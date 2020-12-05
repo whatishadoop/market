@@ -35,6 +35,18 @@
                    </div>
                </div>
              </div>
+             <div class="page">
+              <el-pagination
+                background
+                :current-page="currentPage"
+                :page-sizes="[10, 20, 30, 40, 50, 100]"
+                :page-size="10"
+                :total="1000"
+                layout="total, sizes, prev, pager, next, jumper"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -46,7 +58,7 @@ export default {
   data() {
     return {
       input2: '',
-      templateImage: require('../sources/template.jpg')
+      templateImage: require('../sources/icon_1_off@1x.png')
     }
   }
 }
@@ -68,11 +80,9 @@ export default {
         margin-top: 62px;
       }
     }
-    .main-one-content {
-      height: 262px;
-    }
     .main-two-content {
-      height: 400px;
+      height: 850px;
+      background: #F0F2F5;
     }
     .data-type-wrapper {
       position: absolute;
@@ -80,7 +90,7 @@ export default {
       margin:auto;
       width: 1200px;
       background-color: #FFFFFF;
-      border-radius: 12px 12px 0 0;
+      border-radius: 12px;
       .data-headline {
         margin-top: 24px;
         margin-left: 24px;
@@ -92,20 +102,20 @@ export default {
       }
       .data-type-content-wrapper {
         width: 100%;
+        margin-top: 41px;
+        background: #fff;
+        border-radius: 12px;
         .data-type-content {
           display: flex;
           flex-wrap: wrap;
+          padding-left: 8px;
+          background: #fff;
+          border-radius: 12px;
           .content-item {
             flex: none;
-            position: relative;
-            margin: 16px;
-            width: 258px;
-            height: 184px;
-            border: 1px solid #3a4659;
-            &:hover {
-              box-shadow: 0 0 20px 0 #000;
-              border: 1px solid #00baff;
-            }
+            width: 218px;
+            margin-left: 16px;
+            margin-bottom: 28px;
             &.content-item-add {
               display: flex;
               justify-content: center;
@@ -121,18 +131,48 @@ export default {
             .content-info {
               position: relative;
               width: 100%;
-              height: calc(100% - 36px);
+              height: 200px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-bottom: 12px;
+              background: #F2F6FC;
+              border-radius: 12px;
+              &:hover {
+                background: #4C7DFE;
+                border-radius: 12px;
+              }
               .template-imge {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
+                width: 141px;
+                height: 141px;
                 /*&.default {*/
                 /*  filter: grayscale(1);*/
                 /*  opacity: 0.07;*/
                 /*}*/
               }
             }
+            .content-main {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              .content-name {
+                font-family: PingFangSC-Medium;
+                font-size: 14px;
+                color: #303133;
+                letter-spacing: 0;
+                text-align: center;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+              }
+            }
           }
+        }
+        .page {
+          height: 40px;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
         }
       }
     }
