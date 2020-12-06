@@ -13,11 +13,11 @@
             mode="horizontal"
             @select="handleSelect"
             background-color="#4C7DFE"
-            text-color="#ffd04b"
+            text-color="#fff"
             active-text-color="#fff"
           >
             <el-menu-item index="1"><span style="font-size: 16px;font-size: 16px;font-family: Microsoft YaHei;font-weight: bold;line-height: 20px;">数据集市</span></el-menu-item>
-            <el-menu-item index="2">能力集市</el-menu-item>
+            <el-menu-item index="2"><span style="font-size: 16px;font-size: 16px;font-family: Microsoft YaHei;font-weight: bold;line-height: 20px;">能力集市</span></el-menu-item>
           </el-menu>
         </div>
       </el-header>
@@ -30,7 +30,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import backgroundImage from '@/icons/hairuisi@1x.png'
+import backgroundImage from '@/assets/hairuisi@1x.png'
 export default {
   name: 'Home',
   components: {
@@ -84,5 +84,23 @@ export default {
         align-items: center;
       }
     }
+  }
+
+  /*修改菜单样式*/
+  .menu-wrapper /deep/ .el-menu.el-menu--horizontal {
+    border-bottom: 0px;
+  }
+  .menu-wrapper /deep/ .el-menu-item {
+    padding: 0px;
+    margin-right: 20px;
+  }
+  .menu-wrapper /deep/ .el-menu-item is-active {
+    background-color: #4C7DFE !important;
+  }
+  .menu-wrapper /deep/ .el-menu-item:hover {
+    background-color: #4C7DFE !important;
+  }
+  .menu-wrapper /deep/ .el-menu-item:focus, .el-menu-item:hover {
+    background: transparent;
   }
 </style>

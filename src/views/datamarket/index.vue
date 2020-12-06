@@ -5,10 +5,9 @@
         <div class="main-one-content">
           <div class="search-wrapper">
             <el-input
-              placeholder="请输入内容"
+              placeholder="搜索"
               prefix-icon="el-icon-search"
-              v-model="input2"
-              style="border-radius: 12px;background: #FFFFFF;"
+              v-model="input"
             >
             </el-input>
           </div>
@@ -26,12 +25,15 @@
           </div>
           <div class="data-type-content-wrapper">
              <div class="data-type-content">
-               <div v-for="index in 12" :key="index" class="content-item">
+               <div v-for="(item , index) in dataPackages" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
                    <div class="content-info">
-                      <img :src="templateImage" class="template-imge">
+                      <svg-icon icon-class="icon_2_off" style="height: 141px;width: 141px;"/>
+                      <div v-show="isSelect === index" class="content-menu">
+                        <div class="content-btn" @click="editApplication">下载数据</div>
+                      </div>
                    </div>
                    <div class="content-main">
-                     <span class="content-name">态势感知系统</span>
+                     <span class="content-name">{{item.name}}}</span>
                    </div>
                </div>
              </div>
@@ -54,16 +56,65 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { getAllDataPackages } from '@/api/datamarket/dataset'
 export default {
   data() {
     return {
-      input2: '',
-      templateImage: require('../sources/icon_1_off@1x.png')
+      currentPage: 1,
+      isSelect: -1,
+      input: '',
+      // 所有数据包信息
+      dataPackages: [],
+      // 所有数据包类型信息
+      dataTypes: []
+    }
+  },
+  created() {
+    this.$nextTick(() => {
+      this.getAllDataPackages()
+      debugger
+    })
+  },
+  methods: {
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`)
+    },
+    selectItem(index) {
+      this.isSelect = index
+    },
+    unselectItem() {
+      this.isSelect = -1
+    },
+    editApplication() {
+      const routeUrl = this.$router.resolve({
+        path: '/about',
+        query: {
+          id: 1,
+          name: '可视化模板'
+        }
+      })
+      window.open(routeUrl.href, '_blank')
+    },
+    // 获取所有数据包信息接口
+    getAllDataPackages() {
+      /*
+      const sort = 'id,desc'
+      const params = { sort: sort }
+      if (this.deptName) { params['name'] = this.deptName }
+      getDepts(params).then(res => {
+        this.deptDatas = res.content
+      })
+       */
+      getAllDataPackages().then(res => {
+        this.dataPackages = res
+      })
     }
   }
 }
 </script>
-
 <style type="text/scss" rel="stylesheet/scss" lang="scss" scoped>
   .main-wapper {
     width: 100%;
@@ -150,6 +201,36 @@ export default {
                 /*  opacity: 0.07;*/
                 /*}*/
               }
+              .content-menu {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: flex-end;
+                justify-content: center;
+                /*background-color: rgba(29,38,46,.8);*/
+                .content-btn {
+                  display: inline-block;
+                  vertical-align: bottom;
+                  height: 32px;
+                  line-height: 32px;
+                  padding: 0 30px;
+                  margin-bottom: 10px;
+                  box-sizing: border-box;
+                  outline: 0;
+                  text-align: center;
+                  font-size: 14px;
+                  font-weight: bold;
+                  background: #00bdff;
+                  color: #fff;
+                  border: none;
+                  border-radius: 3px;
+                  transition: .5s ease;
+                  cursor: pointer;
+                }
+              }
             }
             .content-main {
               display: flex;
@@ -158,6 +239,7 @@ export default {
               .content-name {
                 font-family: PingFangSC-Medium;
                 font-size: 14px;
+                font-weight: bold;
                 color: #303133;
                 letter-spacing: 0;
                 text-align: center;
@@ -176,5 +258,12 @@ export default {
         }
       }
     }
+  }
+
+  /**修改搜索框样式**/
+  .search-wrapper /deep/ .el-input__inner {
+    border-radius: 12px;
+    height: 45px;
+    line-height: 45px;
   }
 </style>
