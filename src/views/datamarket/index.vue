@@ -33,7 +33,7 @@
                       </div>
                    </div>
                    <div class="content-main">
-                     <span class="content-name">{{item.name}}}</span>
+                     <span class="content-name">{{item.name}}</span>
                    </div>
                </div>
              </div>
