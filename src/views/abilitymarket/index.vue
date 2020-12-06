@@ -5,7 +5,7 @@
       <div class="main-one-content">
         <div class="search-wrapper">
           <el-input
-            placeholder="搜索"
+            placeholder="能力数据"
             prefix-icon="el-icon-search"
             v-model="input"
           >
@@ -25,7 +25,7 @@
         </div>
         <div class="data-type-content-wrapper">
           <div class="data-type-content">
-            <div v-for="index in 12" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
+            <div v-for="(item , index) in dataPackages" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
               <div class="content-info">
                 <svg-icon icon-class="icon_2_off" style="height: 141px;width: 141px;"/>
                 <div v-show="isSelect === index" class="content-menu">
@@ -33,22 +33,22 @@
                 </div>
               </div>
               <div class="content-main">
-                <span class="content-name">IP地址段数据-全球版</span>
+                <span class="content-name">{{item.name}}</span>
               </div>
             </div>
           </div>
-          <div class="page">
-            <el-pagination
-              background
-              :current-page="currentPage"
-              :page-sizes="[10, 20, 30, 40, 50, 100]"
-              :page-size="10"
-              :total="1000"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
-          </div>
+        </div>
+        <div class="page">
+          <el-pagination
+            background
+            :current-page="currentPage"
+            :page-sizes="[10, 20, 30, 40, 50, 100]"
+            :page-size="10"
+            :total="1000"
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
         </div>
       </div>
     </div>
@@ -56,13 +56,23 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { getAllDataPackages } from '@/api/datamarket/dataset'
 export default {
   data() {
     return {
       currentPage: 1,
       isSelect: -1,
-      input: ''
+      input: '',
+      // 所有数据包信息
+      dataPackages: [],
+      // 所有数据包类型信息
+      dataTypes: []
     }
+  },
+  created() {
+    this.$nextTick(() => {
+      this.getAllDataPackages()
+    })
   },
   methods: {
     handleSizeChange(val) {
@@ -86,6 +96,20 @@ export default {
         }
       })
       window.open(routeUrl.href, '_blank')
+    },
+    // 获取所有数据包信息接口
+    getAllDataPackages() {
+      /*
+      const sort = 'id,desc'
+      const params = { sort: sort }
+      if (this.deptName) { params['name'] = this.deptName }
+      getDepts(params).then(res => {
+        this.deptDatas = res.content
+      })
+       */
+      getAllDataPackages().then(res => {
+        this.dataPackages = res
+      })
     }
   }
 }
@@ -107,14 +131,15 @@ export default {
       }
     }
     .main-two-content {
-      height: 850px;
+      height: 600px;
       background: #F0F2F5;
     }
     .data-type-wrapper {
       position: absolute;
       left:0; right:0; top:200px; bottom:0;
-      margin:auto;
+      margin: 0 auto;
       width: 1200px;
+      height: 700px;
       background-color: #FFFFFF;
       border-radius: 12px;
       .data-headline {
@@ -127,6 +152,9 @@ export default {
         margin-left: 24px;
       }
       .data-type-content-wrapper {
+        position: relative;
+        left: 0px;
+        top: 0px;
         width: 100%;
         margin-top: 41px;
         background: #fff;
@@ -225,12 +253,13 @@ export default {
             }
           }
         }
-        .page {
-          height: 40px;
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
+      }
+      .page {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        bottom: -15px;
+        height: 40px;
       }
     }
   }

@@ -96,4 +96,4 @@ export function getDataPackageInfoById(params) {
   })
 }
 
-export default { getAllDataPackages, getDataPackagesByType, getDataPackagesByName, getDataPackagesByCondition,getAllDataPackagesCount, getDataPackagesCountByType, getDataPackagesCountByName, getDataPackagesCountByCondition, getAllTypes, getDataPackageDetailByParentId, getDataPackageInfoById}
+export default { getAllDataPackages, getDataPackagesByType, getDataPackagesByName, getDataPackagesByCondition, getAllDataPackagesCount, getDataPackagesCountByType, getDataPackagesCountByName, getDataPackagesCountByCondition, getAllTypes, getDataPackageDetailByParentId, getDataPackageInfoById }

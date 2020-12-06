@@ -37,18 +37,18 @@
                    </div>
                </div>
              </div>
-             <div class="page">
-              <el-pagination
-                background
-                :current-page="currentPage"
-                :page-sizes="[10, 20, 30, 40, 50, 100]"
-                :page-size="10"
-                :total="1000"
-                layout="total, sizes, prev, pager, next, jumper"
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-              />
-            </div>
+          </div>
+          <div class="page">
+            <el-pagination
+              background
+              :current-page="currentPage"
+              :page-sizes="[10, 20, 30, 40, 50, 100]"
+              :page-size="10"
+              :total="1000"
+              layout="total, sizes, prev, pager, next, jumper"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
           </div>
         </div>
       </div>
@@ -72,7 +72,6 @@ export default {
   created() {
     this.$nextTick(() => {
       this.getAllDataPackages()
-      debugger
     })
   },
   methods: {
@@ -90,7 +89,7 @@ export default {
     },
     editApplication() {
       const routeUrl = this.$router.resolve({
-        path: '/about',
+        path: '/dataproduct',
         query: {
           id: 1,
           name: '可视化模板'
@@ -132,14 +131,15 @@ export default {
       }
     }
     .main-two-content {
-      height: 850px;
+      height: 600px;
       background: #F0F2F5;
     }
     .data-type-wrapper {
       position: absolute;
       left:0; right:0; top:200px; bottom:0;
-      margin:auto;
+      margin: 0 auto;
       width: 1200px;
+      height: 700px;
       background-color: #FFFFFF;
       border-radius: 12px;
       .data-headline {
@@ -152,6 +152,9 @@ export default {
         margin-left: 24px;
       }
       .data-type-content-wrapper {
+        position: relative;
+        left: 0px;
+        top: 0px;
         width: 100%;
         margin-top: 41px;
         background: #fff;
@@ -250,12 +253,13 @@ export default {
             }
           }
         }
-        .page {
-          height: 40px;
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
+      }
+      .page {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        bottom: -15px;
+        height: 40px;
       }
     }
   }

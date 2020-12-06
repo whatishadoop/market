@@ -17,6 +17,11 @@ const routes = [
         component: () => import('@/views/datamarket/index.vue')
       },
       {
+        path: '/dataproduct',
+        name: 'dataproduct',
+        component: () => import('@/views/datamarket/dataproduct.vue')
+      },
+      {
         path: '/abilitymarket',
         name: 'abilitymarket',
         component: () => import('@/views/abilitymarket/index.vue')

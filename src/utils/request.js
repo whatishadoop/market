@@ -34,7 +34,7 @@ service.interceptors.response.use(
       Notification.error({
         title: response.message
       })
-      return Promise.reject('error')
+      return Promise.reject(new Error(0))
     } else {
       return response.data
     }
