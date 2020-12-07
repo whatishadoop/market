@@ -8,15 +8,14 @@
             <svg-icon icon-class="icon_2_off" style="height: 140px;width: 140px;"/>
           </div>
           <div class="product-detail-wrapper">
-            <div class="product-name">手机号码归属地-基础版</div>
-            <div class="product-info">手机号码段(前7位)，对应的省市及运营商信息。</div>
+            <div class="product-name">{{dataPackageBase.name}}</div>
+            <div class="product-info">{{dataPackageBase.detail}}</div>
             <div class="product-format">
-              <span style="opacity: 0.65">数据格式：</span><span> xlsx</span>
+              <span style="opacity: 0.65">数据格式：</span><span> {{dataPackageBase.format}}</span>
             </div>
             <div class="product-action">
-              <template v-for="index in 2">
-                <el-button size="medium" round style="background: #FFFFFF;border-radius: 20px;border: 1px solid #DCDFE6;" :key="index">小型按钮</el-button>
-              </template>
+              <el-button size="medium" round style="background: #fff;color: #5587FF;font-size: 16px;font-weight: bold;">立即下载</el-button>
+              <el-button size="medium" round icon="el-icon-star-off" style="background: transparent;border: 1px solid #fff;color: #fff;font-size: 16px;font-weight: bold;">收藏<span style="color: transparent;">..</span></el-button>
             </div>
           </div>
         </div>
@@ -31,9 +30,8 @@
         <div class="data-list-wrapper">
           <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;">数据列表 / List</h3>
           <div class="data-action">
-            <template v-for="index in 2">
-              <el-button size="small" round style="background: #FFFFFF;border-radius: 20px;border: 1px solid #DCDFE6;" :key="index">小型按钮</el-button>
-            </template>
+            <el-button size="medium" round style="background: #FFFFFF;border-radius: 20px;border: 1px solid #DCDFE6;" :key="index">全部</el-button>
+            <el-button size="medium" round style="background: #FFFFFF;border-radius: 20px;border: 1px solid #DCDFE6;" :key="index">{{dataPackageBase.format}}</el-button>
           </div>
           <div class="data-list">
             <template>
@@ -45,7 +43,9 @@
                 style="width: 1136px;margin-top: 20px">
                 <el-table-column
                   prop="updateTime"
-                  label="发布时间">
+                  label="发布时间"
+                  :formatter="formatter"
+                  >
                 </el-table-column>
                 <el-table-column
                   prop="name"
@@ -66,7 +66,7 @@
                 <el-table-column
                   label="操作">
                   <template slot-scope="scope">
-                    <el-button @click="handleClick(scope.row)" type="text" size="small">下载</el-button>
+                    <el-button @click="download(scope.row)" type="text" size="small">下载</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -74,9 +74,12 @@
             <div class="page">
               <el-pagination
                 background
+                :current-page="currentPage"
+                :page-size="pageSize"
+                :total="total"
                 layout="prev, pager, next"
-                :total="50">
-              </el-pagination>
+                @current-change="handleCurrentChange"
+              />
             </div>
           </div>
         </div>
@@ -87,173 +90,60 @@
 
 <script type="text/ecmascript-6">
 import dataexpImage from '@/assets/dataexp.png'
-import { getAllDataPackages } from '@/api/datamarket/dataset'
+import { getDataPackageInfoById } from '@/api/datamarket/dataset'
+import { formatDate } from '@/utils/date'
 export default {
   data() {
     return {
+      total: 0,
       currentPage: 1,
-      isSelect: -1,
-      input: '',
+      pageSize: 10,
+      dataPackageBase: {},
       // 所有数据包信息
-      dataPackages: [],
+      dataPackageDetailList: [],
+      // 一页数据
+      tableData: [],
       // 所有数据包类型信息
       dataTypes: [],
-      dataexpImage: dataexpImage,
-      tableData: [
-        {
-          id: 10010011,
-          parentId: 1,
-          name: '北京POI数据信息-01',
-          amount: '53264',
-          format: 'TXT',
-          sort: 1,
-          size: '53.12MB',
-          url: '/dataset/typename/poi/北京POI-01.zip',
-          imageUrl: '/dataset/typename/poi/poi-exapmle-01.jpg',
-          detail: '北京POI数据信息-01',
-          remark: '北京POI数据信息-01',
-          downloadCnt: 0,
-          createPerson: 'admin',
-          updatePerson: 'rhino',
-          createTime: 1606978445000,
-          updateTime: 1606978448000
-        },
-        {
-          id: 10010012,
-          parentId: 1,
-          name: '北京POI数据信息-02',
-          amount: '1000',
-          format: 'TXT',
-          sort: 1,
-          size: '1.12MB',
-          url: '/dataset/typename/poi/北京POI-02.zip',
-          imageUrl: '/dataset/typename/poi/poi-exapmle-02.jpg',
-          detail: '北京POI数据信息-02',
-          remark: '北京POI数据信息-02',
-          downloadCnt: 12,
-          createPerson: 'admin',
-          updatePerson: 'rhino',
-          createTime: 1606978445000,
-          updateTime: 1606978448000
-        },
-        {
-          id: 10010012,
-          parentId: 1,
-          name: '北京POI数据信息-02',
-          amount: '1000',
-          format: 'TXT',
-          sort: 1,
-          size: '1.12MB',
-          url: '/dataset/typename/poi/北京POI-02.zip',
-          imageUrl: '/dataset/typename/poi/poi-exapmle-02.jpg',
-          detail: '北京POI数据信息-02',
-          remark: '北京POI数据信息-02',
-          downloadCnt: 12,
-          createPerson: 'admin',
-          updatePerson: 'rhino',
-          createTime: 1606978445000,
-          updateTime: 1606978448000
-        },
-        {
-          id: 10010012,
-          parentId: 1,
-          name: '北京POI数据信息-02',
-          amount: '1000',
-          format: 'TXT',
-          sort: 1,
-          size: '1.12MB',
-          url: '/dataset/typename/poi/北京POI-02.zip',
-          imageUrl: '/dataset/typename/poi/poi-exapmle-02.jpg',
-          detail: '北京POI数据信息-02',
-          remark: '北京POI数据信息-02',
-          downloadCnt: 12,
-          createPerson: 'admin',
-          updatePerson: 'rhino',
-          createTime: 1606978445000,
-          updateTime: 1606978448000
-        },
-        {
-          id: 10010012,
-          parentId: 1,
-          name: '北京POI数据信息-02',
-          amount: '1000',
-          format: 'TXT',
-          sort: 1,
-          size: '1.12MB',
-          url: '/dataset/typename/poi/北京POI-02.zip',
-          imageUrl: '/dataset/typename/poi/poi-exapmle-02.jpg',
-          detail: '北京POI数据信息-02',
-          remark: '北京POI数据信息-02',
-          downloadCnt: 12,
-          createPerson: 'admin',
-          updatePerson: 'rhino',
-          createTime: 1606978445000,
-          updateTime: 1606978448000
-        },
-        {
-          id: 10010012,
-          parentId: 1,
-          name: '北京POI数据信息-02',
-          amount: '1000',
-          format: 'TXT',
-          sort: 1,
-          size: '1.12MB',
-          url: '/dataset/typename/poi/北京POI-02.zip',
-          imageUrl: '/dataset/typename/poi/poi-exapmle-02.jpg',
-          detail: '北京POI数据信息-02',
-          remark: '北京POI数据信息-02',
-          downloadCnt: 12,
-          createPerson: 'admin',
-          updatePerson: 'rhino',
-          createTime: 1606978445000,
-          updateTime: 1606978448000
-        }
-      ]
+      dataexpImage: dataexpImage
     }
   },
   created() {
     this.$nextTick(() => {
-      this.getAllDataPackages()
+      this.getDataPackageInfoById(this.$route.query.id)
     })
   },
   methods: {
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.pageSize = val
+      this.paging()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.currentPage = val
+      this.paging()
     },
-    handleClick(row) {
+    // 分页方法
+    paging() {
+      this.tableData = this.dataPackageDetailList.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+    },
+    // 下载文件
+    download(row) {
       console.log(row)
+      window.location.href = row.url
     },
-    selectItem(index) {
-      this.isSelect = index
+    formatter(row, column) {
+      return formatDate(new Date(row.updateTime), 'yyyy-MM-dd hh:mm:ss')
     },
-    unselectItem() {
-      this.isSelect = -1
-    },
-    editApplication() {
-      const routeUrl = this.$router.resolve({
-        path: '/dataproduct',
-        query: {
-          id: 1,
-          name: '可视化模板'
-        }
-      })
-      window.open(routeUrl.href, '_blank')
-    },
-    // 获取所有数据包信息接口
-    getAllDataPackages() {
-      /*
-      const sort = 'id,desc'
-      const params = { sort: sort }
-      if (this.deptName) { params['name'] = this.deptName }
-      getDepts(params).then(res => {
-        this.deptDatas = res.content
-      })
-       */
-      getAllDataPackages().then(res => {
-        this.dataPackages = res
+    // 根据数据包父ID获取数据包的所有信息，包括子数据包信息
+    getDataPackageInfoById(id) {
+      const params = {
+        id: id
+      }
+      getDataPackageInfoById(params).then(res => {
+        this.dataPackageBase = res.dataPackageBase
+        this.dataPackageDetailList = res.dataPackageDetailList
+        this.total = res.dataPackageDetailList.length
+        this.paging()
       })
     }
   }
@@ -313,6 +203,12 @@ export default {
           }
           .product-action {
             margin-top: 18px;
+            .download {
+              font-family: PingFangSC-Regular;
+            }
+            .collect {
+              font-family: PingFangSC-Regular;
+            }
           }
         }
       }

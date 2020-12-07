@@ -26,7 +26,7 @@
                    <div class="content-info">
                       <svg-icon icon-class="icon_2_off" style="height: 141px;width: 141px;"/>
                       <div v-show="isSelect === index" class="content-menu">
-                        <div class="content-btn" @click="editApplication">下载数据</div>
+                        <div class="content-btn" @click="editApplication(item.id)">下载数据</div>
                       </div>
                    </div>
                    <div class="content-main">
@@ -93,12 +93,11 @@ export default {
     unselectItem() {
       this.isSelect = -1
     },
-    editApplication() {
+    editApplication(id) {
       const routeUrl = this.$router.resolve({
         path: '/dataproduct',
         query: {
-          id: 1,
-          name: '可视化模板'
+          id: id
         }
       })
       window.open(routeUrl.href, '_blank')
@@ -115,7 +114,6 @@ export default {
        */
       if (type === '全部') {
         getAllDataPackages().then(res => {
-          debugger
           this.dataPackages = res
           this.total = res.length
           this.paging()
