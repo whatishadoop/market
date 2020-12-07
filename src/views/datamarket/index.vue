@@ -4,11 +4,8 @@
       <div class="main-wapper">
         <div class="main-one-content">
           <div class="search-wrapper">
-            <el-input
-              placeholder="搜索"
-              prefix-icon="el-icon-search"
-              v-model="input"
-            >
+            <el-input placeholder="请输入内容" v-model="input">
+              <el-button @click="getDataPackagesByCondition()" slot="prepend" icon="el-icon-search" style="color: #5075E7;font-weight: bold"></el-button>
             </el-input>
           </div>
         </div>
@@ -19,13 +16,13 @@
             <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;">数据块分类</h3>
           </div>
           <div class="data-type-btn">
-            <template v-for="index in 8">
-              <el-button size="small" round style="background: #F2F6FC;border-radius: 18px;border: 1px solid #DCDFE6;" :key="index">小型按钮</el-button>
+            <template v-for="(item , index) in dataTypes">
+              <el-button size="small" round style="background: #F2F6FC;border-radius: 18px;border: 1px solid #DCDFE6;" :key="index" @click="getAllDataPackages(item.type)">{{item.type}}</el-button>
             </template>
           </div>
           <div class="data-type-content-wrapper">
              <div class="data-type-content">
-               <div v-for="(item , index) in dataPackages" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
+               <div v-for="(item , index) in tableData" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
                    <div class="content-info">
                       <svg-icon icon-class="icon_2_off" style="height: 141px;width: 141px;"/>
                       <div v-show="isSelect === index" class="content-menu">
@@ -42,11 +39,9 @@
             <el-pagination
               background
               :current-page="currentPage"
-              :page-sizes="[10, 20, 30, 40, 50, 100]"
-              :page-size="10"
-              :total="1000"
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChange"
+              :page-size="pageSize"
+              :total="total"
+              layout="prev, pager, next"
               @current-change="handleCurrentChange"
             />
           </div>
@@ -56,30 +51,41 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getAllDataPackages } from '@/api/datamarket/dataset'
+import { getAllDataPackages, getAllTypes, getDataPackagesByType, getDataPackagesByCondition } from '@/api/datamarket/dataset'
 export default {
   data() {
     return {
+      total: 0,
       currentPage: 1,
+      pageSize: 10,
       isSelect: -1,
       input: '',
       // 所有数据包信息
       dataPackages: [],
       // 所有数据包类型信息
-      dataTypes: []
+      dataTypes: [],
+      // 前端分页显示数据
+      tableData: []
     }
   },
   created() {
     this.$nextTick(() => {
-      this.getAllDataPackages()
+      this.getAllDataPackages('全部')
+      this.getAllTypes()
     })
   },
   methods: {
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.pageSize = val
+      this.paging()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.currentPage = val
+      this.paging()
+    },
+    // 分页方法
+    paging() {
+      this.tableData = this.dataPackages.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
     },
     selectItem(index) {
       this.isSelect = index
@@ -98,7 +104,7 @@ export default {
       window.open(routeUrl.href, '_blank')
     },
     // 获取所有数据包信息接口
-    getAllDataPackages() {
+    getAllDataPackages(type) {
       /*
       const sort = 'id,desc'
       const params = { sort: sort }
@@ -107,8 +113,51 @@ export default {
         this.deptDatas = res.content
       })
        */
-      getAllDataPackages().then(res => {
+      if (type === '全部') {
+        getAllDataPackages().then(res => {
+          debugger
+          this.dataPackages = res
+          this.total = res.length
+          this.paging()
+        })
+      } else {
+        const params = {
+          type: type,
+          pageNum: '0',
+          rowsNum: '4'
+        }
+        getDataPackagesByType(params).then(res => {
+          this.dataPackages = res
+          this.total = res.length
+          this.paging()
+          console.log(this.dataPackages)
+        })
+      }
+    },
+    getDataPackagesByCondition() {
+      const params = {
+        condition: this.input,
+        pageNum: '0',
+        rowsNum: '5'
+      }
+      getDataPackagesByCondition(params).then(res => {
         this.dataPackages = res
+        this.total = res.length
+        this.paging()
+        console.log(this.dataPackages)
+      })
+    },
+    // 获取所有数据包类型
+    getAllTypes() {
+      getAllTypes().then(res => {
+        let all = [
+          {
+            type: '全部',
+            cnt: 0
+          }
+        ]
+        this.dataTypes = all.concat(res)
+        console.log(this.dataTypes)
       })
     }
   }
@@ -266,8 +315,20 @@ export default {
 
   /**修改搜索框样式**/
   .search-wrapper /deep/ .el-input__inner {
-    border-radius: 12px;
     height: 45px;
     line-height: 45px;
+    padding-left: 0px;
+    border: 0px;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+  .search-wrapper /deep/ .el-input-group__prepend {
+    height: 45px;
+    line-height: 45px;
+    padding-left: 15px;
+    padding-right: 10px;
+    background: #FFFFFF;
+    border-radius: 12px 0px 0px 12px;
+    border: 0px;
   }
 </style>

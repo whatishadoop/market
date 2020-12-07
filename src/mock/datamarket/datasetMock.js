@@ -44,11 +44,37 @@ const data01 = [
     updatePerson: 'rhino',
     createTime: 1606838400000,
     updateTime: 1606838400000
-  }
-]
-
-// 2.根据类型及分页参数获取数据包列表
-const data02 = [
+  },
+  {
+    id: 2,
+    name: 'POI信息-2',
+    type: 'XX',
+    format: 'TXT',
+    amount: '1000',
+    sort: 2,
+    price: 1.99,
+    detail: '主要包含北京的地理位置坐标信息，精确到5m。',
+    remark: '北京地址坐标信息',
+    createPerson: 'admin',
+    updatePerson: 'rhino',
+    createTime: 1606838400000,
+    updateTime: 1606838400000
+  },
+  {
+    id: 1,
+    name: 'POI信息',
+    type: 'XX',
+    format: 'TXT',
+    amount: '1000288',
+    sort: 1,
+    price: 1.99,
+    detail: '主要包含北京的地理位置坐标信息，精确到5m。',
+    remark: '北京地址坐标信息',
+    createPerson: 'admin',
+    updatePerson: 'rhino',
+    createTime: 1606838400000,
+    updateTime: 1606838400000
+  },
   {
     id: 3,
     name: '警情信息',
@@ -64,6 +90,100 @@ const data02 = [
     createTime: 1606838400000,
     updateTime: 1606838400000
   },
+  {
+    id: 2,
+    name: 'POI信息-2',
+    type: 'XX',
+    format: 'TXT',
+    amount: '1000',
+    sort: 2,
+    price: 1.99,
+    detail: '主要包含北京的地理位置坐标信息，精确到5m。',
+    remark: '北京地址坐标信息',
+    createPerson: 'admin',
+    updatePerson: 'rhino',
+    createTime: 1606838400000,
+    updateTime: 1606838400000
+  },
+  {
+    id: 1,
+    name: 'POI信息',
+    type: 'XX',
+    format: 'TXT',
+    amount: '1000288',
+    sort: 1,
+    price: 1.99,
+    detail: '主要包含北京的地理位置坐标信息，精确到5m。',
+    remark: '北京地址坐标信息',
+    createPerson: 'admin',
+    updatePerson: 'rhino',
+    createTime: 1606838400000,
+    updateTime: 1606838400000
+  },
+  {
+    id: 3,
+    name: '警情信息',
+    type: 'JQ',
+    format: 'CSV',
+    amount: '5201',
+    sort: 3,
+    price: 3.99,
+    detail: '主要包含北京的海淀区的警情数据信息',
+    remark: '北京的海淀区的警情数据信息',
+    createPerson: 'admin',
+    updatePerson: 'rhino',
+    createTime: 1606838400000,
+    updateTime: 1606838400000
+  },
+  {
+    id: 2,
+    name: 'POI信息-2',
+    type: 'XX',
+    format: 'TXT',
+    amount: '1000',
+    sort: 2,
+    price: 1.99,
+    detail: '主要包含北京的地理位置坐标信息，精确到5m。',
+    remark: '北京地址坐标信息',
+    createPerson: 'admin',
+    updatePerson: 'rhino',
+    createTime: 1606838400000,
+    updateTime: 1606838400000
+  },
+  {
+    id: 1,
+    name: 'POI信息',
+    type: 'XX',
+    format: 'TXT',
+    amount: '1000288',
+    sort: 1,
+    price: 1.99,
+    detail: '主要包含北京的地理位置坐标信息，精确到5m。',
+    remark: '北京地址坐标信息',
+    createPerson: 'admin',
+    updatePerson: 'rhino',
+    createTime: 1606838400000,
+    updateTime: 1606838400000
+  },
+  {
+    id: 3,
+    name: '警情信息',
+    type: 'JQ',
+    format: 'CSV',
+    amount: '5201',
+    sort: 3,
+    price: 3.99,
+    detail: '主要包含北京的海淀区的警情数据信息',
+    remark: '北京的海淀区的警情数据信息',
+    createPerson: 'admin',
+    updatePerson: 'rhino',
+    createTime: 1606838400000,
+    updateTime: 1606838400000
+  }
+]
+
+// 2.根据类型及分页参数获取数据包列表
+const data02 = [
   {
     id: 2,
     name: 'POI信息-2',
@@ -149,7 +269,7 @@ const data03 = [
 const data04 = [
   {
     id: 2,
-    name: 'POI信息-2',
+    name: 'POI信息-2c',
     type: 'XX',
     format: 'TXT',
     amount: '1000',
@@ -164,7 +284,7 @@ const data04 = [
   },
   {
     id: 1,
-    name: 'POI信息',
+    name: 'POI信息c',
     type: 'XX',
     format: 'TXT',
     amount: '1000288',
