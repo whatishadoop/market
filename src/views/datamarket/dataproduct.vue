@@ -8,14 +8,14 @@
             <svg-icon icon-class="icon_2_off" style="height: 140px;width: 140px;"/>
           </div>
           <div class="product-detail-wrapper">
-            <div class="product-name">{{dataPackageBase.name}}</div>
+            <div class="product-name" v-cloak>{{dataPackageBase.name}}</div>
             <div class="product-info">{{dataPackageBase.detail}}</div>
             <div class="product-format">
               <span style="opacity: 0.65">数据格式：</span><span> {{dataPackageBase.format}}</span>
             </div>
             <div class="product-action">
               <el-button size="medium" round style="background: #fff;color: #5587FF;font-size: 16px;font-weight: bold;">立即下载</el-button>
-              <el-button size="medium" round icon="el-icon-star-off" style="background: transparent;border: 1px solid #fff;color: #fff;font-size: 16px;font-weight: bold;">收藏<span style="color: transparent;">..</span></el-button>
+              <!--<el-button size="medium" round icon="el-icon-star-off" style="background: transparent;border: 1px solid #fff;color: #fff;font-size: 16px;font-weight: bold;">收藏<span style="color: transparent;">..</span></el-button>-->
             </div>
           </div>
         </div>
@@ -29,10 +29,10 @@
         </div>
         <div class="data-list-wrapper">
           <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;">数据列表 / List</h3>
-          <div class="data-action">
-            <el-button size="medium" round style="background: #FFFFFF;border-radius: 20px;border: 1px solid #DCDFE6;" :key="index">全部</el-button>
-            <el-button size="medium" round style="background: #FFFFFF;border-radius: 20px;border: 1px solid #DCDFE6;" :key="index">{{dataPackageBase.format}}</el-button>
-          </div>
+          <!--<div class="data-action">-->
+            <!--<el-button size="medium" round style="background: #FFFFFF;border-radius: 20px;border: 1px solid #DCDFE6;" :key="index">全部</el-button>-->
+            <!--<el-button size="medium" round style="background: #FFFFFF;border-radius: 20px;border: 1px solid #DCDFE6;" :key="index">{{dataPackageBase.format}}</el-button>-->
+          <!--</div>-->
           <div class="data-list">
             <template>
               <el-table
@@ -128,7 +128,6 @@ export default {
     },
     // 下载文件
     download(row) {
-      console.log(row)
       window.location.href = row.url
     },
     formatter(row, column) {
@@ -136,6 +135,7 @@ export default {
     },
     // 根据数据包父ID获取数据包的所有信息，包括子数据包信息
     getDataPackageInfoById(id) {
+      const rLoading = this.openLoading()
       const params = {
         id: id
       }
@@ -144,6 +144,7 @@ export default {
         this.dataPackageDetailList = res.dataPackageDetailList
         this.total = res.dataPackageDetailList.length
         this.paging()
+        rLoading.close()
       })
     }
   }
@@ -153,6 +154,8 @@ export default {
   .main-wapper {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
     .main-one-content {
       height: 417px;
       padding-top: 60px;
@@ -178,22 +181,26 @@ export default {
           flex-direction: column;
           align-items: flex-start;
           .product-name {
+            height: 28px;
+            line-height: 28px;
             font-family: PingFangSC-Medium;
             font-size: 20px;
             color: #FFFFFF;
             letter-spacing: 0;
-            line-height: 28px;
           }
           .product-info {
+            height: 26px;
+            line-height: 26px;
             margin-top: 4px;
             opacity: 0.65;
             font-family: PingFangSC-Regular;
             font-size: 12px;
             color: #FFFFFF;
             letter-spacing: 0;
-            line-height: 26px;
           }
           .product-format {
+            width: 90px;
+            height: 26px;
             margin-top: 16px;
             font-family: PingFangSC-Regular;
             font-size: 12px;
@@ -214,7 +221,7 @@ export default {
       }
     }
     .main-two-content {
-      height: 745px;
+      height: 705px;
       background: #F0F2F5;
     }
     .data-type-wrapper {
@@ -222,7 +229,7 @@ export default {
       left:0; right:0; top:327px; bottom:0;
       margin: 0 auto;
       width: 1200px;
-      height: 860px;
+      height: 820px;
       background-color: #FFFFFF;
       border-radius: 12px;
       .data-exp-wrapper {

@@ -32,11 +32,11 @@ module.exports = {
       errors: true
     },
     proxy: {
-      '/api': {
+      '/market': {
         target: process.env.VUE_APP_BASE_API,
         changeOrigin: true,
         pathRewrite: {
-          '^/api': 'api'
+          '^/market': 'market'
         }
       },
       '/auth': {

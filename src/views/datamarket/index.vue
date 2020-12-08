@@ -47,6 +47,41 @@
           </div>
         </div>
       </div>
+      <!--对话框-->
+      <el-dialog title="需求提交" :visible.sync="dialogFormVisible" :center="true">
+        <el-form :model="form" :rules="rules" ref="ruleform">
+          <el-form-item label="需求类型" label-width="100px" prop="type">
+            <el-radio v-model="form.type" label="1">API</el-radio>
+            <el-radio v-model="form.type" label="2">数据块</el-radio>
+          </el-form-item>
+          <el-form-item label="需求描述" label-width="100px" prop="desc">
+            <el-input
+              type="textarea"
+              :rows="4"
+              placeholder="请输入内容"
+              v-model="form.desc">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="您的称呼" label-width="100px" prop="name">
+            <el-input
+              placeholder="请输入内容"
+              v-model="form.name"
+              clearable>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="联系方式" label-width="100px" prop="phone">
+            <el-input
+              placeholder="请输入内容"
+              v-model="form.phone"
+              clearable>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="resetForm('ruleform')">重 置</el-button>
+          <el-button type="primary" @click="submitForm('ruleform')">提 交</el-button>
+        </div>
+      </el-dialog>
     </div>
 </template>
 
@@ -65,7 +100,30 @@ export default {
       // 所有数据包类型信息
       dataTypes: [],
       // 前端分页显示数据
-      tableData: []
+      tableData: [],
+      // 需求反馈对话框
+      dialogFormVisible: false,
+      form: {
+        type: '1',
+        desc: '',
+        name: '',
+        phone: ''
+      },
+      rules: {
+        type: [
+          { required: true, message: '需求类型不能为空' }
+        ],
+        desc: [
+          { required: true, message: '需求描述不能为空' }
+        ],
+        name: [
+          { required: true, message: '称呼不能为空' }
+        ],
+        phone: [
+          { required: true, message: '联系方式不能为空' }
+        ]
+      },
+      formLabelWidth: '120px'
     }
   },
   created() {
@@ -102,47 +160,64 @@ export default {
       })
       window.open(routeUrl.href, '_blank')
     },
+    submitForm(formName) {
+      this.dialogFormVisible = false
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          this.resetForm(formName)
+          return false
+        }
+      })
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
+    },
     // 获取所有数据包信息接口
     getAllDataPackages(type) {
-      /*
-      const sort = 'id,desc'
-      const params = { sort: sort }
-      if (this.deptName) { params['name'] = this.deptName }
-      getDepts(params).then(res => {
-        this.deptDatas = res.content
-      })
-       */
+      // 重置当前页
+      this.currentPage = 1
       if (type === '全部') {
+        const rLoading = this.openLoading()
         getAllDataPackages().then(res => {
           this.dataPackages = res
           this.total = res.length
           this.paging()
+          rLoading.close()
         })
+      } else if (type === '需求反馈') {
+        this.dialogFormVisible = true
       } else {
         const params = {
           type: type,
           pageNum: '0',
-          rowsNum: '4'
+          rowsNum: '500'
         }
+        const rLoading = this.openLoading()
         getDataPackagesByType(params).then(res => {
           this.dataPackages = res
           this.total = res.length
           this.paging()
-          console.log(this.dataPackages)
+          rLoading.close()
         })
       }
     },
     getDataPackagesByCondition() {
+      const rLoading = this.openLoading()
+      // 重置当前页
+      this.currentPage = 1
       const params = {
         condition: this.input,
         pageNum: '0',
-        rowsNum: '5'
+        rowsNum: '500'
       }
       getDataPackagesByCondition(params).then(res => {
         this.dataPackages = res
         this.total = res.length
         this.paging()
-        console.log(this.dataPackages)
+        rLoading.close()
       })
     },
     // 获取所有数据包类型
@@ -154,8 +229,12 @@ export default {
             cnt: 0
           }
         ]
+        let feedback = {
+          type: '需求反馈',
+          cnt: 0
+        }
         this.dataTypes = all.concat(res)
-        console.log(this.dataTypes)
+        this.dataTypes.push(feedback)
       })
     }
   }
@@ -165,8 +244,10 @@ export default {
   .main-wapper {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
     .main-one-content {
-      height: 262px;
+      flex: 0 1 262px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -178,7 +259,7 @@ export default {
       }
     }
     .main-two-content {
-      height: 600px;
+      flex: 0 1 auto;
       background: #F0F2F5;
     }
     .data-type-wrapper {
