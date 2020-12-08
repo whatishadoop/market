@@ -10,40 +10,40 @@
           </div>
         </div>
         <div class="main-two-content">
-        </div>
-        <div class="data-type-wrapper">
-          <div class="data-headline">
-            <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;">数据块分类</h3>
-          </div>
-          <div class="data-type-btn">
-            <template v-for="(item , index) in dataTypes">
-              <el-button size="small" round style="background: #F2F6FC;border-radius: 18px;border: 1px solid #DCDFE6;" :key="index" @click="getAllDataPackages(item.type)">{{item.type}}</el-button>
-            </template>
-          </div>
-          <div class="data-type-content-wrapper">
-             <div class="data-type-content">
-               <div v-for="(item , index) in tableData" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
-                   <div class="content-info">
-                      <svg-icon icon-class="icon_2_off" style="height: 141px;width: 141px;"/>
-                      <div v-show="isSelect === index" class="content-menu">
-                        <div class="content-btn" @click="editApplication(item.id)">下载数据</div>
-                      </div>
-                   </div>
-                   <div class="content-main">
-                     <span class="content-name">{{item.name}}</span>
-                   </div>
-               </div>
-             </div>
-          </div>
-          <div class="page">
-            <el-pagination
-              background
-              :current-page="currentPage"
-              :page-size="pageSize"
-              :total="total"
-              layout="prev, pager, next"
-              @current-change="handleCurrentChange"
-            />
+          <div class="data-type-wrapper">
+            <div class="data-headline">
+              <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;margin: 0px">数据块分类</h3>
+            </div>
+            <div class="data-type-btn">
+              <template v-for="(item , index) in dataTypes">
+                <el-button size="small" round style="background: #F2F6FC;border-radius: 18px;border: 1px solid #DCDFE6;" :key="index" @click="getAllDataPackages(item.type)">{{item.type}}</el-button>
+              </template>
+            </div>
+            <div class="data-type-content-wrapper">
+              <div class="data-type-content">
+                <div v-for="(item , index) in tableData" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
+                  <div class="content-info">
+                    <svg-icon icon-class="icon_2_off" style="height: 141px;width: 141px;"/>
+                    <div v-show="isSelect === index" class="content-menu">
+                      <div class="content-btn" @click="editApplication(item.id)">下载数据</div>
+                    </div>
+                  </div>
+                  <div class="content-main">
+                    <span class="content-name">{{item.name}}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="page">
+                <el-pagination
+                  background
+                  :current-page="currentPage"
+                  :page-size="pageSize"
+                  :total="total"
+                  layout="prev, pager, next"
+                  @current-change="handleCurrentChange"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -132,6 +132,12 @@ export default {
       this.getAllTypes()
     })
   },
+  beforeCreate () {
+    document.querySelector('body').setAttribute('style', 'background-color: #F0F2F5;')
+  },
+  beforeDestroy () {
+    document.querySelector('body').removeAttribute('style')
+  },
   methods: {
     handleSizeChange(val) {
       this.pageSize = val
@@ -182,8 +188,8 @@ export default {
       if (type === '全部') {
         const rLoading = this.openLoading()
         getAllDataPackages().then(res => {
-          this.dataPackages = res
-          this.total = res.length
+          this.dataPackages = res.rows
+          this.total = res.rows.length
           this.paging()
           rLoading.close()
         })
@@ -197,8 +203,8 @@ export default {
         }
         const rLoading = this.openLoading()
         getDataPackagesByType(params).then(res => {
-          this.dataPackages = res
-          this.total = res.length
+          this.dataPackages = res.rows
+          this.total = res.rows.length
           this.paging()
           rLoading.close()
         })
@@ -214,8 +220,8 @@ export default {
         rowsNum: '500'
       }
       getDataPackagesByCondition(params).then(res => {
-        this.dataPackages = res
-        this.total = res.length
+        this.dataPackages = res.rows
+        this.total = res.rows.length
         this.paging()
         rLoading.close()
       })
@@ -259,135 +265,134 @@ export default {
       }
     }
     .main-two-content {
-      flex: 0 1 auto;
+      flex: 1 1 auto;
       background: #F0F2F5;
-    }
-    .data-type-wrapper {
-      position: absolute;
-      left:0; right:0; top:200px; bottom:0;
-      margin: 0 auto;
-      width: 1200px;
-      height: 700px;
-      background-color: #FFFFFF;
-      border-radius: 12px;
-      .data-headline {
-        margin-top: 24px;
-        margin-left: 24px;
-      }
-      .data-type-btn {
-        display: flex;
-        margin-top: 20px;
-        margin-left: 24px;
-      }
-      .data-type-content-wrapper {
+      .data-type-wrapper {
         position: relative;
-        left: 0px;
-        top: 0px;
-        width: 100%;
-        margin-top: 41px;
-        background: #fff;
+        top: -115px;
+        padding-top: 6px;
+        flex: 1 1 auto;
+        margin: 0 auto;
+        width: 1200px;
+        background-color: #FFFFFF;
         border-radius: 12px;
-        .data-type-content {
+        .data-headline {
+          margin-left: 24px;
+        }
+        .data-type-btn {
           display: flex;
-          flex-wrap: wrap;
-          padding-left: 8px;
+          margin-top: 20px;
+          margin-left: 24px;
+        }
+        .data-type-content-wrapper {
+          position: relative;
+          left: 0px;
+          top: 0px;
+          width: 100%;
+          margin-top: 41px;
           background: #fff;
           border-radius: 12px;
-          .content-item {
-            flex: none;
-            width: 218px;
-            margin-left: 16px;
-            margin-bottom: 28px;
-            &.content-item-add {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              cursor: pointer;
-              height: 184px;
-              width: 258px;
-              font-size: 14px;
-              border: 1px solid #00baff;
-              color: #8eeeff;
-              background-image: linear-gradient(-90deg,rgba(0,222,255,.39),rgba(0,174,255,.19));
-            }
-            .content-info {
-              position: relative;
-              width: 100%;
-              height: 200px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              margin-bottom: 12px;
-              background: #F2F6FC;
-              border-radius: 12px;
-              &:hover {
-                background: #4C7DFE;
-                border-radius: 12px;
-              }
-              .template-imge {
-                width: 141px;
-                height: 141px;
-                /*&.default {*/
-                /*  filter: grayscale(1);*/
-                /*  opacity: 0.07;*/
-                /*}*/
-              }
-              .content-menu {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
+          .data-type-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: 8px;
+            background: #fff;
+            border-radius: 12px;
+            .content-item {
+              flex: none;
+              width: 218px;
+              margin-left: 16px;
+              margin-bottom: 28px;
+              &.content-item-add {
                 display: flex;
-                align-items: flex-end;
                 justify-content: center;
-                /*background-color: rgba(29,38,46,.8);*/
-                .content-btn {
-                  display: inline-block;
-                  vertical-align: bottom;
-                  height: 32px;
-                  line-height: 32px;
-                  padding: 0 30px;
-                  margin-bottom: 10px;
-                  box-sizing: border-box;
-                  outline: 0;
-                  text-align: center;
+                align-items: center;
+                cursor: pointer;
+                height: 184px;
+                width: 258px;
+                font-size: 14px;
+                border: 1px solid #00baff;
+                color: #8eeeff;
+                background-image: linear-gradient(-90deg,rgba(0,222,255,.39),rgba(0,174,255,.19));
+              }
+              .content-info {
+                position: relative;
+                width: 100%;
+                height: 200px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 12px;
+                background: #F2F6FC;
+                border-radius: 12px;
+                &:hover {
+                  background: #4C7DFE;
+                  border-radius: 12px;
+                }
+                .template-imge {
+                  width: 141px;
+                  height: 141px;
+                  /*&.default {*/
+                  /*  filter: grayscale(1);*/
+                  /*  opacity: 0.07;*/
+                  /*}*/
+                }
+                .content-menu {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  align-items: flex-end;
+                  justify-content: center;
+                  /*background-color: rgba(29,38,46,.8);*/
+                  .content-btn {
+                    display: inline-block;
+                    vertical-align: bottom;
+                    height: 32px;
+                    line-height: 32px;
+                    padding: 0 30px;
+                    margin-bottom: 10px;
+                    box-sizing: border-box;
+                    outline: 0;
+                    text-align: center;
+                    font-size: 14px;
+                    font-weight: bold;
+                    background: #00bdff;
+                    color: #fff;
+                    border: none;
+                    border-radius: 3px;
+                    transition: .5s ease;
+                    cursor: pointer;
+                  }
+                }
+              }
+              .content-main {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                .content-name {
+                  font-family: PingFangSC-Medium;
                   font-size: 14px;
                   font-weight: bold;
-                  background: #00bdff;
-                  color: #fff;
-                  border: none;
-                  border-radius: 3px;
-                  transition: .5s ease;
-                  cursor: pointer;
+                  color: #303133;
+                  letter-spacing: 0;
+                  text-align: center;
+                  text-overflow: ellipsis;
+                  overflow: hidden;
+                  white-space: nowrap;
                 }
               }
             }
-            .content-main {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              .content-name {
-                font-family: PingFangSC-Medium;
-                font-size: 14px;
-                font-weight: bold;
-                color: #303133;
-                letter-spacing: 0;
-                text-align: center;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
-              }
-            }
+          }
+          .page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 10px;
           }
         }
-      }
-      .page {
-        position: absolute;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        bottom: -15px;
-        height: 40px;
       }
     }
   }
