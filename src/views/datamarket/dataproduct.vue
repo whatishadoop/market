@@ -25,7 +25,7 @@
       <div class="data-type-wrapper">
         <div class="data-exp-wrapper">
           <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;">数据示例 / Example</h3>
-          <img :src="dataexpImage" class="image-size">
+          <img :src="dataPackageBase.imageUrl" class="image-size">
         </div>
         <div class="data-list-wrapper">
           <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;">数据列表 / List</h3>
@@ -105,7 +105,8 @@ export default {
       tableData: [],
       // 所有数据包类型信息
       dataTypes: [],
-      dataexpImage: dataexpImage
+      dataexpImage: dataexpImage,
+      imageUrl: ''
     }
   },
   created() {

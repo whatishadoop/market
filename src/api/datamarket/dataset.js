@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 
 // 1.获取所有数据包信息接口
-export function getAllDataPackages() {
+export function getAllDataPackages(params) {
   return request({
     url: 'market/dataset/getAllDataPackages',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
@@ -96,4 +97,13 @@ export function getDataPackageInfoById(params) {
   })
 }
 
-export default { getAllDataPackages, getDataPackagesByType, getDataPackagesByName, getDataPackagesByCondition, getAllDataPackagesCount, getDataPackagesCountByType, getDataPackagesCountByName, getDataPackagesCountByCondition, getAllTypes, getDataPackageDetailByParentId, getDataPackageInfoById }
+// 12.客户需求反馈接口
+export function insertCustomerRequire(data) {
+  return request({
+    url: 'market/require/insertCustomerRequire',
+    method: 'post',
+    data
+  })
+}
+
+export default { getAllDataPackages, getDataPackagesByType, getDataPackagesByName, getDataPackagesByCondition, getAllDataPackagesCount, getDataPackagesCountByType, getDataPackagesCountByName, getDataPackagesCountByCondition, getAllTypes, getDataPackageDetailByParentId, getDataPackageInfoById, insertCustomerRequire }

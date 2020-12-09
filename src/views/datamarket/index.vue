@@ -51,28 +51,28 @@
       <el-dialog title="需求提交" :visible.sync="dialogFormVisible" :center="true">
         <el-form :model="form" :rules="rules" ref="ruleform">
           <el-form-item label="需求类型" label-width="100px" prop="type">
-            <el-radio v-model="form.type" label="1">API</el-radio>
-            <el-radio v-model="form.type" label="2">数据块</el-radio>
+            <el-radio v-model="form.requireType" label="1">API</el-radio>
+            <el-radio v-model="form.requireType" label="2">数据块</el-radio>
           </el-form-item>
           <el-form-item label="需求描述" label-width="100px" prop="desc">
             <el-input
               type="textarea"
               :rows="4"
               placeholder="请输入内容"
-              v-model="form.desc">
+              v-model="form.requireDetail">
             </el-input>
           </el-form-item>
           <el-form-item label="您的称呼" label-width="100px" prop="name">
             <el-input
               placeholder="请输入内容"
-              v-model="form.name"
+              v-model="form.customerName"
               clearable>
             </el-input>
           </el-form-item>
           <el-form-item label="联系方式" label-width="100px" prop="phone">
             <el-input
               placeholder="请输入内容"
-              v-model="form.phone"
+              v-model="form.contactInfo"
               clearable>
             </el-input>
           </el-form-item>
@@ -86,13 +86,13 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getAllDataPackages, getAllTypes, getDataPackagesByType, getDataPackagesByCondition } from '@/api/datamarket/dataset'
+import { getAllDataPackages, getAllTypes, getDataPackagesByType, getDataPackagesByCondition, insertCustomerRequire } from '@/api/datamarket/dataset'
 export default {
   data() {
     return {
       total: 0,
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 20,
       isSelect: -1,
       input: '',
       // 所有数据包信息
@@ -104,22 +104,22 @@ export default {
       // 需求反馈对话框
       dialogFormVisible: false,
       form: {
-        type: '1',
-        desc: '',
-        name: '',
-        phone: ''
+        requireType: '1',
+        requireDetail: '',
+        customerName: '',
+        contactInfo: ''
       },
       rules: {
-        type: [
+        requireType: [
           { required: true, message: '需求类型不能为空' }
         ],
-        desc: [
+        requireDetail: [
           { required: true, message: '需求描述不能为空' }
         ],
-        name: [
+        customerName: [
           { required: true, message: '称呼不能为空' }
         ],
-        phone: [
+        contactInfo: [
           { required: true, message: '联系方式不能为空' }
         ]
       },
@@ -170,9 +170,10 @@ export default {
       this.dialogFormVisible = false
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          insertCustomerRequire(this.form).then(res => {
+            this.resetForm(formName)
+          })
         } else {
-          console.log('error submit!!')
           this.resetForm(formName)
           return false
         }
@@ -185,9 +186,14 @@ export default {
     getAllDataPackages(type) {
       // 重置当前页
       this.currentPage = 1
+      const params = {
+        type: type,
+        page: '0',
+        rows: '1000'
+      }
       if (type === '全部') {
         const rLoading = this.openLoading()
-        getAllDataPackages().then(res => {
+        getAllDataPackages(params).then(res => {
           this.dataPackages = res.rows
           this.total = res.rows.length
           this.paging()
@@ -196,11 +202,6 @@ export default {
       } else if (type === '需求反馈') {
         this.dialogFormVisible = true
       } else {
-        const params = {
-          type: type,
-          pageNum: '0',
-          rowsNum: '500'
-        }
         const rLoading = this.openLoading()
         getDataPackagesByType(params).then(res => {
           this.dataPackages = res.rows
@@ -216,8 +217,8 @@ export default {
       this.currentPage = 1
       const params = {
         condition: this.input,
-        pageNum: '0',
-        rowsNum: '500'
+        page: '0',
+        rows: '500'
       }
       getDataPackagesByCondition(params).then(res => {
         this.dataPackages = res.rows
