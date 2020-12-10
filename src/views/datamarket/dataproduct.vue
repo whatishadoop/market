@@ -244,13 +244,13 @@ export default {
       }
       .data-list-wrapper {
         width: 100%;
-        margin-top: 50px;
+        margin-top: 30px;
         margin-left: 32px;
         .data-list {
            width: 100%;
           .page {
             float: right;
-            margin-top: 18px;
+            margin-top: 14px;
             margin-right: 55px;
           }
         }
