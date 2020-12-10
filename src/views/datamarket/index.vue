@@ -23,7 +23,8 @@
               <div class="data-type-content">
                 <div v-for="(item , index) in tableData" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
                   <div class="content-info">
-                    <svg-icon icon-class="icon_2_off" style="height: 141px;width: 141px;"/>
+                    <svg-icon v-if="isSelect === index" icon-class="icon_APP信息_hover" style="height: 141px;width: 141px;"/>
+                    <svg-icon v-else icon-class="icon_APP信息_off" style="height: 141px;width: 141px;"/>
                     <div v-show="isSelect === index" class="content-menu">
                       <div class="content-btn" @click="editApplication(item.id)">下载数据</div>
                     </div>

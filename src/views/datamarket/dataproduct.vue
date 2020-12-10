@@ -237,15 +237,14 @@ export default {
         margin-top: 32px;
         margin-left: 32px;
         .image-size {
-          height: 251px;
-          width: 100%;
-          margin-left: -14px;
-          object-fit: cover;
+          height: 300px;
+          width: 1136px;
+          object-fit: contain;
         }
       }
       .data-list-wrapper {
         width: 100%;
-        margin-top: 65px;
+        margin-top: 50px;
         margin-left: 32px;
         .data-list {
            width: 100%;
