@@ -12,19 +12,21 @@
         <div class="main-two-content">
           <div class="data-type-wrapper">
             <div class="data-headline">
-              <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;margin: 0px">数据块分类</h3>
+              <h3 sytle="font-family: PingFangSC-Medium;font-size: 20px;color: #333333;letter-spacing: 0;line-height: 28px;margin: 0px">数据分类</h3>
             </div>
             <div class="data-type-btn">
               <template v-for="(item , index) in dataTypes">
-                <el-button size="small" round style="background: #F2F6FC;border-radius: 18px;border: 1px solid #DCDFE6;" :key="index" @click="getAllDataPackages(item.type)">{{item.type}}</el-button>
+                <el-button v-if="(dataTypes.length - 1) === index" size="small" round style="background: rgba(0,189,255,.15);border-radius: 18px;border: 1px solid #DCDFE6;color: #00bdff;border-color: #00bdff;" :key="index" @click="getAllDataPackages(item.type)">{{item.type}}</el-button>
+                <el-button v-else-if="0 === index" size="small" :class="{active: isActive}" round :key="index" @click="getAllDataPackages(item.type)" style="background: #F2F6FC;border-radius: 18px;border: 1px solid #DCDFE6;">{{item.type}}</el-button>
+                <el-button v-else  size="small" round :key="index" @click="getAllDataPackages(item.type)" style="background: #F2F6FC;border-radius: 18px;border: 1px solid #DCDFE6;">{{item.type}}</el-button>
               </template>
             </div>
             <div class="data-type-content-wrapper">
               <div class="data-type-content">
                 <div v-for="(item , index) in tableData" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
                   <div class="content-info">
-                    <svg-icon v-if="isSelect === index" icon-class="icon_APP信息_hover" style="height: 141px;width: 141px;"/>
-                    <svg-icon v-else icon-class="icon_APP信息_off" style="height: 141px;width: 141px;"/>
+                    <svg-icon v-if="isSelect === index" :icon-class="item.iconOnName" style="height: 141px;width: 141px;"/>
+                    <svg-icon v-else :icon-class="item.iconOffName" style="height: 141px;width: 141px;"/>
                     <div v-show="isSelect === index" class="content-menu">
                       <div class="content-btn" @click="editApplication(item.id)">下载数据</div>
                     </div>
@@ -49,13 +51,13 @@
         </div>
       </div>
       <!--对话框-->
-      <el-dialog title="需求提交" :visible.sync="dialogFormVisible" :center="true">
+      <el-dialog title="需求提交" :visible.sync="dialogFormVisible" :center="true" :before-close="handleDialogClose">
         <el-form :model="form" :rules="rules" ref="ruleform">
-          <el-form-item label="需求类型" label-width="100px" prop="type">
-            <el-radio v-model="form.requireType" label="1">API</el-radio>
-            <el-radio v-model="form.requireType" label="2">数据块</el-radio>
-          </el-form-item>
-          <el-form-item label="需求描述" label-width="100px" prop="desc">
+          <!--<el-form-item label="需求类型" label-width="100px" prop="requireType">-->
+            <!--<el-radio v-model="form.requireType" label="1">API</el-radio>-->
+            <!--<el-radio v-model="form.requireType" label="1">数据</el-radio>-->
+          <!--</el-form-item>-->
+          <el-form-item label="需求描述" label-width="100px" prop="requireDetail">
             <el-input
               type="textarea"
               :rows="4"
@@ -63,14 +65,14 @@
               v-model="form.requireDetail">
             </el-input>
           </el-form-item>
-          <el-form-item label="您的称呼" label-width="100px" prop="name">
+          <el-form-item label="您的称呼" label-width="100px" prop="customerName">
             <el-input
               placeholder="请输入内容"
               v-model="form.customerName"
               clearable>
             </el-input>
           </el-form-item>
-          <el-form-item label="联系方式" label-width="100px" prop="phone">
+          <el-form-item label="联系方式" label-width="100px" prop="contactInfo">
             <el-input
               placeholder="请输入内容"
               v-model="form.contactInfo"
@@ -94,6 +96,7 @@ export default {
       total: 0,
       currentPage: 1,
       pageSize: 20,
+      isActive: true,
       isSelect: -1,
       input: '',
       // 所有数据包信息
@@ -121,7 +124,8 @@ export default {
           { required: true, message: '称呼不能为空' }
         ],
         contactInfo: [
-          { required: true, message: '联系方式不能为空' }
+          { required: true, message: '联系方式不能为空' },
+          { type: 'number', message: '联系方式为数字值' }
         ]
       },
       formLabelWidth: '120px'
@@ -167,15 +171,21 @@ export default {
       })
       window.open(routeUrl.href, '_blank')
     },
+    /**
+     * 点击 X 关闭对话框的回调
+     **/
+    handleDialogClose(done) {
+      this.resetForm('ruleform')
+      done()
+    },
     submitForm(formName) {
-      this.dialogFormVisible = false
       this.$refs[formName].validate((valid) => {
         if (valid) {
           insertCustomerRequire(this.form).then(res => {
             this.resetForm(formName)
+            this.dialogFormVisible = false
           })
         } else {
-          this.resetForm(formName)
           return false
         }
       })
@@ -194,6 +204,7 @@ export default {
       }
       if (type === '全部') {
         const rLoading = this.openLoading()
+        this.isActive = true
         getAllDataPackages(params).then(res => {
           this.dataPackages = res.rows
           this.total = res.rows.length
@@ -204,6 +215,7 @@ export default {
         this.dialogFormVisible = true
       } else {
         const rLoading = this.openLoading()
+        this.isActive = false
         getDataPackagesByType(params).then(res => {
           this.dataPackages = res.rows
           this.total = res.rows.length
@@ -285,6 +297,9 @@ export default {
           display: flex;
           margin-top: 20px;
           margin-left: 24px;
+          .active {
+            color: #00bdff;
+          }
         }
         .data-type-content-wrapper {
           position: relative;

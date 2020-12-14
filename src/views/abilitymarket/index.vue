@@ -8,18 +8,38 @@
       <div class="main-two-content">
         <div class="ability-wrapper">
           <div class="left-content">
-            11111
+            <el-menu
+              default-active="2"
+              class="el-menu-vertical-demo"
+              @open="handleOpen"
+              @close="handleClose">
+              <el-menu-item index="1">
+                <i class="el-icon-menu"></i>
+                <span slot="title">全部(22)</span>
+              </el-menu-item>
+              <el-menu-item index="2">
+                <i class="el-icon-microphone"></i>
+                <span slot="title">语音识别(2)</span>
+              </el-menu-item>
+              <el-menu-item index="3">
+                <i class="el-icon-document"></i>
+                <span slot="title">OCR识别(6)</span>
+              </el-menu-item>
+              <el-menu-item index="4">
+                <i class="el-icon-setting"></i>
+                <span slot="title">自然语言处理(11)</span>
+              </el-menu-item>
+              <el-menu-item index="5">
+                <i class="el-icon-setting"></i>
+                <span slot="title">外部接入(3)</span>
+              </el-menu-item>
+            </el-menu>
           </div>
           <div class="right-content">
             <div class="search-wrapper">
-              <el-input placeholder="请输入内容" v-model="input">
+              <el-input placeholder="搜索" v-model="input">
                 <el-button @click="getDataPackagesByCondition()" slot="prepend" icon="el-icon-search" style="color: #5075E7;font-weight: bold"></el-button>
               </el-input>
-            </div>
-            <div class="ability-btn">
-              <template v-for="(item , index) in dataTypes">
-                <el-button size="small" round style="background: #F2F6FC;border-radius: 18px;border: 1px solid #DCDFE6;" :key="index" @click="getAllDataPackages(item.type)">{{item.type}}</el-button>
-              </template>
             </div>
             <div class="ability-content-wrapper">
               <div class="ability-content">
@@ -90,166 +110,166 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { getAllDataPackages, getAllTypes, getDataPackagesByType, getDataPackagesByCondition, insertCustomerRequire } from '@/api/datamarket/dataset'
-  export default {
-    data() {
-      return {
-        total: 0,
-        currentPage: 1,
-        pageSize: 20,
-        isSelect: -1,
-        input: '',
-        // 所有数据包信息
-        dataPackages: [],
-        // 所有数据包类型信息
-        dataTypes: [],
-        // 前端分页显示数据
-        tableData: [],
-        // 需求反馈对话框
-        dialogFormVisible: false,
-        form: {
-          requireType: '1',
-          requireDetail: '',
-          customerName: '',
-          contactInfo: ''
-        },
-        rules: {
-          requireType: [
-            { required: true, message: '需求类型不能为空' }
-          ],
-          requireDetail: [
-            { required: true, message: '需求描述不能为空' }
-          ],
-          customerName: [
-            { required: true, message: '称呼不能为空' }
-          ],
-          contactInfo: [
-            { required: true, message: '联系方式不能为空' }
-          ]
-        },
-        formLabelWidth: '120px'
-      }
+import { getAllDataPackages, getAllTypes, getDataPackagesByType, getDataPackagesByCondition, insertCustomerRequire } from '@/api/datamarket/dataset'
+export default {
+  data() {
+    return {
+      total: 0,
+      currentPage: 1,
+      pageSize: 20,
+      isSelect: -1,
+      input: '',
+      // 所有数据包信息
+      dataPackages: [],
+      // 所有数据包类型信息
+      dataTypes: [],
+      // 前端分页显示数据
+      tableData: [],
+      // 需求反馈对话框
+      dialogFormVisible: false,
+      form: {
+        requireType: '1',
+        requireDetail: '',
+        customerName: '',
+        contactInfo: ''
+      },
+      rules: {
+        requireType: [
+          { required: true, message: '需求类型不能为空' }
+        ],
+        requireDetail: [
+          { required: true, message: '需求描述不能为空' }
+        ],
+        customerName: [
+          { required: true, message: '称呼不能为空' }
+        ],
+        contactInfo: [
+          { required: true, message: '联系方式不能为空' }
+        ]
+      },
+      formLabelWidth: '120px'
+    }
+  },
+  created() {
+    this.$nextTick(() => {
+      this.getAllDataPackages('全部')
+      this.getAllTypes()
+    })
+  },
+  beforeCreate () {
+    document.querySelector('body').setAttribute('style', 'background-color: #F0F2F5;')
+  },
+  beforeDestroy () {
+    document.querySelector('body').removeAttribute('style')
+  },
+  methods: {
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.paging()
     },
-    created() {
-      this.$nextTick(() => {
-        this.getAllDataPackages('全部')
-        this.getAllTypes()
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.paging()
+    },
+    // 分页方法
+    paging() {
+      this.tableData = this.dataPackages.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+    },
+    selectItem(index) {
+      this.isSelect = index
+    },
+    unselectItem() {
+      this.isSelect = -1
+    },
+    editApplication(id) {
+      const routeUrl = this.$router.resolve({
+        path: '/dataproduct',
+        query: {
+          id: id
+        }
+      })
+      window.open(routeUrl.href, '_blank')
+    },
+    submitForm(formName) {
+      this.dialogFormVisible = false
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          insertCustomerRequire(this.form).then(res => {
+            this.resetForm(formName)
+          })
+        } else {
+          this.resetForm(formName)
+          return false
+        }
       })
     },
-    beforeCreate () {
-      document.querySelector('body').setAttribute('style', 'background-color: #F0F2F5;')
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     },
-    beforeDestroy () {
-      document.querySelector('body').removeAttribute('style')
-    },
-    methods: {
-      handleSizeChange(val) {
-        this.pageSize = val
-        this.paging()
-      },
-      handleCurrentChange(val) {
-        this.currentPage = val
-        this.paging()
-      },
-      // 分页方法
-      paging() {
-        this.tableData = this.dataPackages.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
-      },
-      selectItem(index) {
-        this.isSelect = index
-      },
-      unselectItem() {
-        this.isSelect = -1
-      },
-      editApplication(id) {
-        const routeUrl = this.$router.resolve({
-          path: '/dataproduct',
-          query: {
-            id: id
-          }
-        })
-        window.open(routeUrl.href, '_blank')
-      },
-      submitForm(formName) {
-        this.dialogFormVisible = false
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            insertCustomerRequire(this.form).then(res => {
-              this.resetForm(formName)
-            })
-          } else {
-            this.resetForm(formName)
-            return false
-          }
-        })
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields()
-      },
-      // 获取所有数据包信息接口
-      getAllDataPackages(type) {
-        // 重置当前页
-        this.currentPage = 1
-        const params = {
-          type: type,
-          page: '0',
-          rows: '1000'
-        }
-        if (type === '全部') {
-          const rLoading = this.openLoading()
-          getAllDataPackages(params).then(res => {
-            this.dataPackages = res.rows
-            this.total = res.rows.length
-            this.paging()
-            rLoading.close()
-          })
-        } else if (type === '需求反馈') {
-          this.dialogFormVisible = true
-        } else {
-          const rLoading = this.openLoading()
-          getDataPackagesByType(params).then(res => {
-            this.dataPackages = res.rows
-            this.total = res.rows.length
-            this.paging()
-            rLoading.close()
-          })
-        }
-      },
-      getDataPackagesByCondition() {
+    // 获取所有数据包信息接口
+    getAllDataPackages(type) {
+      // 重置当前页
+      this.currentPage = 1
+      const params = {
+        type: type,
+        page: '0',
+        rows: '1000'
+      }
+      if (type === '全部') {
         const rLoading = this.openLoading()
-        // 重置当前页
-        this.currentPage = 1
-        const params = {
-          condition: this.input,
-          page: '0',
-          rows: '500'
-        }
-        getDataPackagesByCondition(params).then(res => {
+        getAllDataPackages(params).then(res => {
           this.dataPackages = res.rows
           this.total = res.rows.length
           this.paging()
           rLoading.close()
         })
-      },
-      // 获取所有数据包类型
-      getAllTypes() {
-        getAllTypes().then(res => {
-          let all = [
-            {
-              type: '全部',
-              cnt: 0
-            }
-          ]
-          let feedback = {
-            type: '需求反馈',
-            cnt: 0
-          }
-          this.dataTypes = all.concat(res)
-          this.dataTypes.push(feedback)
+      } else if (type === '需求反馈') {
+        this.dialogFormVisible = true
+      } else {
+        const rLoading = this.openLoading()
+        getDataPackagesByType(params).then(res => {
+          this.dataPackages = res.rows
+          this.total = res.rows.length
+          this.paging()
+          rLoading.close()
         })
       }
+    },
+    getDataPackagesByCondition() {
+      const rLoading = this.openLoading()
+      // 重置当前页
+      this.currentPage = 1
+      const params = {
+        condition: this.input,
+        page: '0',
+        rows: '500'
+      }
+      getDataPackagesByCondition(params).then(res => {
+        this.dataPackages = res.rows
+        this.total = res.rows.length
+        this.paging()
+        rLoading.close()
+      })
+    },
+    // 获取所有数据包类型
+    getAllTypes() {
+      getAllTypes().then(res => {
+        let all = [
+          {
+            type: '全部',
+            cnt: 0
+          }
+        ]
+        let feedback = {
+          type: '需求反馈',
+          cnt: 0
+        }
+        this.dataTypes = all.concat(res)
+        this.dataTypes.push(feedback)
+      })
     }
   }
+}
 </script>
 <style type="text/scss" rel="stylesheet/scss" lang="scss" scoped>
   .main-wapper {
@@ -278,10 +298,13 @@
         background-color: #FFFFFF;
         border-radius: 12px;
         .left-content {
+          padding-top: 23px;
+          padding-left: 8px;
           flex: 0 1 200px;
-          border: 1px solid black;
+          box-shadow: inset -1px 0 0 0 #E4E7ED;
         }
         .right-content {
+           padding: 16px;
            flex: 0 1 auto;
           .search-wrapper {
             width: 432px;
@@ -424,5 +447,11 @@
     background: #F5F7FA;
     border-radius: 12px 0px 0px 12px;
     border: 0px;
+  }
+  .left-content /deep/ .el-menu {
+    border-top-left-radius: 12px;
+  }
+  .left-content /deep/ .el-menu-item.is-active {
+    border-left: 2px solid #65A7FF;
   }
 </style>

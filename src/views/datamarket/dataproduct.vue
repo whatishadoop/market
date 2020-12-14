@@ -5,7 +5,7 @@
       <div class="main-one-content">
         <div class="product-wrapper">
           <div class="product-logo">
-            <svg-icon icon-class="icon_2_off" style="height: 140px;width: 140px;"/>
+            <svg-icon :icon-class="dataPackageBase.iconOffName" style="height: 140px;width: 140px;"/>
           </div>
           <div class="product-detail-wrapper">
             <div class="product-name" v-cloak>{{dataPackageBase.name}}</div>
@@ -14,7 +14,7 @@
               <span style="opacity: 0.65">数据格式：</span><span> {{dataPackageBase.format}}</span>
             </div>
             <div class="product-action">
-              <el-button size="medium" round style="background: #fff;color: #5587FF;font-size: 16px;font-weight: bold;">立即下载</el-button>
+              <!--<el-button size="medium" round style="background: #fff;color: #5587FF;font-size: 16px;font-weight: bold;">立即下载</el-button>-->
               <!--<el-button size="medium" round icon="el-icon-star-off" style="background: transparent;border: 1px solid #fff;color: #fff;font-size: 16px;font-weight: bold;">收藏<span style="color: transparent;">..</span></el-button>-->
             </div>
           </div>
@@ -62,6 +62,10 @@
                 <el-table-column
                   prop="size"
                   label="数据大小">
+                </el-table-column>
+                <el-table-column
+                  prop="remark"
+                  label="备注">
                 </el-table-column>
                 <el-table-column
                   label="操作">
