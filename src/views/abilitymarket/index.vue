@@ -15,23 +15,23 @@
               @close="handleClose">
               <el-menu-item index="1">
                 <i class="el-icon-menu"></i>
-                <span slot="title">全部(22)</span>
+                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">全部  (22)</span>
               </el-menu-item>
               <el-menu-item index="2">
                 <i class="el-icon-microphone"></i>
-                <span slot="title">语音识别(2)</span>
+                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">语音识别  (2)</span>
               </el-menu-item>
               <el-menu-item index="3">
                 <i class="el-icon-document"></i>
-                <span slot="title">OCR识别(6)</span>
+                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">OCR识别  (6)</span>
               </el-menu-item>
               <el-menu-item index="4">
                 <i class="el-icon-setting"></i>
-                <span slot="title">自然语言处理(11)</span>
+                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">自然语言处理  (11)</span>
               </el-menu-item>
               <el-menu-item index="5">
                 <i class="el-icon-setting"></i>
-                <span slot="title">外部接入(3)</span>
+                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">外部接入  (3)</span>
               </el-menu-item>
             </el-menu>
           </div>
@@ -41,18 +41,29 @@
                 <el-button @click="getDataPackagesByCondition()" slot="prepend" icon="el-icon-search" style="color: #5075E7;font-weight: bold"></el-button>
               </el-input>
             </div>
+            <div class="ability-type-wrapper">
+                <span class="ability-type-name">语音识别（集成）</span>
+            </div>
             <div class="ability-content-wrapper">
               <div class="ability-content">
-                <div v-for="(item , index) in tableData" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
+                <div v-for="index in 4" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
                   <div class="content-info">
-                    <svg-icon v-if="isSelect === index" icon-class="icon_2_on" style="height: 141px;width: 141px;"/>
-                    <svg-icon v-else icon-class="icon_2_off" style="height: 141px;width: 141px;"/>
-                    <div v-show="isSelect === index" class="content-menu">
-                      <div class="content-btn" @click="editApplication(item.id)">下载数据</div>
+                    <div class="content-wrapper">
+                      <div class="logo">
+                        <svg-icon icon-class="音频文件转写" style="height: 70px;width: 70px;"/>
+                      </div>
+                      <div class="detail">
+                        <div class="name"><span class="text-one">音频文件转写</span></div>
+                        <div class="duration"><span class="text-two">一年无限使用权</span></div>
+                        <div class="price"><span class="text-three">￥0.00</span></div>
+                      </div>
                     </div>
-                  </div>
-                  <div class="content-main">
-                    <span class="content-name">{{item.name}}</span>
+                    <div class="content-desc">
+                      <span class="desc">这是一段描述这是一段描述这是一段描述这是一段描述，最多显示2行，超一段描述这是一段描一段描述这是一段描一段描述这是一段描</span>
+                    </div>
+                    <div class="license-code-wrapper">
+                      <div class="license-code-btn" @click="editApplication(item.id)">购买授权码</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -163,6 +174,12 @@ export default {
     document.querySelector('body').removeAttribute('style')
   },
   methods: {
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath)
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath)
+    },
     handleSizeChange(val) {
       this.pageSize = val
       this.paging()
@@ -293,126 +310,151 @@ export default {
         top: -200px;
         flex: 1 1 auto;
         margin: 0 auto;
-        width: 1200px;
+        width: 1220px;
         display: flex;
         background-color: #FFFFFF;
         border-radius: 12px;
         .left-content {
           padding-top: 23px;
           padding-left: 8px;
-          flex: 0 1 200px;
+          flex: 0 1 194px;
           box-shadow: inset -1px 0 0 0 #E4E7ED;
         }
         .right-content {
-           padding: 16px;
+           padding-left: 16px;
+           padding-top: 16px;
            flex: 0 1 auto;
           .search-wrapper {
             width: 432px;
-            margin-top: 33px;
           }
-          .ability-btn {
+          .ability-type-wrapper {
             display: flex;
             margin-top: 20px;
-            margin-left: 24px;
+            .ability-type-name {
+              font-family: PingFangSC-Medium;
+              font-size: 16px;
+              font-weight: bold;
+              line-height: 16px;
+              color: #000000;
+              text-align: center;
+            }
           }
           .ability-content-wrapper {
             position: relative;
             left: 0px;
             top: 0px;
             width: 100%;
-            margin-top: 41px;
+            margin-top: 14px;
             background: #fff;
             border-radius: 12px;
             .ability-content {
               display: flex;
               flex-wrap: wrap;
-              padding-left: 8px;
               background: #fff;
               border-radius: 12px;
               .content-item {
                 flex: none;
-                width: 218px;
-                margin-left: 16px;
+                width: 234px;
+                margin-right: 16px;
                 margin-bottom: 28px;
-                &.content-item-add {
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  cursor: pointer;
-                  height: 184px;
-                  width: 258px;
-                  font-size: 14px;
-                  border: 1px solid #00baff;
-                  color: #8eeeff;
-                  background-image: linear-gradient(-90deg,rgba(0,222,255,.39),rgba(0,174,255,.19));
-                }
                 .content-info {
                   position: relative;
                   width: 100%;
-                  height: 200px;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  margin-bottom: 12px;
-                  background: #F2F6FC;
-                  border-radius: 12px;
-                  &:hover {
-                    background: #4C7DFE;
-                    border-radius: 12px;
+                  height: 184px;
+                  border: 1px solid #EBEEF5;
+                  border-radius: 5px;
+                  .content-wrapper {
+                    display: flex;
+                    height: 92px;
+                    .logo {
+                      flex: 0 1 76px;
+                      margin: 12px;
+                    }
+                    .detail {
+                      flex: 1 1 auto;
+                      .name {
+                        margin-top: 12px;
+                        margin-right: 12px;
+                        .text-one {
+                          font-family: PingFangSC-Medium;
+                          font-size: 16px;
+                          line-height: 20px;
+                          color: #303133;
+                          letter-spacing: 0;
+                        }
+                      }
+                      .duration {
+                        width: 96px;
+                        height: 17px;
+                        margin-top: 4px;
+                        background: #FFF2E8;
+                        border-radius: 2px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        .text-two {
+                          font-family: PingFangSC-Regular;
+                          font-size: 12px;
+                          line-height: 17px;
+                          color: #FD6700;
+                          letter-spacing: 0;
+                        }
+                      }
+                      .price {
+                        margin-top: 8px;
+                        .text-three {
+                          font-family: DINPro-Bold;
+                          font-size: 18px;
+                          font-weight: bolder;
+                          line-height: 18px;
+                          color: #FD6700;
+                          letter-spacing: 0;
+                        }
+                      }
+                    }
                   }
-                  .template-imge {
-                    width: 141px;
-                    height: 141px;
-                    /*&.default {*/
-                    /*  filter: grayscale(1);*/
-                    /*  opacity: 0.07;*/
-                    /*}*/
+                  .content-desc {
+                    margin: 0px 12px 0px;
+                    /*多行文本溢出*/
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
+                    overflow: hidden;
+                    .desc {
+                      font-family: PingFangSC-Regular;
+                      font-size: 12px;
+                      color: #909399;
+                      letter-spacing: 0;
+                    }
                   }
-                  .content-menu {
+                  .license-code-wrapper {
                     position: absolute;
                     top: 0;
                     left: 0;
                     width: 100%;
                     height: 100%;
+                    padding: 12px;
+                    box-sizing: border-box;
                     display: flex;
                     align-items: flex-end;
                     justify-content: center;
-                    /*background-color: rgba(29,38,46,.8);*/
-                    .content-btn {
+                    .license-code-btn {
                       display: inline-block;
                       vertical-align: bottom;
                       height: 32px;
+                      width: 208px;
                       line-height: 32px;
-                      padding: 0 30px;
-                      margin-bottom: 10px;
                       box-sizing: border-box;
                       outline: 0;
                       text-align: center;
                       font-size: 14px;
-                      font-weight: bold;
-                      background: #00bdff;
+                      background: #FF9F40;
                       color: #fff;
                       border: none;
-                      border-radius: 3px;
+                      border-radius: 8px;
                       transition: .5s ease;
                       cursor: pointer;
                     }
-                  }
-                }
-                .content-main {
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  .content-name {
-                    font-family: PingFangSC-Medium;
-                    font-size: 14px;
-                    font-weight: bold;
-                    color: #303133;
-                    letter-spacing: 0;
-                    text-align: center;
-                    text-overflow: ellipsis;
-                    overflow: hidden;
-                    white-space: nowrap;
                   }
                 }
               }
