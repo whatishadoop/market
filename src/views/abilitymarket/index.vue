@@ -9,12 +9,9 @@
         <div class="ability-wrapper">
           <div class="left-content">
             <el-menu
-              default-active="2"
-              class="el-menu-vertical-demo"
-              @open="handleOpen"
-              @close="handleClose">
-
-              <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index"  index="1 + index">
+              :default-active="type"
+              class="el-menu-vertical-demo" @select="handleSelect">
+              <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index" :index="item.type">
                 <i class="el-icon-menu"></i>
                 <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.type}}  ({{item.cnt}})</span>
               </el-menu-item>
@@ -23,7 +20,7 @@
           <div class="right-content">
             <div class="search-wrapper">
               <el-input placeholder="搜索" v-model="input">
-                <el-button @click="getDataPackagesByCondition()" slot="prepend" icon="el-icon-search" style="color: #5075E7;font-weight: bold"></el-button>
+                <el-button @click="getFunctionDetailByCondition()" slot="prepend" icon="el-icon-search" style="color: #5075E7;font-weight: bold"></el-button>
               </el-input>
             </div>
             <template v-for="(item, index) in functionTypes">
@@ -48,7 +45,7 @@
                         <span class="desc">{{item.detail}}</span>
                       </div>
                       <div class="license-code-wrapper">
-                        <div class="license-code-btn" @click="editApplication(item.id)">购买授权码</div>
+                        <div class="license-code-btn" @click="buyApp(item.id)">购买授权码</div>
                       </div>
                     </div>
                   </div>
@@ -98,7 +95,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getAllFunctionTypes, getAllFunctionDetails } from '@/api/abilitymarket/function'
+import { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByCondition } from '@/api/abilitymarket/function'
 export default {
   computed: {
     functionDetailsByType () {
@@ -107,7 +104,11 @@ export default {
       }
     },
     functionTypes() {
-      return this.noAllFunctionTypes
+      if(this.type === '全部') {
+        return this.allFunctionTypes.filter(item => item.type !== this.type)
+      }else {
+        return this.allFunctionTypes.filter(item => item.type === this.type)
+      }
     }
   },
   data() {
@@ -118,8 +119,6 @@ export default {
       allFunctions: [],
       // 获取所有能力类型信息
       allFunctionTypes: [],
-      // 获取所有能力类型信息,不包括全部
-      noAllFunctionTypes: [],
       // 需求反馈对话框
       dialogFormVisible: false,
       form: {
@@ -157,13 +156,12 @@ export default {
     document.querySelector('body').removeAttribute('style')
   },
   methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath)
+    handleSelect(key, keyPath) {
+      console.log(key)
+      this.type = key
     },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath)
-    },
-    editApplication(id) {
+    buyApp(id) {
+      this.dialogFormVisible = true
     },
     submitForm(formName) {
       this.dialogFormVisible = false
@@ -179,14 +177,23 @@ export default {
       this.$refs[formName].resetFields()
     },
     getAllFunctionDetails() {
+      const rLoading = this.openLoading()
       getAllFunctionDetails().then(res => {
         this.allFunctions = res.rows
+        rLoading.close()
       })
     },
     getAllFunctionTypes() {
       getAllFunctionTypes().then(res => {
         this.allFunctionTypes = res
-        this.noAllFunctionTypes = res.filter(item => item.type !== '全部')
+      })
+    },
+    getFunctionDetailByCondition() {
+      const rLoading = this.openLoading()
+      console.log(this.input)
+      getFunctionDetailByCondition().then(res => {
+        this.allFunctions = res.rows
+        rLoading.close()
       })
     }
   }
