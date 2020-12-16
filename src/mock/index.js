@@ -29,3 +29,13 @@ Mock.mock(/\/market\/dataset\/getAllTypes/, 'get', dataSetApi.getAllTypes())
 Mock.mock(/\/market\/dataset\/getDataPackageDetailByParentId/, 'get', dataSetApi.getDataPackageDetailByParentId())
 // 11.根据数据包父ID获取数据包的所有信息，包括子数据包信息
 Mock.mock(/\/market\/dataset\/getDataPackageInfoById/, 'get', dataSetApi.getDataPackageInfoById())
+
+// 拦截的是 能力集市业务相关数据  内容表示正则表达式写法
+// 12.获取所有类型及每个类型包含的能力个数
+Mock.mock(/\/market\/function\/getAllTypes/, 'get', dataSetApi.getAllFunctionTypes())
+// 13.获取所有能力信息
+Mock.mock(/\/market\/function\/getAllFunctionDetails/, 'get', dataSetApi.getAllFunctionDetails())
+// 14.根据类型获取能力详情
+Mock.mock(/\/market\/function\/getFunctionDetailByType/, 'get', dataSetApi.getFunctionDetailByType())
+// 15.根据条件获取能力详情
+Mock.mock(/\/market\/function\/getFunctionDetailByCondition/, 'get', dataSetApi.getFunctionDetailByCondition())

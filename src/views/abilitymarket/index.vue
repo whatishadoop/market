@@ -13,25 +13,10 @@
               class="el-menu-vertical-demo"
               @open="handleOpen"
               @close="handleClose">
-              <el-menu-item index="1">
+
+              <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index"  index="1 + index">
                 <i class="el-icon-menu"></i>
-                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">全部  (22)</span>
-              </el-menu-item>
-              <el-menu-item index="2">
-                <i class="el-icon-microphone"></i>
-                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">语音识别  (2)</span>
-              </el-menu-item>
-              <el-menu-item index="3">
-                <i class="el-icon-document"></i>
-                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">OCR识别  (6)</span>
-              </el-menu-item>
-              <el-menu-item index="4">
-                <i class="el-icon-setting"></i>
-                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">自然语言处理  (11)</span>
-              </el-menu-item>
-              <el-menu-item index="5">
-                <i class="el-icon-setting"></i>
-                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">外部接入  (3)</span>
+                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.type}}  ({{item.cnt}})</span>
               </el-menu-item>
             </el-menu>
           </div>
@@ -41,43 +26,35 @@
                 <el-button @click="getDataPackagesByCondition()" slot="prepend" icon="el-icon-search" style="color: #5075E7;font-weight: bold"></el-button>
               </el-input>
             </div>
-            <div class="ability-type-wrapper">
-                <span class="ability-type-name">语音识别（集成）</span>
-            </div>
-            <div class="ability-content-wrapper">
-              <div class="ability-content">
-                <div v-for="index in 4" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
-                  <div class="content-info">
-                    <div class="content-wrapper">
-                      <div class="logo">
-                        <svg-icon icon-class="音频文件转写" style="height: 70px;width: 70px;"/>
+            <template v-for="(item, index) in functionTypes">
+              <div class="ability-type-wrapper" :key="index">
+                <span class="ability-type-name">{{item.type}}</span>
+              </div>
+              <div class="ability-content-wrapper" :key="item.id">
+                <div class="ability-content">
+                  <div v-for="item in functionDetailsByType(item.type)" :key="item.id" class="content-item">
+                    <div class="content-info">
+                      <div class="content-wrapper">
+                        <div class="logo">
+                          <svg-icon icon-class="音频文件转写" style="height: 70px;width: 70px;"/>
+                        </div>
+                        <div class="detail">
+                          <div class="name"><span class="text-one">{{item.name}}</span></div>
+                          <div class="duration"><span class="text-two">{{item.useTimeDesc}}</span></div>
+                          <div class="price"><span class="text-three">￥{{item.currentPrice}} </span><span class="sub-text-three">{{item.originalPrice}}</span></div>
+                        </div>
                       </div>
-                      <div class="detail">
-                        <div class="name"><span class="text-one">音频文件转写</span></div>
-                        <div class="duration"><span class="text-two">一年无限使用权</span></div>
-                        <div class="price"><span class="text-three">￥0.00</span></div>
+                      <div class="content-desc">
+                        <span class="desc">{{item.detail}}</span>
                       </div>
-                    </div>
-                    <div class="content-desc">
-                      <span class="desc">这是一段描述这是一段描述这是一段描述这是一段描述，最多显示2行，超一段描述这是一段描一段描述这是一段描一段描述这是一段描</span>
-                    </div>
-                    <div class="license-code-wrapper">
-                      <div class="license-code-btn" @click="editApplication(item.id)">购买授权码</div>
+                      <div class="license-code-wrapper">
+                        <div class="license-code-btn" @click="editApplication(item.id)">购买授权码</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="page">
-                <el-pagination
-                  background
-                  :current-page="currentPage"
-                  :page-size="pageSize"
-                  :total="total"
-                  layout="prev, pager, next"
-                  @current-change="handleCurrentChange"
-                />
-              </div>
-            </div>
+            </template>
           </div>
         </div>
       </div>
@@ -121,21 +98,26 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getAllDataPackages, getAllTypes, getDataPackagesByType, getDataPackagesByCondition, insertCustomerRequire } from '@/api/datamarket/dataset'
+import { getAllFunctionTypes, getAllFunctionDetails } from '@/api/abilitymarket/function'
 export default {
+  computed: {
+    functionDetailsByType () {
+      return function(type) {
+        return this.allFunctions.filter(item => item.type === type)
+      }
+    },
+    functionTypes() {
+      return this.allFunctionTypes
+    }
+  },
   data() {
     return {
-      total: 0,
-      currentPage: 1,
-      pageSize: 20,
-      isSelect: -1,
       input: '',
-      // 所有数据包信息
-      dataPackages: [],
-      // 所有数据包类型信息
-      dataTypes: [],
-      // 前端分页显示数据
-      tableData: [],
+      type: '全部',
+      // 所有能力包信息
+      allFunctions: [],
+      // 获取所有能力信息
+      allFunctionTypes: [],
       // 需求反馈对话框
       dialogFormVisible: false,
       form: {
@@ -157,14 +139,13 @@ export default {
         contactInfo: [
           { required: true, message: '联系方式不能为空' }
         ]
-      },
-      formLabelWidth: '120px'
+      }
     }
   },
   created() {
     this.$nextTick(() => {
-      this.getAllDataPackages('全部')
-      this.getAllTypes()
+      this.getAllFunctionDetails()
+      this.getAllFunctionTypes()
     })
   },
   beforeCreate () {
@@ -180,40 +161,12 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath)
     },
-    handleSizeChange(val) {
-      this.pageSize = val
-      this.paging()
-    },
-    handleCurrentChange(val) {
-      this.currentPage = val
-      this.paging()
-    },
-    // 分页方法
-    paging() {
-      this.tableData = this.dataPackages.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
-    },
-    selectItem(index) {
-      this.isSelect = index
-    },
-    unselectItem() {
-      this.isSelect = -1
-    },
     editApplication(id) {
-      const routeUrl = this.$router.resolve({
-        path: '/dataproduct',
-        query: {
-          id: id
-        }
-      })
-      window.open(routeUrl.href, '_blank')
     },
     submitForm(formName) {
       this.dialogFormVisible = false
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          insertCustomerRequire(this.form).then(res => {
-            this.resetForm(formName)
-          })
         } else {
           this.resetForm(formName)
           return false
@@ -223,66 +176,14 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields()
     },
-    // 获取所有数据包信息接口
-    getAllDataPackages(type) {
-      // 重置当前页
-      this.currentPage = 1
-      const params = {
-        type: type,
-        page: '0',
-        rows: '1000'
-      }
-      if (type === '全部') {
-        const rLoading = this.openLoading()
-        getAllDataPackages(params).then(res => {
-          this.dataPackages = res.rows
-          this.total = res.rows.length
-          this.paging()
-          rLoading.close()
-        })
-      } else if (type === '需求反馈') {
-        this.dialogFormVisible = true
-      } else {
-        const rLoading = this.openLoading()
-        getDataPackagesByType(params).then(res => {
-          this.dataPackages = res.rows
-          this.total = res.rows.length
-          this.paging()
-          rLoading.close()
-        })
-      }
-    },
-    getDataPackagesByCondition() {
-      const rLoading = this.openLoading()
-      // 重置当前页
-      this.currentPage = 1
-      const params = {
-        condition: this.input,
-        page: '0',
-        rows: '500'
-      }
-      getDataPackagesByCondition(params).then(res => {
-        this.dataPackages = res.rows
-        this.total = res.rows.length
-        this.paging()
-        rLoading.close()
+    getAllFunctionDetails() {
+      getAllFunctionDetails().then(res => {
+        this.allFunctions = res.rows
       })
     },
-    // 获取所有数据包类型
-    getAllTypes() {
-      getAllTypes().then(res => {
-        let all = [
-          {
-            type: '全部',
-            cnt: 0
-          }
-        ]
-        let feedback = {
-          type: '需求反馈',
-          cnt: 0
-        }
-        this.dataTypes = all.concat(res)
-        this.dataTypes.push(feedback)
+    getAllFunctionTypes() {
+      getAllFunctionTypes().then(res => {
+        this.allFunctionTypes = res
       })
     }
   }
@@ -310,20 +211,22 @@ export default {
         top: -200px;
         flex: 1 1 auto;
         margin: 0 auto;
-        width: 1220px;
+        width: 1200px;
         display: flex;
         background-color: #FFFFFF;
         border-radius: 12px;
         .left-content {
+          width: 194px;
           padding-top: 23px;
           padding-left: 8px;
           flex: 0 1 194px;
           box-shadow: inset -1px 0 0 0 #E4E7ED;
         }
         .right-content {
+           width: 1006px;
            padding-left: 16px;
            padding-top: 16px;
-           flex: 0 1 auto;
+           flex: 0 1 1006px;
           .search-wrapper {
             width: 432px;
           }
@@ -355,8 +258,8 @@ export default {
               .content-item {
                 flex: none;
                 width: 234px;
-                margin-right: 16px;
-                margin-bottom: 28px;
+                margin-right: 12px;
+                margin-bottom: 12px;
                 .content-info {
                   position: relative;
                   width: 100%;
@@ -373,8 +276,12 @@ export default {
                     .detail {
                       flex: 1 1 auto;
                       .name {
+                        width: 128px;
                         margin-top: 12px;
                         margin-right: 12px;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
                         .text-one {
                           font-family: PingFangSC-Medium;
                           font-size: 16px;
@@ -410,17 +317,25 @@ export default {
                           color: #FD6700;
                           letter-spacing: 0;
                         }
+                        .sub-text-three {
+                          font-family: PingFangSC-Regular;
+                          font-size: 12px;
+                          color: #C0C4CC;
+                          letter-spacing: 0;
+                          text-decoration: line-through;
+                        }
                       }
                     }
                   }
                   .content-desc {
                     margin: 0px 12px 0px;
-                    /*多行文本溢出*/
-                    display: -webkit-box;
-                    -webkit-box-orient: vertical;
-                    -webkit-line-clamp: 2;
-                    overflow: hidden;
                     .desc {
+                      /*多行文本溢出*/
+                      display: -webkit-box;
+                      -webkit-box-orient: vertical;
+                      -webkit-line-clamp: 2;
+                      overflow: hidden;
+                      line-height: 17px;
                       font-family: PingFangSC-Regular;
                       font-size: 12px;
                       color: #909399;
@@ -447,13 +362,16 @@ export default {
                       box-sizing: border-box;
                       outline: 0;
                       text-align: center;
-                      font-size: 14px;
-                      background: #FF9F40;
-                      color: #fff;
-                      border: none;
+                      font-size: 12px;
+                      color: #5587FF;
+                      border: 1px solid #5587FF;
                       border-radius: 8px;
                       transition: .5s ease;
                       cursor: pointer;
+                      &:hover {
+                        background: #5587FF;
+                        color: #fff;
+                      }
                     }
                   }
                 }
