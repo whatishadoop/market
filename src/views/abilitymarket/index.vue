@@ -107,7 +107,7 @@ export default {
       }
     },
     functionTypes() {
-      return this.allFunctionTypes
+      return this.noAllFunctionTypes
     }
   },
   data() {
@@ -116,8 +116,10 @@ export default {
       type: '全部',
       // 所有能力包信息
       allFunctions: [],
-      // 获取所有能力信息
+      // 获取所有能力类型信息
       allFunctionTypes: [],
+      // 获取所有能力类型信息,不包括全部
+      noAllFunctionTypes: [],
       // 需求反馈对话框
       dialogFormVisible: false,
       form: {
@@ -184,6 +186,7 @@ export default {
     getAllFunctionTypes() {
       getAllFunctionTypes().then(res => {
         this.allFunctionTypes = res
+        this.noAllFunctionTypes = res.filter(item => item.type !== '全部')
       })
     }
   }
