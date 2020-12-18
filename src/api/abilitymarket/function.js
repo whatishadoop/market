@@ -36,4 +36,13 @@ export function getFunctionDetailByCondition(params) {
   })
 }
 
-export default { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByType, getFunctionDetailByCondition }
+// 5.根据条件获取能力信息
+export function getAllTypesByCondition(params) {
+  return request({
+    url: 'market/function/getAllTypesByCondition',
+    method: 'get',
+    params
+  })
+}
+
+export default { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByType, getFunctionDetailByCondition, getAllTypesByCondition }

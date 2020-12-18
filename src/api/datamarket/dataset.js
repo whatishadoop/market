@@ -106,4 +106,13 @@ export function insertCustomerRequire(data) {
   })
 }
 
-export default { getAllDataPackages, getDataPackagesByType, getDataPackagesByName, getDataPackagesByCondition, getAllDataPackagesCount, getDataPackagesCountByType, getDataPackagesCountByName, getDataPackagesCountByCondition, getAllTypes, getDataPackageDetailByParentId, getDataPackageInfoById, insertCustomerRequire }
+// 13.客户需求反馈接口
+export function authcodeDown(data) {
+  return request({
+    url: 'market/download/remote/package',
+    method: 'post',
+    data
+  })
+}
+
+export default { getAllDataPackages, getDataPackagesByType, getDataPackagesByName, getDataPackagesByCondition, getAllDataPackagesCount, getDataPackagesCountByType, getDataPackagesCountByName, getDataPackagesCountByCondition, getAllTypes, getDataPackageDetailByParentId, getDataPackageInfoById, insertCustomerRequire, authcodeDown }

@@ -12,7 +12,7 @@
               :default-active="type"
               class="el-menu-vertical-demo" @select="handleSelect">
               <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index" :index="item.type">
-                <i class="el-icon-menu"></i>
+                <i :class=icons[index]></i>
                 <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.type}}  ({{item.cnt}})</span>
               </el-menu-item>
             </el-menu>
@@ -33,7 +33,7 @@
                     <div class="content-info">
                       <div class="content-wrapper">
                         <div class="logo">
-                          <svg-icon icon-class="音频文件转写" style="height: 70px;width: 70px;"/>
+                          <svg-icon :icon-class="item.iconUrl" style="height: 70px;width: 70px;"/>
                         </div>
                         <div class="detail">
                           <div class="name"><span class="text-one">{{item.name}}</span></div>
@@ -95,7 +95,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByCondition } from '@/api/abilitymarket/function'
+import { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByCondition, getAllTypesByCondition } from '@/api/abilitymarket/function'
 export default {
   computed: {
     functionDetailsByType () {
@@ -104,9 +104,9 @@ export default {
       }
     },
     functionTypes() {
-      if(this.type === '全部') {
+      if (this.type === '全部') {
         return this.allFunctionTypes.filter(item => item.type !== this.type)
-      }else {
+      } else {
         return this.allFunctionTypes.filter(item => item.type === this.type)
       }
     }
@@ -115,6 +115,7 @@ export default {
     return {
       input: '',
       type: '全部',
+      icons: ['el-icon-menu', 'el-icon-mic', 'el-icon-view', 'el-icon-tickets', 'el-icon-link'],
       // 所有能力包信息
       allFunctions: [],
       // 获取所有能力类型信息
@@ -144,6 +145,14 @@ export default {
     }
   },
   created() {
+    let that = this
+    document.onkeypress = function(e) {
+      let keycode = document.all ? event.keyCode : e.which
+      if (keycode === 13) {
+        that.getFunctionDetailByCondition()
+        return false
+      }
+    }
     this.$nextTick(() => {
       this.getAllFunctionDetails()
       this.getAllFunctionTypes()
@@ -157,28 +166,18 @@ export default {
   },
   methods: {
     handleSelect(key, keyPath) {
-      console.log(key)
       this.type = key
     },
     buyApp(id) {
-      this.dialogFormVisible = true
-    },
-    submitForm(formName) {
-      this.dialogFormVisible = false
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-        } else {
-          this.resetForm(formName)
-          return false
-        }
-      })
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
+      // this.dialogFormVisible = true
     },
     getAllFunctionDetails() {
       const rLoading = this.openLoading()
-      getAllFunctionDetails().then(res => {
+      const params = {
+        page: '0',
+        rows: '5000'
+      }
+      getAllFunctionDetails(params).then(res => {
         this.allFunctions = res.rows
         rLoading.close()
       })
@@ -190,11 +189,39 @@ export default {
     },
     getFunctionDetailByCondition() {
       const rLoading = this.openLoading()
-      console.log(this.input)
-      getFunctionDetailByCondition().then(res => {
+      const params1 = {
+        condition: this.input
+      }
+      const params2 = {
+        condition: this.input,
+        page: '0',
+        rows: '5000'
+      }
+      getAllTypesByCondition(params1).then(res => {
+        this.allFunctionTypes = res
+      })
+      getFunctionDetailByCondition(params2).then(res => {
         this.allFunctions = res.rows
         rLoading.close()
       })
+    },
+    /**
+     * 点击 X 关闭对话框的回调
+     **/
+    handleDialogClose(done) {
+      this.resetForm('ruleform')
+      done()
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+        } else {
+          return false
+        }
+      })
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     }
   }
 }
@@ -227,7 +254,7 @@ export default {
         border-radius: 12px;
         .left-content {
           width: 194px;
-          padding-top: 23px;
+          padding-top: 8px;
           padding-left: 8px;
           flex: 0 1 194px;
           box-shadow: inset -1px 0 0 0 #E4E7ED;
@@ -239,6 +266,7 @@ export default {
            flex: 0 1 1006px;
           .search-wrapper {
             width: 432px;
+            margin-bottom: 30px;
           }
           .ability-type-wrapper {
             display: flex;
@@ -354,10 +382,10 @@ export default {
                   }
                   .license-code-wrapper {
                     position: absolute;
-                    top: 0;
+                    top: 142px;
                     left: 0;
                     width: 100%;
-                    height: 100%;
+                    height: 44px;
                     padding: 12px;
                     box-sizing: border-box;
                     display: flex;

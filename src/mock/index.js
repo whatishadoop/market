@@ -39,3 +39,5 @@ Mock.mock(/\/market\/function\/getAllFunctionDetails/, 'get', dataSetApi.getAllF
 Mock.mock(/\/market\/function\/getFunctionDetailByType/, 'get', dataSetApi.getFunctionDetailByType())
 // 15.根据条件获取能力详情
 Mock.mock(/\/market\/function\/getFunctionDetailByCondition/, 'get', dataSetApi.getFunctionDetailByCondition())
+// 16.根据条件获取能力信息
+Mock.mock(/\/market\/function\/getAllTypesByCondition/, 'get', dataSetApi.getAllTypesByCondition())

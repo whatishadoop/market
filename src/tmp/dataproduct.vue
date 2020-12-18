@@ -45,45 +45,34 @@
                   prop="updateTime"
                   label="发布时间"
                   :formatter="formatter"
-                  width="150"
-                  align="center"
                   >
                 </el-table-column>
                 <el-table-column
                   prop="name"
-                  label="数据包名称"
-                  align="center"
-                  width="200">
+                  label="数据包名称">
                 </el-table-column>
                 <el-table-column
                   prop="format"
-                  label="数据格式"
-                  align="center">
+                  label="数据格式">
                 </el-table-column>
                 <el-table-column
                   prop="amount"
-                  label="数据量"
-                  align="center">
+                  label="数据量">
                 </el-table-column>
                 <el-table-column
                   prop="size"
-                  label="数据大小"
-                  align="center">
+                  label="数据大小">
                 </el-table-column>
                 <el-table-column
                   prop="realDownloadCnt"
-                  label="下载次数"
-                  align="center">
+                  label="下载次数">
                 </el-table-column>
                 <el-table-column
                   prop="remark"
-                  label="备注"
-                  align="center">
+                  label="备注">
                 </el-table-column>
                 <el-table-column
-                  label="操作"
-                  width="100"
-                  align="center">
+                  label="操作">
                   <template slot-scope="scope">
                     <el-button @click="download(scope.row)" type="text" size="small">下载</el-button>
                   </template>
@@ -104,29 +93,12 @@
         </div>
       </div>
     </div>
-    <!--对话框-->
-    <el-dialog title="购买授权码" :visible.sync="dialogFormVisible" :center="true" :before-close="handleDialogClose">
-      <el-form :model="form" :rules="rules" ref="authcode">
-        <el-form-item label="授权码" label-width="100px" prop="requireDetail">
-          <el-input
-            type="textarea"
-            :rows="4"
-            placeholder="请输入内容"
-            v-model="form.key">
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="resetForm('authcode')">重 置</el-button>
-        <el-button type="primary" @click="submitForm('authcode')">提 交</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import dataexpImage from '@/assets/dataexp.png'
-import { getDataPackageInfoById, authcodeDown } from '@/api/datamarket/dataset'
+import { getDataPackageInfoById } from '@/api/datamarket/dataset'
 import { formatDate } from '@/utils/date'
 export default {
   data() {
@@ -142,20 +114,7 @@ export default {
       // 所有数据包类型信息
       dataTypes: [],
       dataexpImage: dataexpImage,
-      imageUrl: '',
-      // 需求反馈对话框
-      dialogFormVisible: false,
-      form: {
-        packageId: '',
-        packageName: '',
-        key: '',
-        fileRelativePath: ''
-      },
-      rules: {
-        key: [
-          { required: true, message: '授权码不能为空' }
-        ]
-      }
+      imageUrl: ''
     }
   },
   created() {
@@ -178,10 +137,7 @@ export default {
     },
     // 下载文件
     download(row) {
-      this.dialogFormVisible = true
-      this.form.packageId = row.id + ''
-      this.form.packageName = row.name
-      this.form.fileRelativePath = row.url
+      window.location.href = row.url
     },
     formatter(row, column) {
       return formatDate(new Date(row.updateTime), 'yyyy-MM-dd hh:mm:ss')
@@ -199,29 +155,6 @@ export default {
         this.paging()
         rLoading.close()
       })
-    },
-    /**
-     * 点击 X 关闭对话框的回调
-     **/
-    handleDialogClose(done) {
-      this.resetForm('authcode')
-      done()
-    },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          authcodeDown(this.form).then(res => {
-            window.location.href = res.downloadUrl
-            this.resetForm(formName)
-            this.dialogFormVisible = false
-          })
-        } else {
-          return false
-        }
-      })
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
     }
   }
 }

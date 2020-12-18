@@ -23,7 +23,7 @@
             </div>
             <div class="data-type-content-wrapper">
               <div class="data-type-content">
-                <div v-for="(item , index) in tableData" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
+                <div v-for="(item , index) in dataPackages" :key="index" class="content-item" @mouseover="selectItem(index)" @mouseout="unselectItem(index)">
                   <div class="content-info">
                     <svg-icon v-if="isSelect === index" :icon-class="item.iconOnName" style="height: 141px;width: 141px;"/>
                     <svg-icon v-else :icon-class="item.iconOffName" style="height: 141px;width: 141px;"/>
@@ -103,8 +103,8 @@ export default {
       dataPackages: [],
       // 所有数据包类型信息
       dataTypes: [],
-      // 前端分页显示数据
-      tableData: [],
+      // // 前端分页显示数据
+      // tableData: [],
       // 需求反馈对话框
       dialogFormVisible: false,
       form: {
@@ -127,18 +127,11 @@ export default {
           { required: true, message: '联系方式不能为空' },
           { type: 'number', message: '联系方式为数字值' }
         ]
-      }
+      },
+      formLabelWidth: '120px'
     }
   },
   created() {
-    let that = this
-    document.onkeypress = function(e) {
-      let keycode = document.all ? event.keyCode : e.which
-      if (keycode === 13) {
-        that.getDataPackagesByCondition()
-        return false
-      }
-    }
     this.$nextTick(() => {
       this.getAllDataPackages('全部')
       this.getAllTypes()
@@ -153,16 +146,14 @@ export default {
   methods: {
     handleSizeChange(val) {
       this.pageSize = val
-      this.paging()
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.paging()
     },
-    // 分页方法
-    paging() {
-      this.tableData = this.dataPackages.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
-    },
+    // 前端分页方法
+    // paging() {
+    //   this.tableData = this.dataPackages.slice((this.currentPage - 1) * this.pageSize, (this.currentPage - 1) * this.pageSize + this.pageSize)
+    // },
     selectItem(index) {
       this.isSelect = index
     },
@@ -202,32 +193,36 @@ export default {
     },
     // 获取所有数据包信息接口
     getAllDataPackages(type) {
-      // 重置当前页
-      this.currentPage = 1
-      this.input = ''
-      const params = {
-        type: type,
-        page: '0',
-        rows: '50000'
-      }
       if (type === '全部') {
+        // 重置当前页
+        this.currentPage = 1
         const rLoading = this.openLoading()
         this.isActive = true
+        const params = {
+          type: type,
+          page: this.currentPage,
+          rows: this.pageSize
+        }
         getAllDataPackages(params).then(res => {
           this.dataPackages = res.rows
-          this.total = res.rows.length
-          this.paging()
+          this.total = res.total
           rLoading.close()
         })
       } else if (type === '需求反馈') {
+        // 重置当前页
+        this.currentPage = 1
         this.dialogFormVisible = true
       } else {
         const rLoading = this.openLoading()
+        const params = {
+          type: type,
+          page: this.currentPage,
+          rows: this.pageSize
+        }
         this.isActive = false
         getDataPackagesByType(params).then(res => {
           this.dataPackages = res.rows
-          this.total = res.rows.length
-          this.paging()
+          this.total = res.total
           rLoading.close()
         })
       }
@@ -238,13 +233,12 @@ export default {
       this.currentPage = 1
       const params = {
         condition: this.input,
-        page: '0',
-        rows: '50000'
+        page: this.currentPage,
+        rows: this.pageSize
       }
       getDataPackagesByCondition(params).then(res => {
         this.dataPackages = res.rows
-        this.total = res.rows.length
-        this.paging()
+        this.total = res.total
         rLoading.close()
       })
     },
