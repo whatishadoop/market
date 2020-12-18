@@ -105,9 +105,9 @@
       </div>
     </div>
     <!--对话框-->
-    <el-dialog title="购买授权码" :visible.sync="dialogFormVisible" :center="true" :before-close="handleDialogClose">
+    <el-dialog title="请输入您的密钥凭证" :visible.sync="dialogFormVisible" :left="true" :before-close="handleDialogClose">
       <el-form :model="form" :rules="rules" ref="authcode">
-        <el-form-item label="授权码" label-width="100px" prop="requireDetail">
+        <el-form-item label="" label-width="0px" prop="requireDetail">
           <el-input
             type="textarea"
             :rows="4"

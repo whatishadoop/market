@@ -45,7 +45,7 @@
                         <span class="desc">{{item.detail}}</span>
                       </div>
                       <div class="license-code-wrapper">
-                        <div class="license-code-btn" @click="buyApp(item.id)">购买授权码</div>
+                        <div class="license-code-btn" @click="buyApp(item)">购买授权码</div>
                       </div>
                     </div>
                   </div>
@@ -57,38 +57,62 @@
       </div>
     </div>
     <!--对话框-->
-    <el-dialog title="需求提交" :visible.sync="dialogFormVisible" :center="true">
-      <el-form :model="form" :rules="rules" ref="ruleform">
-        <el-form-item label="需求类型" label-width="100px" prop="type">
-          <el-radio v-model="form.requireType" label="1">API</el-radio>
-          <el-radio v-model="form.requireType" label="2">数据块</el-radio>
-        </el-form-item>
-        <el-form-item label="需求描述" label-width="100px" prop="desc">
-          <el-input
-            type="textarea"
-            :rows="4"
-            placeholder="请输入内容"
-            v-model="form.requireDetail">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="您的称呼" label-width="100px" prop="name">
-          <el-input
-            placeholder="请输入内容"
-            v-model="form.customerName"
-            clearable>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="联系方式" label-width="100px" prop="phone">
-          <el-input
-            placeholder="请输入内容"
-            v-model="form.contactInfo"
-            clearable>
-          </el-input>
-        </el-form-item>
-      </el-form>
+    <el-dialog title="购买授权码" :visible.sync="dialogFormVisible" :left="true" width="880px">
+      <div class="ability-detail-wrapper">
+        <div class="ability-content-wrapper">
+          <div class="logo-detail">
+            <svg-icon :icon-class="abilituitem.iconUrl" style="height: 100px;width: 100px;"/>
+          </div>
+          <div class="detail">
+            <div class="name"><span class="text-one">{{abilituitem.name}}</span></div>
+            <div class="desc"><span class="text-two">{{abilituitem.detail}}</span></div>
+            <div class="purchase-info-wrapper">
+              <div class="price"><span class="text-three">￥{{abilituitem.currentPrice}} </span><span class="sub-text-three">168</span></div>
+              <div class="duration"><span class="content">{{abilituitem.useTimeDesc}}</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ability-authcode-wrapper">
+          <div class="account-key-wrapper">
+            <div class="title">
+              <div>
+                <span>账号密钥：</span>
+              </div>
+              <el-button size="small" type="primary" style="color: transparent;background-color: transparent;border: 0px;">下载授权码</el-button>
+              <el-button type="primary" size="small" style="color: transparent;background-color: transparent;border: 0px;">一键复制</el-button>
+            </div>
+            <div class="account-key">
+              <el-input
+                type="textarea"
+                :rows="11"
+                placeholder="请输入您的账号密钥，账号密钥在oceanmindlite系统内“功能授权弹窗”的顶部哦～"
+                v-model="textarea1">
+              </el-input>
+            </div>
+          </div>
+          <div class="creat-btn-wrapper">
+            <el-button type="primary" size="small">生成授权码</el-button>
+          </div>
+          <div class="auth-code-wrapper">
+            <div class="title">
+              <div>
+                <span>授权码：</span>
+              </div>
+              <div><el-button size="small" type="primary">下载授权码</el-button><el-button type="primary" size="small">一键复制</el-button></div>
+            </div>
+            <div class="auth-code">
+              <el-input
+                type="textarea"
+                :rows="11"
+                placeholder="请输入内容"
+                v-model="textarea2">
+              </el-input>
+            </div>
+          </div>
+        </div>
+      </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="resetForm('ruleform')">重 置</el-button>
-        <el-button type="primary" @click="submitForm('ruleform')">提 交</el-button>
+        <el-button @click="cancelPurchase" size="small">取消购买</el-button>
       </div>
     </el-dialog>
   </div>
@@ -122,26 +146,9 @@ export default {
       allFunctionTypes: [],
       // 需求反馈对话框
       dialogFormVisible: false,
-      form: {
-        requireType: '1',
-        requireDetail: '',
-        customerName: '',
-        contactInfo: ''
-      },
-      rules: {
-        requireType: [
-          { required: true, message: '需求类型不能为空' }
-        ],
-        requireDetail: [
-          { required: true, message: '需求描述不能为空' }
-        ],
-        customerName: [
-          { required: true, message: '称呼不能为空' }
-        ],
-        contactInfo: [
-          { required: true, message: '联系方式不能为空' }
-        ]
-      }
+      abilituitem: {},
+      textarea1: '',
+      textarea2: ''
     }
   },
   created() {
@@ -168,8 +175,9 @@ export default {
     handleSelect(key, keyPath) {
       this.type = key
     },
-    buyApp(id) {
-      // this.dialogFormVisible = true
+    buyApp(item) {
+      this.abilituitem = item
+      this.dialogFormVisible = true
     },
     getAllFunctionDetails() {
       const rLoading = this.openLoading()
@@ -209,19 +217,14 @@ export default {
      * 点击 X 关闭对话框的回调
      **/
     handleDialogClose(done) {
-      this.resetForm('ruleform')
+      this.textarea1 = ''
+      this.textarea2 = ''
       done()
     },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-        } else {
-          return false
-        }
-      })
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
+    cancelPurchase() {
+      this.textarea1 = ''
+      this.textarea2 = ''
+      this.dialogFormVisible = false
     }
   }
 }
@@ -426,7 +429,132 @@ export default {
       }
     }
   }
-
+  .ability-detail-wrapper {
+    height: 100%;
+    width: 100%;
+    .ability-content-wrapper {
+      display: flex;
+      .logo-detail {
+        flex: 0 1 76px;
+        margin: 0 18px 0 0;
+      }
+      .detail {
+        flex: 1 1 auto;
+        .name {
+          width: 128px;
+          margin-right: 12px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          .text-one {
+            font-family: PingFangSC-Medium;
+            font-size: 16px;
+            line-height: 20px;
+            color: #303133;
+            letter-spacing: 0;
+          }
+        }
+        .desc {
+          margin-top: 8px;
+          height: 34px;
+          .text-two {
+            /*多行文本溢出*/
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            line-height: 17px;
+            font-family: PingFangSC-Regular;
+            font-size: 12px;
+            color: #909399;
+            letter-spacing: 0;
+          }
+        }
+        .purchase-info-wrapper {
+          display: flex;
+          align-items: center;
+          margin-top: 18px;
+          .price {
+            display: inline-block;
+            .text-three {
+              font-family: DINPro-Bold;
+              font-size: 18px;
+              font-weight: bolder;
+              line-height: 18px;
+              color: #FD6700;
+              letter-spacing: 0;
+            }
+            .sub-text-three {
+              font-family: PingFangSC-Regular;
+              font-size: 12px;
+              color: #C0C4CC;
+              letter-spacing: 0;
+              text-decoration: line-through;
+            }
+          }
+          .duration {
+            margin-left: 8px;
+            width: 96px;
+            height: 17px;
+            background: #FFF2E8;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .content {
+              font-family: PingFangSC-Regular;
+              font-size: 12px;
+              line-height: 17px;
+              color: #FD6700;
+              letter-spacing: 0;
+            }
+          }
+        }
+      }
+    }
+    .ability-authcode-wrapper {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .account-key-wrapper {
+         flex: 1 1 auto;
+        .title {
+          display: flex;
+          align-items: center;
+          font-weight: bold;
+          font-family: PingFangSC-Medium;
+          font-size: 14px;
+          color: #303133;
+          letter-spacing: 0;
+        }
+        .account-key {
+          margin-top: 10px;
+        }
+      }
+      .creat-btn-wrapper {
+         flex: 0 1 80px;
+         margin-left: 5px;
+         margin-right: 5px;
+      }
+      .auth-code-wrapper {
+         flex: 1 1 auto;
+        .title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-weight: bold;
+          font-family: PingFangSC-Medium;
+          font-size: 14px;
+          color: #303133;
+          letter-spacing: 0;
+        }
+        .auth-code {
+          margin-top: 10px;
+        }
+      }
+    }
+  }
   /**修改搜索框样式**/
   .search-wrapper /deep/ .el-input__inner {
     height: 45px;

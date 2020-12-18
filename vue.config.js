@@ -16,7 +16,7 @@ module.exports = {
       entry: 'src/main.js',
       template: 'public/index.html',
       filename: 'index.html',
-      title: 'Index Page'
+      title: '海睿思-大数据平台'
     }
   },
   outputDir: 'dist',
