@@ -7,7 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss' // 全局样式
 import '@/assets/icons' // icon
 // 开发环境支持mock
-// process.env.NODE_ENV === 'development' && require('@/mock/index.js')
+process.env.NODE_ENV === 'development' && require('@/mock/index.js')
 
 // 声明一个loading对象
 Vue.prototype.openLoading = function() {

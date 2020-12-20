@@ -67,7 +67,7 @@
             <div class="name"><span class="text-one">{{abilituitem.name}}</span></div>
             <div class="desc"><span class="text-two">{{abilituitem.detail}}</span></div>
             <div class="purchase-info-wrapper">
-              <div class="price"><span class="text-three">￥{{abilituitem.currentPrice}} </span><span class="sub-text-three">168</span></div>
+              <div class="price"><span class="text-three">￥{{abilituitem.currentPrice}} </span><span class="sub-text-three">{{abilituitem.originalPrice}}</span></div>
               <div class="duration"><span class="content">{{abilituitem.useTimeDesc}}</span></div>
             </div>
           </div>

@@ -31,6 +31,7 @@
 
 <script type="text/ecmascript-6">
 import backgroundImage from '@/assets/hairuisi@1x.png'
+const localStorage = window.localStorage
 export default {
   name: 'Home',
   components: {
@@ -38,8 +39,12 @@ export default {
   data () {
     return {
       activeIndex: '1',
-      backgroundImage: backgroundImage
+      backgroundImage: backgroundImage,
+      pathName: 'datamarket'
     }
+  },
+  created() {
+    this.init()
   },
   methods: {
     handleSelect (key, keyPath) {
@@ -52,8 +57,19 @@ export default {
       } else if (key === '2') {
         pathName = 'abilitymarket'
       }
-
+      localStorage.setItem('pathName', pathName)
+      localStorage.setItem('keepAlive', key)
       this.$router.push({ name: pathName })
+    },
+    init() {
+      this.activeIndex = localStorage.getItem('keepAlive')
+      if (this.activeIndex === null) {
+        this.activeIndex = '1'
+      }
+      this.pathName = localStorage.getItem('pathName')
+      if (this.pathName === null) {
+        this.pathName = 'datamarket'
+      }
     }
   }
 }
