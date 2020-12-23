@@ -28,7 +28,8 @@ const routes = [
       {
         path: '/abilitymarket',
         name: 'abilitymarket',
-        component: () => import('@/views/abilitymarket/index.vue')
+        component: () => import('@/views/abilitymarket/index.vue'),
+        meta: { id: '2' }
       }
     ]
   },

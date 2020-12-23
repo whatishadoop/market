@@ -208,6 +208,10 @@ export default {
       done()
     },
     submitForm(formName) {
+      if (this.form.key === '' || this.form.key === null) {
+        this.$message.error('请输入您的密钥凭证')
+        return
+      }
       this.$refs[formName].validate((valid) => {
         if (valid) {
           authcodeDown(this.form).then(res => {

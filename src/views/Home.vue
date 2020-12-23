@@ -31,7 +31,6 @@
 
 <script type="text/ecmascript-6">
 import backgroundImage from '@/assets/hairuisi@1x.png'
-const localStorage = window.localStorage
 export default {
   name: 'Home',
   components: {
@@ -57,21 +56,26 @@ export default {
       } else if (key === '2') {
         pathName = 'abilitymarket'
       }
-      localStorage.setItem('pathName', pathName)
-      localStorage.setItem('keepAlive', key)
       this.$router.push({ name: pathName })
     },
     init() {
-      this.activeIndex = localStorage.getItem('keepAlive')
-      if (this.activeIndex === null) {
+      this.activeIndex = this.$route.meta.id
+      if (this.activeIndex === null || this.activeIndex === undefined) {
         this.activeIndex = '1'
-      }
-      this.pathName = localStorage.getItem('pathName')
-      if (this.pathName === null) {
-        this.pathName = 'datamarket'
       }
     }
   }
+  // 监听,当路由发生变化的时候执行
+  // watch: {
+  //   $route(to, from) {
+  //     console.log(to.path)
+  //     if (to.path === 'datamarket') {
+  //       this.activeIndex = '1'
+  //     } else {
+  //       this.activeIndex = '2'
+  //     }
+  //   }
+  // }
 }
 </script>
 <style type="text/scss" rel="stylesheet/scss" lang="scss" scoped>

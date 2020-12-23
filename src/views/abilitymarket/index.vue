@@ -41,7 +41,7 @@
                           <div class="price"><span class="text-three">￥{{item.currentPrice}} </span><span class="sub-text-three">{{item.originalPrice}}</span></div>
                         </div>
                       </div>
-                      <div class="content-desc">
+                      <div class="content-desc" :title="item.detail">
                         <span class="desc">{{item.detail}}</span>
                       </div>
                       <div class="license-code-wrapper">
@@ -57,7 +57,7 @@
       </div>
     </div>
     <!--对话框-->
-    <el-dialog title="购买授权码" :visible.sync="dialogFormVisible" :left="true" width="880px">
+    <el-dialog title="购买授权码" :visible.sync="dialogFormVisible" :left="true" width="880px" :before-close="handleDialogClose">
       <div class="ability-detail-wrapper">
         <div class="ability-content-wrapper">
           <div class="logo-detail">
@@ -85,20 +85,20 @@
               <el-input
                 type="textarea"
                 :rows="11"
-                placeholder="请输入您的账号密钥，账号密钥在oceanmindlite系统内“功能授权弹窗”的顶部哦～"
+                placeholder="请输入您的账号密钥，账号密钥在OceanMind系统内“功能授权弹窗”的顶部哦～"
                 v-model="textarea1">
               </el-input>
             </div>
           </div>
           <div class="creat-btn-wrapper">
-            <el-button type="primary" size="small">生成授权码</el-button>
+            <el-button type="primary" size="small" @click="genCode">生成授权码</el-button>
           </div>
           <div class="auth-code-wrapper">
             <div class="title">
               <div>
                 <span>授权码：</span>
               </div>
-              <div><el-button size="small" type="primary">下载授权码</el-button><el-button type="primary" size="small">一键复制</el-button></div>
+              <div><el-button size="small" type="primary" @click="downGenCode">下载授权码</el-button><el-button type="primary" size="small" @click="copy">一键复制</el-button></div>
             </div>
             <div class="auth-code">
               <el-input
@@ -119,7 +119,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByCondition, getAllTypesByCondition } from '@/api/abilitymarket/function'
+import { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByCondition, getAllTypesByCondition, getFuncCode, downloadFuncCode } from '@/api/abilitymarket/function'
+import { getToken, setToken } from '@/utils/auth'
 export default {
   computed: {
     functionDetailsByType () {
@@ -172,11 +173,60 @@ export default {
     document.querySelector('body').removeAttribute('style')
   },
   methods: {
+    copy () {
+      this.$copyText(this.textarea2).then(function (e) {
+        this.$message({
+          message: '复制成功',
+          type: 'success'
+        })
+      }, function (e) {
+        this.$message({
+          message: '复制失败',
+          type: 'warning'
+        })
+      })
+    },
+    downGenCode () {
+      if (this.textarea1 === '' || this.textarea1 === null) {
+        this.$message.error('请输入您的账号密钥')
+        return
+      }
+      let data = {
+        key: this.textarea1,
+        funcId: this.abilituitem.id,
+        funcName: this.abilituitem.name,
+        days: this.abilituitem.useTime
+      }
+      downloadFuncCode(data).then(res => {
+        window.location.href = res.downLoadPath
+      })
+    },
+    genCode() {
+      if (this.textarea1 === '' || this.textarea1 === null) {
+        this.$message.error('请输入您的账号密钥')
+        return
+      }
+      let data = {
+        key: this.textarea1,
+        funcId: this.abilituitem.id,
+        funcName: this.abilituitem.name,
+        days: this.abilituitem.useTime
+      }
+      getFuncCode(data).then(res => {
+        this.textarea2 = res.funcCode
+        // 保存在cookies中，有效期1天
+        setToken(this.textarea1, true)
+      })
+    },
     handleSelect(key, keyPath) {
       this.type = key
     },
     buyApp(item) {
       this.abilituitem = item
+      let keyValue = getToken()
+      if (keyValue !== '' || keyValue !== null) {
+        this.textarea1 = keyValue
+      }
       this.dialogFormVisible = true
     },
     getAllFunctionDetails() {

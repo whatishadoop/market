@@ -45,4 +45,22 @@ export function getAllTypesByCondition(params) {
   })
 }
 
-export default { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByType, getFunctionDetailByCondition, getAllTypesByCondition }
+// 获取授权码
+export function getFuncCode(data) {
+  return request({
+    url: 'market/account/getFuncCode',
+    method: 'post',
+    data
+  })
+}
+
+// 下载授权码
+export function downloadFuncCode(data) {
+  return request({
+    url: 'market/account/downloadFuncCode',
+    method: 'post',
+    data
+  })
+}
+
+export default { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByType, getFunctionDetailByCondition, getAllTypesByCondition, getFuncCode, downloadFuncCode }

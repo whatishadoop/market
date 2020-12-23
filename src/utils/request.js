@@ -4,10 +4,11 @@ import { Notification, MessageBox } from 'element-ui'
 import store from '../store'
 import { getToken } from '@/utils/auth'
 import Config from '@/settings'
-
 // 创建axios实例
 const service = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_BASE_API : '/', // api 的 base_url
+  // baseURL: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_BASE_API : '/', // api 的 base_url
+  /* eslint-disable */
+  baseURL: CONFIG_ITEMS.baseURL,
   timeout: Config.timeout // 请求超时时间
 })
 
@@ -36,6 +37,12 @@ service.interceptors.response.use(
       })
       return Promise.reject(new Error(0))
     } else {
+      if (response.data.errcode === '500') {
+        Notification.error({
+          title: response.data.errmsg
+        })
+        return Promise.reject(new Error(0))
+      }
       return response.data.data
     }
   },
