@@ -128,6 +128,7 @@
 import dataexpImage from '@/assets/dataexp.png'
 import { getDataPackageInfoById, authcodeDown } from '@/api/datamarket/dataset'
 import { formatDate } from '@/utils/date'
+import { getToken, setToken } from '@/utils/auth'
 export default {
   data() {
     return {
@@ -178,10 +179,14 @@ export default {
     },
     // 下载文件
     download(row) {
-      this.dialogFormVisible = true
+      let keyValue = getToken()
+      if (keyValue !== '' || keyValue !== null) {
+        this.form.key = keyValue
+      }
       this.form.packageId = row.id + ''
       this.form.packageName = row.name
       this.form.fileRelativePath = row.url
+      this.dialogFormVisible = true
     },
     formatter(row, column) {
       return formatDate(new Date(row.updateTime), 'yyyy-MM-dd hh:mm:ss')
@@ -216,6 +221,9 @@ export default {
         if (valid) {
           authcodeDown(this.form).then(res => {
             window.location.href = res.downloadUrl
+            // 保存在cookies中，有效期1天
+            setToken(this.form.key, true)
+            // 提交后保存到cookies中
             this.resetForm(formName)
             this.dialogFormVisible = false
           })
@@ -225,7 +233,7 @@ export default {
       })
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields()
+      this.form.key = ''
     }
   }
 }
