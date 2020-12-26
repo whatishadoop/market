@@ -193,7 +193,7 @@ export default {
       }
       let data = {
         key: this.textarea1,
-        funcId: this.abilituitem.id,
+        funcId: this.abilituitem.functionId,
         funcName: this.abilituitem.name,
         days: this.abilituitem.useTime
       }
