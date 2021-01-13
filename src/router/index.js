@@ -13,7 +13,7 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
-    redirect: '/datamarket',
+    redirect: '/opensrcinfo',
     children: [
       {
         path: '/datamarket',
@@ -30,6 +30,11 @@ const routes = [
         name: 'abilitymarket',
         component: () => import('@/views/abilitymarket/index.vue'),
         meta: { id: '2' }
+      },
+      {
+        path: '/opensrcinfo',
+        name: 'opensrcinfo',
+        component: () => import('@/views/opensrcinfo/index.vue')
       }
     ]
   },

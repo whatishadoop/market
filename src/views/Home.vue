@@ -6,20 +6,6 @@
           <img :src="backgroundImage" class="image-size">
           <h4 style="font-size: 12px;color: #FFFFFF;font-family: PingFang SC;margin-top: 26px;margin-left: 12px">轻量化数据中台生态引领者</h4>
         </div>
-        <div class="menu-wrapper">
-          <el-menu
-            :default-active="activeIndex"
-            class="el-menu-demo"
-            mode="horizontal"
-            @select="handleSelect"
-            background-color="#4C7DFE"
-            text-color="#fff"
-            active-text-color="#fff"
-          >
-            <el-menu-item index="1"><span style="font-size: 16px;font-size: 16px;font-family: Microsoft YaHei;font-weight: bold;line-height: 20px;">数据集市</span></el-menu-item>
-            <el-menu-item index="2"><span style="font-size: 16px;font-size: 16px;font-family: Microsoft YaHei;font-weight: bold;line-height: 20px;">能力集市</span></el-menu-item>
-          </el-menu>
-        </div>
       </el-header>
       <el-main style="padding: 0px;">
         <!--根据顶部菜单选项切换不同内容-->
@@ -46,24 +32,6 @@ export default {
     this.init()
   },
   methods: {
-    handleSelect (key, keyPath) {
-      if (key == null) {
-        return
-      }
-      let pathName = ''
-      if (key === '1') {
-        pathName = 'datamarket'
-      } else if (key === '2') {
-        pathName = 'abilitymarket'
-      }
-      this.$router.push({ name: pathName })
-    },
-    init() {
-      this.activeIndex = this.$route.meta.id
-      if (this.activeIndex === null || this.activeIndex === undefined) {
-        this.activeIndex = '1'
-      }
-    }
   }
   // 监听,当路由发生变化的时候执行
   // watch: {
