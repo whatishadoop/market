@@ -4,7 +4,7 @@
       <el-header height="58px" class="header-wapper">
         <div class="logo-wrapper">
           <img :src="backgroundImage" class="image-size">
-          <h4 style="font-size: 12px;color: #FFFFFF;font-family: PingFang SC;margin-top: 26px;margin-left: 12px">轻量化数据中台生态引领者</h4>
+          <span style="font-size: 20px;color: #FFFFFF;font-family: PingFang SC;margin-left: 12px;line-height: 28px">睿企企业开源情报专家</span>
         </div>
       </el-header>
       <el-main style="padding: 0px;">
@@ -16,7 +16,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import backgroundImage from '@/assets/hairuisi@1x.png'
+import backgroundImage from '@/assets/ruiqi@2x.png'
 export default {
   name: 'Home',
   components: {
@@ -27,9 +27,6 @@ export default {
       backgroundImage: backgroundImage,
       pathName: 'datamarket'
     }
-  },
-  created() {
-    this.init()
   },
   methods: {
   }
@@ -60,9 +57,9 @@ export default {
         display: flex;
         align-items: center;
         .image-size {
-          height: 23px;
-          width: 88px;
-          margin-left: 40.5px;
+          height: 28px;
+          width: 40px;
+          margin-left: 20px;
           object-fit: contain;
         }
       }

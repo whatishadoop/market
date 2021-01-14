@@ -330,23 +330,23 @@ const data12 = {
   errmsg: '数据请求响应成功',
   data: [
     {
-      type: '全部',
+      type: '南京中新赛克科技有限责任公司监控方案',
       cnt: 22
     },
     {
-      type: '自然语言处理',
+      type: '监控方案1',
       cnt: 11
     },
     {
-      type: 'OCR识别',
+      type: '监控方案2',
       cnt: 6
     },
     {
-      type: '语音识别',
+      type: '监控方案3',
       cnt: 2
     },
     {
-      type: '外部数据接入',
+      type: '监控方案4',
       cnt: 3
     }
   ]

@@ -2,53 +2,42 @@
   <div>
     <!--搜索与分类内容区域-->
     <div class="main-wapper">
-      <div class="main-two-content">
+      <div class="main-content">
         <div class="ability-wrapper">
           <div class="left-content">
+            <div class="headline">
+              <div class="name"><span style="font-size: 16px;font-weight: bold;font-family: PingFangSC-Semibold;color: #333436;letter-spacing: 0;">监控方案</span></div>
+              <div class="create"><i class="el-icon-circle-plus" style="font-size: 20px;"></i></div>
+            </div>
             <el-menu
               :default-active="type"
               class="el-menu-vertical-demo" @select="handleSelect">
               <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index" :index="item.type">
-                <i :class=icons[index]></i>
-                <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.type}}  ({{item.cnt}})</span>
+                <div class="menu-content-wrapper">
+                  <div class="menu-content-name">
+                    <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.type}}</span>
+                  </div>
+                  <div class="menu-content-icon">
+                    <i class="el-icon-delete"></i>
+                  </div>
+                </div>
               </el-menu-item>
             </el-menu>
           </div>
           <div class="right-content">
-            <div class="search-wrapper">
-              <el-input placeholder="搜索" v-model="input">
-                <el-button @click="getFunctionDetailByCondition()" slot="prepend" icon="el-icon-search" style="color: #5075E7;font-weight: bold"></el-button>
-              </el-input>
+            <div class="monitor-name-wrapper">
+              <div class="name"><span style="font-family: PingFangSC-Semibold;font-size: 20px;color: #FFFFFF;">南京中新赛克责任有限公司</span></div>
+              <div class="date"><span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">最后更新时间: 2020-03-02</span></div>
             </div>
-            <template v-for="(item, index) in functionTypes">
-              <div class="ability-type-wrapper" :key="index">
-                <span class="ability-type-name">{{item.type}}</span>
-              </div>
-              <div class="ability-content-wrapper" :key="item.id">
-                <div class="ability-content">
-                  <div v-for="item in functionDetailsByType(item.type)" :key="item.id" class="content-item">
-                    <div class="content-info">
-                      <div class="content-wrapper">
-                        <div class="logo">
-                          <svg-icon :icon-class="item.iconUrl" style="height: 70px;width: 70px;"/>
-                        </div>
-                        <div class="detail">
-                          <div class="name"><span class="text-one">{{item.name}}</span></div>
-                          <div class="duration"><span class="text-two">{{item.useTimeDesc}}</span></div>
-                          <div class="price"><span class="text-three">￥{{item.currentPrice}} </span><span class="sub-text-three">{{item.originalPrice}}</span></div>
-                        </div>
-                      </div>
-                      <div class="content-desc" :title="item.detail">
-                        <span class="desc">{{item.detail}}</span>
-                      </div>
-                      <div class="license-code-wrapper">
-                        <div class="license-code-btn" @click="buyApp(item)">购买授权码</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </template>
+            <div class="search-wrapper">
+              <el-tabs v-model="activeName" type="card">
+                <el-tab-pane label="舆情列表" name="first"><yuqingList></yuqingList></el-tab-pane>
+                <el-tab-pane label="舆情分析" name="second">舆情分析</el-tab-pane>
+                <el-tab-pane label="舆情预警" name="third">舆情预警</el-tab-pane>
+                <el-tab-pane label="舆情事件" name="fourth">舆情事件</el-tab-pane>
+                <el-tab-pane label="方案设置" name="five"><caseConfig></caseConfig></el-tab-pane>
+              </el-tabs>
+            </div>
           </div>
         </div>
       </div>
@@ -118,7 +107,14 @@
 <script type="text/ecmascript-6">
 import { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByCondition, getAllTypesByCondition, getFuncCode, downloadFuncCode } from '@/api/abilitymarket/function'
 import { getToken, setToken } from '@/utils/auth'
+import yuqingList from './component/yuqingList'
+import caseConfig from './component/caseConfig'
+
 export default {
+  components: {
+    yuqingList,
+    caseConfig
+  },
   computed: {
     functionDetailsByType () {
       return function(type) {
@@ -135,6 +131,7 @@ export default {
   },
   data() {
     return {
+      activeName: 'five',
       input: '',
       type: '全部',
       icons: ['el-icon-menu', 'el-icon-mic', 'el-icon-view', 'el-icon-tickets', 'el-icon-link'],
@@ -282,185 +279,58 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
-    .main-two-content {
+    .main-content {
       flex: 1 1 auto;
       background: #F0F2F5;
       .ability-wrapper {
-        position: relative;
-        top: 0px;
         flex: 1 1 auto;
         width: 100%;
+        height: 100%;
+        padding: 14px 10px 0px 10px;
         display: flex;
-        border-radius: 12px;
+        box-sizing: border-box;
         .left-content {
-          width: 194px;
-          padding-top: 8px;
-          padding-left: 8px;
-          flex: 0 1 194px;
-          box-shadow: inset -1px 0 0 0 #E4E7ED;
+          width: 252px;
+          flex: 0 1 252px;
+          background: #FFFFFF;
+          border-radius: 12px;
+          .headline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px 20px 0px 20px;
+            .name {
+              flex: 1;
+              letter-spacing: 0;
+              line-height: 64px;
+            }
+            .create {
+              font-size: 14px;
+            }
+          }
         }
         .right-content {
-          width: 1006px;
-          padding-left: 16px;
-          padding-top: 16px;
-          flex: 0 1 1006px;
-          .search-wrapper {
-            width: 432px;
-            margin-bottom: 30px;
-          }
-          .ability-type-wrapper {
-            display: flex;
-            margin-top: 20px;
-            .ability-type-name {
-              font-family: PingFangSC-Medium;
-              font-size: 16px;
-              font-weight: bold;
-              line-height: 16px;
-              color: #000000;
-              text-align: center;
-            }
-          }
-          .ability-content-wrapper {
-            position: relative;
-            left: 0px;
-            top: 0px;
-            width: 100%;
-            margin-top: 14px;
-            background: #fff;
+          margin-left: 10px;
+          flex: 1;
+          border-radius: 12px;
+          .monitor-name-wrapper {
+            height: 73px;
+            margin-bottom: 15px;
+            padding-left: 42px;
+            box-sizing: border-box;
+            background-image: linear-gradient(90deg, #5075E7 0%, #5996FB 74%);
+            border: 1px solid #5075E7;
             border-radius: 12px;
-            .ability-content {
-              display: flex;
-              flex-wrap: wrap;
-              background: #fff;
-              border-radius: 12px;
-              .content-item {
-                flex: none;
-                width: 234px;
-                margin-right: 12px;
-                margin-bottom: 12px;
-                .content-info {
-                  position: relative;
-                  width: 100%;
-                  height: 184px;
-                  border: 1px solid #EBEEF5;
-                  border-radius: 5px;
-                  .content-wrapper {
-                    display: flex;
-                    height: 92px;
-                    .logo {
-                      flex: 0 1 76px;
-                      margin: 12px;
-                    }
-                    .detail {
-                      flex: 1 1 auto;
-                      .name {
-                        width: 128px;
-                        margin-top: 12px;
-                        margin-right: 12px;
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        .text-one {
-                          font-family: PingFangSC-Medium;
-                          font-size: 16px;
-                          line-height: 20px;
-                          color: #303133;
-                          letter-spacing: 0;
-                        }
-                      }
-                      .duration {
-                        width: 96px;
-                        height: 17px;
-                        margin-top: 4px;
-                        background: #FFF2E8;
-                        border-radius: 2px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        .text-two {
-                          font-family: PingFangSC-Regular;
-                          font-size: 12px;
-                          line-height: 17px;
-                          color: #FD6700;
-                          letter-spacing: 0;
-                        }
-                      }
-                      .price {
-                        margin-top: 8px;
-                        .text-three {
-                          font-family: DINPro-Bold;
-                          font-size: 18px;
-                          font-weight: bolder;
-                          line-height: 18px;
-                          color: #FD6700;
-                          letter-spacing: 0;
-                        }
-                        .sub-text-three {
-                          font-family: PingFangSC-Regular;
-                          font-size: 12px;
-                          color: #C0C4CC;
-                          letter-spacing: 0;
-                          text-decoration: line-through;
-                        }
-                      }
-                    }
-                  }
-                  .content-desc {
-                    margin: 0px 12px 0px;
-                    .desc {
-                      /*多行文本溢出*/
-                      display: -webkit-box;
-                      -webkit-box-orient: vertical;
-                      -webkit-line-clamp: 2;
-                      overflow: hidden;
-                      line-height: 17px;
-                      font-family: PingFangSC-Regular;
-                      font-size: 12px;
-                      color: #909399;
-                      letter-spacing: 0;
-                    }
-                  }
-                  .license-code-wrapper {
-                    position: absolute;
-                    top: 142px;
-                    left: 0;
-                    width: 100%;
-                    height: 44px;
-                    padding: 12px;
-                    box-sizing: border-box;
-                    display: flex;
-                    align-items: flex-end;
-                    justify-content: center;
-                    .license-code-btn {
-                      display: inline-block;
-                      vertical-align: bottom;
-                      height: 32px;
-                      width: 208px;
-                      line-height: 32px;
-                      box-sizing: border-box;
-                      outline: 0;
-                      text-align: center;
-                      font-size: 12px;
-                      color: #5587FF;
-                      border: 1px solid #5587FF;
-                      border-radius: 8px;
-                      transition: .5s ease;
-                      cursor: pointer;
-                      &:hover {
-                        background: #5587FF;
-                        color: #fff;
-                      }
-                    }
-                  }
-                }
-              }
+            .name {
+              margin-top: 9px;
             }
-            .page {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              padding-bottom: 10px;
+            .date {
+              margin-top: 4px;
             }
+          }
+          .search-wrapper {
+            background-color: #FFFFFF;
+            border-radius: 12px;
           }
         }
       }
@@ -592,29 +462,28 @@ export default {
       }
     }
   }
-  /**修改搜索框样式**/
-  .search-wrapper /deep/ .el-input__inner {
-    height: 45px;
-    line-height: 45px;
-    padding-left: 0px;
-    border: 0px;
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    background: #F5F7FA;
-  }
-  .search-wrapper /deep/ .el-input-group__prepend {
-    height: 45px;
-    line-height: 45px;
-    padding-left: 15px;
-    padding-right: 10px;
-    background: #F5F7FA;
-    border-radius: 12px 0px 0px 12px;
-    border: 0px;
-  }
-  .left-content /deep/ .el-menu {
-    border-top-left-radius: 12px;
+
+  .left-content /deep/ .el-menu-item {
+    padding: 0 10px 0px 20px;
   }
   .left-content /deep/ .el-menu-item.is-active {
     border-left: 2px solid #65A7FF;
+  }
+  .left-content /deep/ .menu-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .menu-content-name {
+      width: 168px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .menu-content-icon {
+      flex: 1;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: right;
+    }
   }
 </style>
