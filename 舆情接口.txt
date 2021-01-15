@@ -3,7 +3,7 @@
 -- post发送接口
 {
 	userid: 'xxxx'
-	name:
+	name: 'xxxxx'
 	monitorwords:{
 		company: ['xxxx'],
 		staff: ['tom'],
@@ -58,6 +58,7 @@
 -- get 发送查询接口(分页查询)
 {
 	userid: 'xxxx'，
+	caseid: 'xxxxx'
 	type: '全部'      // 预警，收藏
  	date: 'xxxx',
 	datesrc: 'xxx',
@@ -73,6 +74,7 @@
 {
    allsum: 1314,
    filtersum: 314,
+   caseid: 'xxxxx',  // 监控方案id
    data: [
      {
 	     id: 'xxxx'
