@@ -1,102 +1,168 @@
-1.监控方案保存配置接口
-
--- post发送接口
+1.保存监控方案配置接口
+post发送http接口
+http://10.45.150.181:9876/osintelligence/dataset/saveMonitorCase
 {
-	userid: 'xxxx'
-	name: 'xxxxx'
-	monitorwords:{
-		company: ['xxxx'],
-		staff: ['tom'],
-		org: ['xxx'],
-		business: ['xxx'],
-		technology: ['xxx'],
-	}，
-	excludewords: {
-		words: ['xxxx']
-	}，
-	alarmmode: {
-		words: ['xxxx'],
-		mediawords: ['xxxx'],
-		author: ['xxxx']
-	}
-}
--- 返回接口
+????    userid: 'xxxx'
+	    name: '南京中新赛克科技有限公司监控方案'
+	    monitorwords:{
+		   company: ['南京中新赛克有限责任有限公司','南京中新赛克'],
+		   staff: ['凌东胜', '王明意'],
+		   org: ['南京中新赛克有限责任公司北京分公司','南京中新赛克有限责任北京分公司'],
+		   business: ['计算机软件'],
+		   technology: ['java','c++'],
+	    }，
+	    excludewords: {
+		   words: ['排除词1']
+	    }，
+	    alarmmode: {
+		   words: ['冻结', '处罚'],
+		   mediawords: ['新浪微博'],
+		   author: ['李嘉诚']
+	    }
 
-
-2.监控方案树查询接口
-
--- get 发送查询接口
-{
-	userid: 'xxxx'
 }
 
 
--- 返回接口
+Post 返回接口
 {
-  caseinfo: [
-    {id: xxx，name: '监控方案1'}，
-	{id: xxx，name: '监控方案2'}，
-	{id: xxx，name: '监控方案3'}，
-	{id: xxx，name: '监控方案4'}
-  ]
-}
-
-3.监控方案删除接口
--- get 发送查询接口
-{
-    userid: 'xxxx'
-	id: 'xxxx'
+????"errcode": "400",
+????"errmsg": "数据请求响应成功",
 }
 
 
--- 返回接口
-
-
-
-4.舆情列表接口
-
--- get 发送查询接口(分页查询)
+2.查询监控树方案接口
+get 发送查询左侧接口
+http://10.45.150.181:9876/osintelligence/dataset/getAllDataMonitorCase userid=’xxxxx’
 {
-	userid: 'xxxx'，
-	caseid: 'xxxxx'
-	type: '全部'      // 预警，收藏
- 	date: 'xxxx',
-	datesrc: 'xxx',
-	noisefilter: 'xxxx',
-	importantevent: 'xxx',
-	emotionalori: 'xxxx',
-	duplicateinfo: 'xxxx',
-	order: 'desc'  // 排序方式
+????userid: 'xxxx'  // 用户id
 }
 
 
--- 返回接口
+get返回接口
 {
-   allsum: 1314,
-   filtersum: 314,
-   caseid: 'xxxxx',  // 监控方案id
-   data: [
-     {
-	     id: 'xxxx'
-		 type: '中性'，
-		 abstract: '对目前行情把握不准确',
-		 content: '这里说新闻信息的摘要，很很长很很长很很长很，最多2行以省略号展示。。。。。不超过120字',
-		 eventtags: ['重大事件1', '重大事件2', '重大事件3'],
-		 keywordtags: ['关键词1', '关键词2', '关键词3'],
-		 infosrc: '新浪微博',
-		 headline: '老黄看市',
-		 date: '2021-01-07 12:00:00'
-     },
-	 {
-	     id: 'xxxx',
-		 type: '中性'，
-		 abstract: '对目前行情把握不准确',
-		 content: '这里说新闻信息的摘要，很很长很很长很很长很，最多2行以省略号展示。。。。。不超过120字',
-		 eventtags: ['重大事件1', '重大事件2', '重大事件3'],
-		 keywordtags: ['关键词1', '关键词2', '关键词3'],
-		 infosrc: '新浪微博',
-		 headline: '老黄看市',
-		 date: '2021-01-07 12:00:00'
-     }
-   ]
+????"errcode": "400",
+????"errmsg": "数据请求响应成功",
+????"data": {
+?????? caseinfo: [
+          {id: '监控方案1'，name: '监控方案1'}，
+	     {id: '监控方案2'，name: '监控方案2'}，
+	     {id: '监控方案3'，name: '监控方案3'}，
+	     {id: '监控方案4'，name: '监控方案4'}
+       ]
+????}
+}
+
+
+3.查询监控方案配置详情接口
+
+get 发送查询接口
+http://10.45.150.181:9876/osintelligence/dataset/getMonitorCase userid=’xxxx’&id=’xxxx’
+{
+	 id: 'xxxx'   // 监控方案id
+      userid: 'xxxx'  // 用户id
+}
+
+
+get返回接口
+{
+????"errcode": "400",
+"errmsg": "数据请求响应成功",
+????"data": {
+????????name: '南京中新赛克科技有限公司监控方案'
+	    monitorwords:{
+		   company: ['南京中新赛克有限责任有限公司','南京中新赛克'],
+		   staff: ['凌东胜', '王明意'],
+		   org: ['南京中新赛克有限责任公司北京分公司','南京中新赛克有限责任北京分公司'],
+		   business: ['计算机软件'],
+		   technology: ['java','c++'],
+	    }，
+	    excludewords: {
+		   words: ['排除词1']
+	    }，
+	    alarmmode: {
+		   words: ['冻结', '处罚'],
+		   mediawords: ['新浪微博'],
+		   author: ['李嘉诚']
+	    }
+????}
+}
+
+
+
+4.删除监控方案接口
+get 发送查询接口
+http://10.45.150.181:9876/osintelligence/dataset/delMonitorCase userid=’xxxx’&id=’xxxx’
+{
+???? userid: 'xxxx'   // 用户id
+	 id: 'xxxx'   // 监控方案id
+}
+
+
+get 返回接口
+{
+????"errcode": "400",
+????"errmsg": "数据请求响应成功",
+}
+
+
+5.查询舆情详情信息列表接口
+post 查询接口(分页查询)
+http://10.45.150.181:9876/osintelligence/dataset/getDataDetailByCondition
+{
+????"page": 1,
+"rows": 10,
+userid: 'xxxx'，
+????"conditions": {
+	    caseid: 'xxxxx'
+	    type: '全部'      // 预警，收藏
+ 	    date: {   //timestamp时间格式
+  startdate: '20210115454545',
+enddate: '20210115458888'
+},
+	    eventsrc: '微信',
+	    noisefilter: '精准舆情',
+	    importantevent: '含重大事件',
+	    emotionalori: '正向',
+	    duplicateinfo: '不去重',
+	    order: 'desc'  // 排序方式
+????}
+}
+
+
+post 返回查询接口(分页查询)
+{
+????"errcode": "400",
+"errmsg": "数据请求响应成功",
+????"data": {
+????????caseid: 'xxxxx',  // 监控方案id
+         total: 1314,
+         filtertotal: 314,????????
+         "rows": [
+????????????{
+????????????????id: 'xxxx',
+		        type: '中性'，
+		        title: '对目前行情把握不准确',
+		        samecase: '相似舆情：2条',
+		        content: '这里说新闻信息的摘要，很很长很很长很很长很，最多2行以省略号展示。。。。。不超过120字',
+		        eventtags: ['重大事件1', '重大事件2', '重大事件3'],
+		        keywordtags: ['关键词1', '关键词2', '关键词3'],
+		        infosrc: '新浪微博',
+		        headline: '老黄看市',
+		        date: '2021-01-07 12:00:00'
+????????????},
+????????????{
+????????????????id: 'xxxx',
+		        type: '中性'，
+		        title: '对目前行情把握不准确',
+		        samecase: '相似舆情：2条',
+		        content: '这里说新闻信息的摘要，很很长很很长很很长很，最多2行以省略号展示。。。。。不超过120字',
+		        eventtags: ['重大事件1', '重大事件2', '重大事件3'],
+		        keywordtags: ['关键词1', '关键词2', '关键词3'],
+		        infosrc: '新浪微博',
+		        headline: '老黄看市',
+		        date: '2021-01-07 12:00:00'
+????????????},
+
+????????]
+????}
 }
