@@ -1,0 +1,100 @@
+1.监控方案保存配置接口
+
+-- post发送接口
+{
+	userid: 'xxxx'
+	name:
+	monitorwords:{
+		company: ['xxxx'],
+		staff: ['tom'],
+		org: ['xxx'],
+		business: ['xxx'],
+		technology: ['xxx'],
+	}，
+	excludewords: {
+		words: ['xxxx']
+	}，
+	alarmmode: {
+		words: ['xxxx'],
+		mediawords: ['xxxx'],
+		author: ['xxxx']
+	}
+}
+-- 返回接口
+
+
+2.监控方案树查询接口
+
+-- get 发送查询接口
+{
+	userid: 'xxxx'
+}
+
+
+-- 返回接口
+{
+  caseinfo: [
+    {id: xxx，name: '监控方案1'}，
+	{id: xxx，name: '监控方案2'}，
+	{id: xxx，name: '监控方案3'}，
+	{id: xxx，name: '监控方案4'}
+  ]
+}
+
+3.监控方案删除接口
+-- get 发送查询接口
+{
+    userid: 'xxxx'
+	id: 'xxxx'
+}
+
+
+-- 返回接口
+
+
+
+4.舆情列表接口
+
+-- get 发送查询接口(分页查询)
+{
+	userid: 'xxxx'，
+	type: '全部'      // 预警，收藏
+ 	date: 'xxxx',
+	datesrc: 'xxx',
+	noisefilter: 'xxxx',
+	importantevent: 'xxx',
+	emotionalori: 'xxxx',
+	duplicateinfo: 'xxxx',
+	order: 'desc'  // 排序方式
+}
+
+
+-- 返回接口
+{
+   allsum: 1314,
+   filtersum: 314,
+   data: [
+     {
+	     id: 'xxxx'
+		 type: '中性'，
+		 abstract: '对目前行情把握不准确',
+		 content: '这里说新闻信息的摘要，很很长很很长很很长很，最多2行以省略号展示。。。。。不超过120字',
+		 eventtags: ['重大事件1', '重大事件2', '重大事件3'],
+		 keywordtags: ['关键词1', '关键词2', '关键词3'],
+		 infosrc: '新浪微博',
+		 headline: '老黄看市',
+		 date: '2021-01-07 12:00:00'
+     },
+	 {
+	     id: 'xxxx',
+		 type: '中性'，
+		 abstract: '对目前行情把握不准确',
+		 content: '这里说新闻信息的摘要，很很长很很长很很长很，最多2行以省略号展示。。。。。不超过120字',
+		 eventtags: ['重大事件1', '重大事件2', '重大事件3'],
+		 keywordtags: ['关键词1', '关键词2', '关键词3'],
+		 infosrc: '新浪微博',
+		 headline: '老黄看市',
+		 date: '2021-01-07 12:00:00'
+     }
+   ]
+}
