@@ -14,8 +14,12 @@
             <div class="headline">
               <el-checkbox v-model="checked" style="margin-right: 20px;"/>
               <el-tag size="mini">中性</el-tag>
-              <span class="name">对目前行情把握不准确</span>
-              <span class="num">相似舆情：2条</span>
+              <div class="text-wrapper">
+                <div class="text">
+                  <span class="name">对目前行情把握不准确</span>
+                  <span class="num">相似舆情：2条</span>
+                </div>
+              </div>
             </div>
             <div class="content-wrapper">
               <div class="one-content">
@@ -83,5 +87,82 @@ export default {
 .main-wapper {
   height: 100%;
   width: 100%;
+  .action-type {
+
+  }
+  .detail-infos-wrapper {
+    width: 100%;
+    margin-top: 30px;
+    .single-detail-info {
+      width: 100%;
+      .headline {
+        width: 100%;
+        .text-wrapper {
+          display: inline-block;
+          margin-left: 10px;
+          width: calc(100% - 100px);
+          .text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .name {
+              width: 200px;
+              font-family: PingFangSC-Medium;
+              font-size: 14px;
+              color: rgba(0,0,0,0.65);
+              text-align: left;
+              line-height: 22px;
+            }
+            .num {
+              flex: 1;
+              font-family: PingFangSC-Medium;
+              font-size: 14px;
+              color: #5075E7;
+              text-align: right;
+              line-height: 22px;
+            }
+          }
+        }
+      }
+      .content-wrapper {
+        width: 100%;
+        padding: 0px 30px 0px 30px;
+        .one-content {
+          width: calc(100% - 60px);
+          font-family: PingFangSC-Regular;
+          font-size: 14px;
+          color: rgba(0,0,0,0.45);
+          text-align: left;
+          line-height: 22px;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+        }
+        .two-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          .part-one {
+            flex: 1;
+          }
+          .part-two {
+            flex: 1;
+          }
+        }
+        .three-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          .part-one {
+            flex: 1;
+          }
+          .part-two {
+            flex: 1;
+          }
+        }
+      }
+    }
+  }
 }
 </style>

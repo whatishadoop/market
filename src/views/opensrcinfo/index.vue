@@ -131,7 +131,7 @@ export default {
   },
   data() {
     return {
-      activeName: 'five',
+      activeName: 'first',
       input: '',
       type: '全部',
       icons: ['el-icon-menu', 'el-icon-mic', 'el-icon-view', 'el-icon-tickets', 'el-icon-link'],
