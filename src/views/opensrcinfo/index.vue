@@ -131,7 +131,7 @@ export default {
   },
   data() {
     return {
-      activeName: 'first',
+      activeName: 'five',
       input: '',
       type: '全部',
       icons: ['el-icon-menu', 'el-icon-mic', 'el-icon-view', 'el-icon-tickets', 'el-icon-link'],
@@ -276,7 +276,7 @@ export default {
 <style type="text/scss" rel="stylesheet/scss" lang="scss" scoped>
   .main-wapper {
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 58px);
     display: flex;
     flex-direction: column;
     .main-content {
@@ -310,6 +310,7 @@ export default {
           }
         }
         .right-content {
+          height: calc(100% - 88px);
           margin-left: 10px;
           flex: 1;
           border-radius: 12px;
@@ -331,6 +332,7 @@ export default {
           .search-wrapper {
             background-color: #FFFFFF;
             border-radius: 12px;
+            height: 100%;
           }
         }
       }
