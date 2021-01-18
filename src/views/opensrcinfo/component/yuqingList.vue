@@ -202,7 +202,7 @@ export default {
       position: relative;
       .data-info {
         position: absolute;
-        top: 0px;
+        top: 5px;
         right: 0px;
         width: 470px;
         height: 28px;
