@@ -5,24 +5,28 @@
       <div class="main-content">
         <div class="ability-wrapper">
           <div class="left-content">
-            <div class="headline">
-              <div class="name"><span style="font-size: 16px;font-weight: bold;font-family: PingFangSC-Semibold;color: #333436;letter-spacing: 0;">监控方案</span></div>
-              <div class="create"><i class="el-icon-circle-plus" style="font-size: 20px;"></i></div>
-            </div>
-            <el-menu
-              :default-active="type"
-              class="el-menu-vertical-demo" @select="handleSelect">
-              <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index" :index="item.type">
-                <div class="menu-content-wrapper">
-                  <div class="menu-content-name">
-                    <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.type}}</span>
+            <el-scrollbar style="height:100%;">
+              <div class="headline">
+                <div class="name"><span style="font-size: 16px;font-weight: bold;font-family: PingFangSC-Semibold;color: #333436;letter-spacing: 0;">监控方案</span></div>
+                <div class="create"><i class="el-icon-circle-plus" style="font-size: 20px;"></i></div>
+              </div>
+              <el-menu
+                :default-active="type"
+                class="el-menu-vertical-demo"
+                style="overflow-y: hidden"
+                @select="handleSelect">
+                <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index" :index="item.type">
+                  <div class="menu-content-wrapper">
+                    <div class="menu-content-name">
+                      <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.name}}</span>
+                    </div>
+                    <div class="menu-content-icon">
+                      <i @click="deleteCaseById(item.id)" class="el-icon-delete"></i>
+                    </div>
                   </div>
-                  <div class="menu-content-icon">
-                    <i class="el-icon-delete"></i>
-                  </div>
-                </div>
-              </el-menu-item>
-            </el-menu>
+                </el-menu-item>
+              </el-menu>
+            </el-scrollbar>
           </div>
           <div class="right-content">
             <div class="monitor-name-wrapper">
@@ -31,7 +35,11 @@
             </div>
             <div class="search-wrapper">
               <el-tabs v-model="activeName" type="card">
-                <el-tab-pane label="舆情列表" name="first"><yuqingList></yuqingList></el-tab-pane>
+                <el-tab-pane label="舆情列表" name="first">
+                  <keep-alive>
+                    <yuqingList :caseid="caseid"></yuqingList>
+                  </keep-alive>
+                </el-tab-pane>
                 <el-tab-pane label="舆情分析" name="second">舆情分析</el-tab-pane>
                 <el-tab-pane label="舆情预警" name="third">舆情预警</el-tab-pane>
                 <el-tab-pane label="舆情事件" name="fourth">舆情事件</el-tab-pane>
@@ -42,71 +50,10 @@
         </div>
       </div>
     </div>
-    <!--对话框-->
-    <el-dialog title="购买授权码" :visible.sync="dialogFormVisible" :left="true" width="880px" :before-close="handleDialogClose">
-      <div class="ability-detail-wrapper">
-        <div class="ability-content-wrapper">
-          <div class="logo-detail">
-            <svg-icon :icon-class="abilituitem.iconUrl" style="height: 100px;width: 100px;"/>
-          </div>
-          <div class="detail">
-            <div class="name"><span class="text-one">{{abilituitem.name}}</span></div>
-            <div class="desc"><span class="text-two">{{abilituitem.detail}}</span></div>
-            <div class="purchase-info-wrapper">
-              <div class="price"><span class="text-three">￥{{abilituitem.currentPrice}} </span><span class="sub-text-three">{{abilituitem.originalPrice}}</span></div>
-              <div class="duration"><span class="content">{{abilituitem.useTimeDesc}}</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="ability-authcode-wrapper">
-          <div class="account-key-wrapper">
-            <div class="title">
-              <div>
-                <span>账号密钥：</span>
-              </div>
-              <el-button size="small" type="primary" style="color: transparent;background-color: transparent;border: 0px;">下载授权码</el-button>
-              <el-button type="primary" size="small" style="color: transparent;background-color: transparent;border: 0px;">一键复制</el-button>
-            </div>
-            <div class="account-key">
-              <el-input
-                type="textarea"
-                :rows="11"
-                placeholder="请输入您的账号密钥，账号密钥在OceanMind系统内“功能授权弹窗”的顶部哦～"
-                v-model="textarea1">
-              </el-input>
-            </div>
-          </div>
-          <div class="creat-btn-wrapper">
-            <el-button type="primary" size="small" @click="genCode">生成授权码</el-button>
-          </div>
-          <div class="auth-code-wrapper">
-            <div class="title">
-              <div>
-                <span>授权码：</span>
-              </div>
-              <div><el-button size="small" type="primary" @click="downGenCode">下载授权码</el-button><el-button type="primary" size="small" @click="copy">一键复制</el-button></div>
-            </div>
-            <div class="auth-code">
-              <el-input
-                type="textarea"
-                :rows="11"
-                placeholder="请输入内容"
-                v-model="textarea2">
-              </el-input>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancelPurchase" size="small">取消购买</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-import { getAllFunctionTypes, getAllFunctionDetails, getFunctionDetailByCondition, getAllTypesByCondition, getFuncCode, downloadFuncCode } from '@/api/abilitymarket/function'
-import { getToken, setToken } from '@/utils/auth'
 import yuqingList from './component/yuqingList'
 import caseConfig from './component/caseConfig'
 
@@ -116,11 +63,6 @@ export default {
     caseConfig
   },
   computed: {
-    functionDetailsByType () {
-      return function(type) {
-        return this.allFunctions.filter(item => item.type === type)
-      }
-    },
     functionTypes() {
       if (this.type === '全部') {
         return this.allFunctionTypes.filter(item => item.type !== this.type)
@@ -131,34 +73,56 @@ export default {
   },
   data() {
     return {
-      activeName: 'five',
+      activeName: 'first',
       input: '',
+      caseid: '',
       type: '全部',
-      icons: ['el-icon-menu', 'el-icon-mic', 'el-icon-view', 'el-icon-tickets', 'el-icon-link'],
-      // 所有能力包信息
-      allFunctions: [],
       // 获取所有能力类型信息
-      allFunctionTypes: [],
-      // 需求反馈对话框
-      dialogFormVisible: false,
-      abilituitem: {},
-      textarea1: '',
-      textarea2: ''
+      allFunctionTypes: [
+        {
+          name: '南京中新赛克科技有限责任公司监控方案',
+          id: 22
+        },
+        {
+          name: '监控方案1',
+          id: 11
+        },
+        {
+          name: '监控方案2',
+          id: 6
+        },
+        {
+          name: '监控方案3',
+          id: 2
+        },
+        {
+          name: '监控方案4',
+          id: 3
+        },
+        {
+          name: '南京中新赛克科技有限责任公司监控方案',
+          id: 22
+        },
+        {
+          name: '监控方案1',
+          id: 11
+        },
+        {
+          name: '监控方案2',
+          id: 6
+        },
+        {
+          name: '监控方案3',
+          id: 2
+        },
+        {
+          name: '监控方案4',
+          id: 3
+        }
+      ]
     }
   },
   created() {
-    let that = this
-    document.onkeypress = function(e) {
-      let keycode = document.all ? event.keyCode : e.which
-      if (keycode === 13) {
-        that.getFunctionDetailByCondition()
-        return false
-      }
-    }
-    this.$nextTick(() => {
-      this.getAllFunctionDetails()
-      this.getAllFunctionTypes()
-    })
   },
   beforeCreate () {
     document.querySelector('body').setAttribute('style', 'background-color: #F0F2F5;')
@@ -167,108 +131,11 @@ export default {
     document.querySelector('body').removeAttribute('style')
   },
   methods: {
-    copy () {
-      this.$copyText(this.textarea2).then(function (e) {
-        this.$message({
-          message: '复制成功',
-          type: 'success'
-        })
-      }, function (e) {
-        this.$message({
-          message: '复制失败',
-          type: 'warning'
-        })
-      })
-    },
-    downGenCode () {
-      if (this.textarea1 === '' || this.textarea1 === null) {
-        this.$message.error('请输入您的账号密钥')
-        return
-      }
-      let data = {
-        key: this.textarea1,
-        funcId: this.abilituitem.functionId,
-        funcName: this.abilituitem.name,
-        days: this.abilituitem.useTime
-      }
-      downloadFuncCode(data).then(res => {
-        window.location.href = res.downLoadPath
-      })
-    },
-    genCode() {
-      if (this.textarea1 === '' || this.textarea1 === null) {
-        this.$message.error('请输入您的账号密钥')
-        return
-      }
-      let data = {
-        key: this.textarea1,
-        funcId: this.abilituitem.functionId,
-        funcName: this.abilituitem.name,
-        days: this.abilituitem.useTime
-      }
-      getFuncCode(data).then(res => {
-        this.textarea2 = res.funcCode
-        // 保存在cookies中，有效期1天
-        setToken(this.textarea1, true)
-      })
-    },
     handleSelect(key, keyPath) {
       this.type = key
     },
-    buyApp(item) {
-      this.abilituitem = item
-      let keyValue = getToken()
-      if (keyValue !== '' || keyValue !== null) {
-        this.textarea1 = keyValue
-      }
-      this.dialogFormVisible = true
-    },
-    getAllFunctionDetails() {
-      const rLoading = this.openLoading()
-      const params = {
-        page: '0',
-        rows: '5000'
-      }
-      getAllFunctionDetails(params).then(res => {
-        this.allFunctions = res.rows
-        rLoading.close()
-      })
-    },
-    getAllFunctionTypes() {
-      getAllFunctionTypes().then(res => {
-        this.allFunctionTypes = res
-      })
-    },
-    getFunctionDetailByCondition() {
-      const rLoading = this.openLoading()
-      const params1 = {
-        condition: this.input
-      }
-      const params2 = {
-        condition: this.input,
-        page: '0',
-        rows: '5000'
-      }
-      getAllTypesByCondition(params1).then(res => {
-        this.allFunctionTypes = res
-      })
-      getFunctionDetailByCondition(params2).then(res => {
-        this.allFunctions = res.rows
-        rLoading.close()
-      })
-    },
-    /**
-     * 点击 X 关闭对话框的回调
-     **/
-    handleDialogClose(done) {
-      this.textarea1 = ''
-      this.textarea2 = ''
-      done()
-    },
-    cancelPurchase() {
-      this.textarea1 = ''
-      this.textarea2 = ''
-      this.dialogFormVisible = false
+    deleteCaseById(caseId) {
+      console.log(caseId)
     }
   }
 }
@@ -291,7 +158,7 @@ export default {
         box-sizing: border-box;
         .left-content {
           width: 252px;
-          flex: 0 1 252px;
+          height: calc(100vh - 88px);
           background: #FFFFFF;
           border-radius: 12px;
           .headline {

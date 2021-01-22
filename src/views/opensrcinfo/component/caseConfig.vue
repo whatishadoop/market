@@ -3,7 +3,7 @@
       <div class="main-wrapper">
         <el-scrollbar style="height:100%;">
           <div class="case-name-wrapper">
-            <el-input v-model="input" placeholder="请输入内容" style="margin-right: 10px;"></el-input><el-button size="small" type="primary">确定</el-button>
+            <el-input v-model="name" placeholder="请输入内容" style="margin-right: 10px;"></el-input><el-button size="small" type="primary">确定</el-button>
           </div>
           <div class="word-monitor-wrapper">
             <div class="word-monitor">
@@ -25,20 +25,20 @@
                         v-for="tag in monitorwords.company"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[0])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'company'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="company"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[0])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[0])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -54,20 +54,20 @@
                         v-for="tag in monitorwords.staff"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[1])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'staff'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="staff"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[1])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[1])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -83,20 +83,20 @@
                         v-for="tag in monitorwords.sub_company"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[2])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'subcompany'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="subcompany"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[2])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[2])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -112,20 +112,20 @@
                         v-for="tag in monitorwords.industry"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[3])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'industry'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="industry"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[3])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[3])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -141,20 +141,20 @@
                         v-for="tag in monitorwords.technology"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[4])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'technology'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="technology"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[4])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[4])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                 </el-col>
@@ -181,20 +181,20 @@
                         v-for="tag in excludewords.words"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[5])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'excludewords'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="excludewords"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[5])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[5])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                 </el-col>
@@ -221,20 +221,20 @@
                         v-for="tag in alarmmode.words"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[6])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'alarmwords'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="alarmwords"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[6])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[6])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -250,20 +250,20 @@
                         v-for="tag in alarmmode.mediawords"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[7])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'mediawords'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="mediawords"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[7])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[7])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -279,20 +279,20 @@
                         v-for="tag in alarmmode.author"
                         closable
                         :disable-transitions="false"
-                        @close="handleClose(tag)">
+                        @close="handleClose(tag, tagTypes[8])">
                         {{tag}}
                       </el-tag>
                       <el-input
                         class="input-new-tag condition"
-                        v-if="inputVisible"
+                        v-if="inputVisible === 'author'"
                         v-model="inputValue"
-                        ref="saveTagInput"
+                        ref="author"
                         size="small"
                         @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm"
+                        @blur="handleInputConfirm(tagTypes[8])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[8])(tagType)" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                 </el-col>
@@ -300,7 +300,7 @@
             </div>
           </div>
           <div class="action-btn-wrapper">
-            <el-button size="small" type="primary">开始监控</el-button><el-button size="small" type="primary">保存</el-button><el-button size="small">返回</el-button>
+            <el-button size="small" type="primary">开始监控</el-button><el-button @click="saveConfigInfo" size="small" type="primary">保存</el-button><el-button size="small">返回</el-button>
           </div>
         </el-scrollbar>
       </div>
@@ -311,46 +311,109 @@
 export default {
   data() {
     return {
-      input: '南京中新赛克科技有限公司监控方案',
-      monitorwords:{
-        company: ['南京中新赛克有限责任有限公司','南京中新赛克'],
+      userid: 'admin',
+      name: '南京中新赛克科技有限公司监控方案',
+      monitorwords: {
+        company: ['南京中新赛克有限责任有限公司', '南京中新赛克'],
         staff: ['凌东胜', '王明意'],
-        sub_company: ['南京中新赛克有限责任公司北京分公司','南京中新赛克有限责任北京分公司'],
+        sub_company: ['南京中新赛克有限责任公司北京分公司', '南京中新赛克有限责任北京分公司'],
         industry: ['计算机软件'],
-        technology: ['java','c++']
+        technology: ['java', 'c++']
       },
       excludewords: {
         words: ['排除词1']
       },
-	    alarmmode: {
+      alarmmode: {
         words: ['冻结', '处罚'],
         mediawords: ['新浪微博'],
         author: ['李嘉诚']
       },
+      tagTypes: ['company', 'staff', 'subcompany', 'industry', 'technology', 'excludewords', 'alarmwords', 'mediawords', 'author'],
       date: '',
       activeName: 'first',
-      dynamicTags: ['标签一', '标签二', '标签三'],
-      inputVisible: false,
+      inputVisible: '',
       inputValue: ''
     }
   },
   methods: {
-    handleClose(tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+    handleClose(tag, tagType) {
+      if (tagType === 'company') {
+        this.monitorwords.company.splice(this.monitorwords.company.indexOf(tag), 1)
+      } else if (tagType === 'staff') {
+        this.monitorwords.staff.splice(this.monitorwords.staff.indexOf(tag), 1)
+      } else if (tagType === 'subcompany') {
+        this.monitorwords.sub_company.splice(this.monitorwords.sub_company.indexOf(tag), 1)
+      } else if (tagType === 'industry') {
+        this.monitorwords.industry.splice(this.monitorwords.industry.indexOf(tag), 1)
+      } else if (tagType === 'technology') {
+        this.monitorwords.technology.splice(this.monitorwords.technology.indexOf(tag), 1)
+      } else if (tagType === 'excludewords') {
+        this.excludewords.words.splice(this.excludewords.words.indexOf(tag), 1)
+      } else if (tagType === 'alarmwords') {
+        this.alarmmode.words.splice(this.alarmmode.words.indexOf(tag), 1)
+      } else if (tagType === 'mediawords') {
+        this.alarmmode.mediawords.splice(this.alarmmode.mediawords.indexOf(tag), 1)
+      } else if (tagType === 'author') {
+        this.alarmmode.author.splice(this.alarmmode.author.indexOf(tag), 1)
+      }
     },
-    showInput() {
-      this.inputVisible = true
+    showInput(tagType) {
+      this.inputVisible = tagType
       this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus()
+        this.$refs[tagType].$refs.input.focus()
       })
     },
-    handleInputConfirm() {
+    handleInputConfirm(tagType) {
       let inputValue = this.inputValue
       if (inputValue) {
-        this.dynamicTags.push(inputValue)
+        if (tagType === 'company') {
+          this.monitorwords.company.push(inputValue)
+        } else if (tagType === 'staff') {
+          this.monitorwords.staff.push(inputValue)
+        } else if (tagType === 'subcompany') {
+          this.monitorwords.sub_company.push(inputValue)
+        } else if (tagType === 'industry') {
+          this.monitorwords.industry.push(inputValue)
+        } else if (tagType === 'technology') {
+          this.monitorwords.technology.push(inputValue)
+        } else if (tagType === 'excludewords') {
+          this.excludewords.words.push(inputValue)
+        } else if (tagType === 'alarmwords') {
+          this.alarmmode.words.push(inputValue)
+        } else if (tagType === 'mediawords') {
+          this.alarmmode.mediawords.push(inputValue)
+        } else if (tagType === 'author') {
+          this.alarmmode.author.push(inputValue)
+        }
       }
-      this.inputVisible = false
+      this.inputVisible = ''
       this.inputValue = ''
+    },
+    saveConfigInfo() {
+      let data = {
+        userid: '',
+        name: this.name,
+        monitorwords: {
+          company: this.monitorwords.company,
+          staff: this.monitorwords.staff,
+          sub_company: this.monitorwords.sub_company,
+          industry: this.monitorwords.industry,
+          technology: this.monitorwords.technology
+        },
+        excludewords: {
+          words: this.excludewords.words
+        },
+        alarmmode: {
+          words: this.alarmmode.words,
+          mediawords: this.alarmmode.mediawords,
+          author: this.alarmmode.author
+        }
+      }
+      // 保存配置属性
+      console.log(data)
+    },
+    startMonitor() {
+      // 开启监控
     }
   }
 }
@@ -424,7 +487,8 @@ export default {
     padding-left: 20px;
     padding-right: 5px;
     margin-left: 20px;
-    margin-top: 60px;
+    margin-top: 113px;
+    margin-bottom: 20px;
   }
 }
 </style>

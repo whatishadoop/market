@@ -215,7 +215,7 @@ export default {
         this.isActive = true
         getAllDataPackages(params).then(res => {
           this.dataPackages = res.rows
-          this.total = res.rows.length
+          this.total = res.rows.lengthdate.js
           this.paging()
           rLoading.close()
         })

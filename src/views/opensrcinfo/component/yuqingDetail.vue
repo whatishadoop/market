@@ -44,8 +44,8 @@
                     <span class="text">新浪微博</span><span class="text" style="margin-right: 43px;">老黄看市</span><span class="text">2021-01-07 12:00:00</span>
                   </div>
                   <div class="part-two">
-                    <div class="text">导出 <span style="color: #D8D8D8;">|</span></div>
-                    <div class="text">预警 <span style="color: #D8D8D8;">|</span></div>
+                    <div class="text">预警 <span
+                      style="color: #D8D8D8;">|</span></div>
                     <div class="text">收藏 <span style="color: #D8D8D8;">|</span></div>
                     <div class="text">忽略 <span style="color: #D8D8D8;">|</span></div>
                     <div class="text">修改倾向性</div>
@@ -80,6 +80,21 @@ export default {
       total: 200,
       currentPage: 5,
       pageSize: 20
+    }
+  },
+  props: {
+    conditions: {
+      type: Object,
+      default: () => ({}) // 若page没有传递给子组件，则使用默认值
+    }
+  },
+  methods: {
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`)
+      this.currentPage = val
+      // 向父组件传值
+      this.$emit('e-page', this.currentPage) // 使用$emit()触发一个事件，发送数据，事件名自定义
+      // 发送查询数据conditions
     }
   }
 }

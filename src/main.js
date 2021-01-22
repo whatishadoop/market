@@ -28,6 +28,20 @@ Vue.prototype.openLoading = function() {
   }, 5000)
   return loading
 }
+// 注册一个全局自定义指令 `v-focus`
+Vue.directive('focus', {
+  // 当被绑定的元素插入到 DOM 中时……
+  inserted: function (el) {
+    // 聚焦元素
+    el.focus()
+    // element-ui
+    el.children[0].focus()
+    // 元素有变化，如show或者父元素变化可以加延时或判断
+    setTimeout(_ => {
+      el.children[0].focus()
+    })
+  }
+})
 Vue.config.productionTip = false
 Vue.use(Element)
 new Vue({
