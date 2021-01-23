@@ -3,7 +3,7 @@
       <div class="main-wrapper">
         <el-scrollbar style="height:100%;">
           <div class="case-name-wrapper">
-            <el-input v-model="name" placeholder="请输入内容" style="margin-right: 10px;"></el-input><el-button size="small" type="primary">确定</el-button>
+            <el-input v-model="name" placeholder="请输入内容" style="margin-right: 10px;"></el-input><el-button @click="saveName" size="small" type="primary">确定</el-button>
           </div>
           <div class="word-monitor-wrapper">
             <div class="word-monitor">
@@ -309,6 +309,9 @@
 
 <script type="text/ecmascript-6">
 export default {
+  props: {
+    caseid: String
+  },
   data() {
     return {
       userid: 'admin',
@@ -336,6 +339,11 @@ export default {
     }
   },
   methods: {
+    saveName() {
+      // 1.向后台发送保存公司名请求
+      // 2.向父组件传值
+      this.$emit('e-name', this.name) // 使用$emit()触发一个事件，发送数据，事件名自定义
+    },
     handleClose(tag, tagType) {
       if (tagType === 'company') {
         this.monitorwords.company.splice(this.monitorwords.company.indexOf(tag), 1)
@@ -437,7 +445,7 @@ export default {
 }
 .main-wrapper {
   width: 100%;
-  height: calc(100vh - 218px);
+  height: calc(100vh - 240px);
   .case-name-wrapper {
     width: 400px;
     display: flex;

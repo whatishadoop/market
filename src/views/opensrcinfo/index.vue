@@ -11,11 +11,12 @@
                 <div class="create"><i class="el-icon-circle-plus" style="font-size: 20px;"></i></div>
               </div>
               <el-menu
+                v-if="isNewCreate"
                 :default-active="type"
                 class="el-menu-vertical-demo"
                 style="overflow-y: hidden"
                 @select="handleSelect">
-                <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index" :index="item.type">
+                <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index" :index="item.id">
                   <div class="menu-content-wrapper">
                     <div class="menu-content-name">
                       <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.name}}</span>
@@ -26,26 +27,42 @@
                   </div>
                 </el-menu-item>
               </el-menu>
+              <div v-if="!isNewCreate" class="creat-btn-wrapper">
+                <img :src="backgroundImage" class="image-size">
+                <el-button type="primary" style="width: 200px;height: 32px;margin-top: 21px;padding: 0px;"><span class="create-btn">立即新增</span></el-button>
+              </div>
             </el-scrollbar>
           </div>
           <div class="right-content">
-            <div class="monitor-name-wrapper">
-              <div class="name"><span style="font-family: PingFangSC-Semibold;font-size: 20px;color: #FFFFFF;">南京中新赛克责任有限公司</span></div>
-              <div class="date"><span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">最后更新时间: 2020-03-02</span></div>
-            </div>
-            <div class="search-wrapper">
-              <el-tabs v-model="activeName" type="card">
-                <el-tab-pane label="舆情列表" name="first">
-                  <keep-alive>
-                    <yuqingList :caseid="caseid"></yuqingList>
-                  </keep-alive>
-                </el-tab-pane>
-                <el-tab-pane label="舆情分析" name="second">舆情分析</el-tab-pane>
-                <el-tab-pane label="舆情预警" name="third">舆情预警</el-tab-pane>
-                <el-tab-pane label="舆情事件" name="fourth">舆情事件</el-tab-pane>
-                <el-tab-pane label="方案设置" name="five"><caseConfig></caseConfig></el-tab-pane>
-              </el-tabs>
-            </div>
+            <template v-if="isNewCreate">
+              <div class="monitor-name-wrapper">
+                <div class="name"><span style="font-family: PingFangSC-Semibold;font-size: 20px;color: #FFFFFF;">{{name}}</span></div>
+                <div class="date"><span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">数据截止：{{date}}</span></div>
+              </div>
+              <div class="search-wrapper">
+                <el-tabs v-model="activeName" type="card">
+                  <el-tab-pane label="舆情列表" name="first">
+                    <defaultNoData v-if="isNewCreate"></defaultNoData>
+                    <yuqingList v-else :caseid="caseid"></yuqingList>
+                  </el-tab-pane>
+                  <el-tab-pane label="舆情分析" name="second">
+                    <defaultNoData></defaultNoData>
+                  </el-tab-pane>
+                  <el-tab-pane label="舆情预警" name="third">
+                    <defaultNoData></defaultNoData>
+                  </el-tab-pane>
+                  <el-tab-pane label="舆情事件" name="fourth">
+                    <defaultNoData></defaultNoData>
+                  </el-tab-pane>
+                  <el-tab-pane label="方案设置" name="five"><caseConfig :caseid="caseid" @e-name="renameCompany"></caseConfig></el-tab-pane>
+                </el-tabs>
+              </div>
+            </template>
+            <template v-if="!isNewCreate">
+              <div class="blank-data-wrapper">
+                <img :src="backgroundImage2" class="image-size">
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -55,28 +72,26 @@
 
 <script type="text/ecmascript-6">
 import yuqingList from './component/yuqingList'
+import defaultNoData from './component/defaultNoData'
 import caseConfig from './component/caseConfig'
-
+import backgroundImage from '@/assets/fangan.png'
+import backgroundImage2 from '@/assets/shuju.png'
 export default {
   components: {
     yuqingList,
-    caseConfig
-  },
-  computed: {
-    functionTypes() {
-      if (this.type === '全部') {
-        return this.allFunctionTypes.filter(item => item.type !== this.type)
-      } else {
-        return this.allFunctionTypes.filter(item => item.type === this.type)
-      }
-    }
+    caseConfig,
+    defaultNoData
   },
   data() {
     return {
+      isNewCreate: true,
+      name: '未命名',
+      date: '暂无时间', // 2020-01-07  14:13:14
+      backgroundImage: backgroundImage,
+      backgroundImage2: backgroundImage2,
       activeName: 'first',
       input: '',
       caseid: '',
-      type: '全部',
       // 获取所有能力类型信息
       allFunctionTypes: [
         {
@@ -84,31 +99,11 @@ export default {
           id: 22
         },
         {
-          name: '监控方案1',
+          name: '金琳涵是学神',
           id: 11
         },
         {
-          name: '监控方案2',
-          id: 6
-        },
-        {
-          name: '监控方案3',
-          id: 2
-        },
-        {
-          name: '监控方案4',
-          id: 3
-        },
-        {
-          name: '南京中新赛克科技有限责任公司监控方案',
-          id: 22
-        },
-        {
-          name: '监控方案1',
-          id: 11
-        },
-        {
-          name: '监控方案2',
+          name: '金琳涵不要骄傲',
           id: 6
         },
         {
@@ -131,11 +126,34 @@ export default {
     document.querySelector('body').removeAttribute('style')
   },
   methods: {
+    handleNewCreate(size) {
+      // 根据当前用户名查询对应的方案列表，若size数量为0，则显示新建状态
+      this.isNewCreate = true
+    },
+    renameCompany(name) {
+      this.name= nanme
+    },
     handleSelect(key, keyPath) {
-      this.type = key
+      this.caseid = key
+      alert(this.caseid)
     },
     deleteCaseById(caseId) {
-      console.log(caseId)
+      this.$confirm('此操作将删除该监控方案, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 向后台发送删除请求
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
@@ -175,12 +193,43 @@ export default {
               font-size: 14px;
             }
           }
+          .creat-btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 53px;
+            .image-size {
+              height: 139px;
+              width: 235px;
+              object-fit: contain;
+            }
+            .create-btn {
+              font-family: PingFangSC-Regular;
+              font-size: 14px;
+              color: #FFFFFF;
+              text-align: center;
+            }
+          }
         }
         .right-content {
-          height: calc(100% - 88px);
+          height: calc(100vh - 88px);
           margin-left: 10px;
           flex: 1;
           border-radius: 12px;
+          .blank-data-wrapper {
+            height: 100%;
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .image-size {
+              height: 285px;
+              width: 482px;
+              object-fit: contain;
+            }
+          }
           .monitor-name-wrapper {
             height: 73px;
             margin-bottom: 15px;
@@ -199,7 +248,7 @@ export default {
           .search-wrapper {
             background-color: #FFFFFF;
             border-radius: 12px;
-            height: 100%;
+            height: calc(100% - 88px);
           }
         }
       }

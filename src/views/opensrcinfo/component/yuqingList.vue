@@ -169,7 +169,7 @@ export default {
         importantevent: '',
         emotionalori: '正向',
         duplicateinfo: '不去重',
-        order: 'desc'
+        order: ''
       },
       options: [{
         value: 'asc',
@@ -270,7 +270,7 @@ export default {
 <style type="text/scss" rel="stylesheet/scss" lang="scss" scoped>
 .list-content {
   width: 100%;
-  height: calc(100vh - 218px);
+  height: calc(100vh - 240px);
   .query-area-wrapper {
     height: 100%;
     weight: 100%;
