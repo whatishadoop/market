@@ -10,38 +10,34 @@
           <el-button size="mini" icon="el-icon-edit">修改倾向性</el-button>
         </div>
         <div class="detail-infos-wrapper">
-            <div v-for="o in 4" class="single-detail-info">
+            <div v-for="(item, index) in detailData.rows" class="single-detail-info" :key="item.id">
               <div class="headline">
                 <el-checkbox v-model="checked" style="margin-right: 20px;"/>
-                <el-tag size="mini">中性</el-tag>
+                <el-tag size="mini">{{item.text_sentiment}}</el-tag>
                 <div class="text-wrapper">
                   <div class="text">
-                    <span class="name">对目前行情把握不准确</span>
-                    <span class="num">相似舆情：2条</span>
+                    <span class="name">{{item.title}}</span>
+                    <span class="num">相似舆情：{{item.sim_text_count}}条</span>
                   </div>
                 </div>
               </div>
               <div class="content-wrapper">
                 <div class="one-content">
-                  这里说新闻信息的摘要，可能很长很长很这里说新闻信息的摘要，可能很长很长很这里说新闻信息的摘要，可能很长很长很这里说新闻信息的摘要，可能很长很长很这里说新闻信息的摘要，可能很长很长很很长很很长很很长很很长很很长很很长很很长很很长很很长很很长很很长很很长很很长很，最多2行以省略号展示。。。。。不超过120字
+                  {{item.content}}
                 </div>
                 <div class="two-content">
                   <div class="part-one">
                     <svg-icon icon-class="标签" style="height: 20px;width: 20px;margin-right: 10px;"/>
-                    <el-tag size="small" style="margin-right: 5px;">重大事件1</el-tag>
-                    <el-tag size="small" style="margin-right: 5px;">重大事件2</el-tag>
-                    <el-tag size="small" style="margin-right: 5px;">重大事件3</el-tag>
+                    <el-tag v-for="(event, index) in item.important_events" size="small" style="margin-right: 5px;" :key="index">{{event}}</el-tag>
                   </div>
                   <div class="part-two">
                     <svg-icon icon-class="关键字" style="height: 20px;width: 20px;margin-right: 10px;"/>
-                    <el-tag size="small" style="margin-right: 5px;" type="success" plain>关键字1</el-tag>
-                    <el-tag size="small" style="margin-right: 5px;" type="success" plain>关键字2</el-tag>
-                    <el-tag size="small" style="margin-right: 5px;" type="success" plain>关键字3</el-tag>
+                    <el-tag v-for="(keyword, index) in item.match_key_words" size="small" style="margin-right: 5px;" type="success" plain>{{keyword}}</el-tag>
                   </div>
                 </div>
                 <div class="three-content">
                   <div class="part-one">
-                    <span class="text">新浪微博</span><span class="text" style="margin-right: 43px;">老黄看市</span><span class="text">2021-01-07 12:00:00</span>
+                    <span class="text">{{item.website_name}}</span><span class="text" style="margin-right: 43px;">{{item.publisher}}</span><span class="text">{{item.date}}</span>
                   </div>
                   <div class="part-two">
                     <div class="text">预警 <span
@@ -72,6 +68,12 @@
 
 <script type="text/ecmascript-6">
 export default {
+  props: {
+    detailData: {
+      type: Object,
+      default: () => ({}) // 若page没有传递给子组件，则使用默认值
+    }
+  },
   data() {
     return {
       date: '',
@@ -80,12 +82,6 @@ export default {
       total: 200,
       currentPage: 5,
       pageSize: 20
-    }
-  },
-  props: {
-    conditions: {
-      type: Object,
-      default: () => ({}) // 若page没有传递给子组件，则使用默认值
     }
   },
   methods: {

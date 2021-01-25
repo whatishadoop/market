@@ -6,7 +6,6 @@ import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss' // 全局样式
 import '@/assets/icons' // icon
-
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
 // 开发环境支持mock

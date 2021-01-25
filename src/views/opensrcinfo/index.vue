@@ -8,15 +8,15 @@
             <el-scrollbar style="height:100%;">
               <div class="headline">
                 <div class="name"><span style="font-size: 16px;font-weight: bold;font-family: PingFangSC-Semibold;color: #333436;letter-spacing: 0;">监控方案</span></div>
-                <div class="create"><i class="el-icon-circle-plus" style="font-size: 20px;"></i></div>
+                <div @click="newCase" class="create"><i class="el-icon-circle-plus" style="font-size: 20px;"></i></div>
               </div>
               <el-menu
-                v-if="isNewCreate"
-                :default-active="type"
+                v-if="!isNewCreate"
+                :default-active="caseid"
                 class="el-menu-vertical-demo"
                 style="overflow-y: hidden"
                 @select="handleSelect">
-                <el-menu-item v-for="(item, index) in allFunctionTypes" :key="index" :index="item.id">
+                <el-menu-item v-for="(item, index) in allMonitorCase" :key="index" :index="item.id">
                   <div class="menu-content-wrapper">
                     <div class="menu-content-name">
                       <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.name}}</span>
@@ -27,14 +27,14 @@
                   </div>
                 </el-menu-item>
               </el-menu>
-              <div v-if="!isNewCreate" class="creat-btn-wrapper">
+              <div v-if="isNewCreate" class="creat-btn-wrapper">
                 <img :src="backgroundImage" class="image-size">
-                <el-button type="primary" style="width: 200px;height: 32px;margin-top: 21px;padding: 0px;"><span class="create-btn">立即新增</span></el-button>
+                <el-button @click="creaeCase" type="primary" style="width: 200px;height: 32px;margin-top: 21px;padding: 0px;"><span class="create-btn">立即新增</span></el-button>
               </div>
             </el-scrollbar>
           </div>
           <div class="right-content">
-            <template v-if="isNewCreate">
+            <div v-show="isShowConfigCase">
               <div class="monitor-name-wrapper">
                 <div class="name"><span style="font-family: PingFangSC-Semibold;font-size: 20px;color: #FFFFFF;">{{name}}</span></div>
                 <div class="date"><span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">数据截止：{{date}}</span></div>
@@ -42,8 +42,8 @@
               <div class="search-wrapper">
                 <el-tabs v-model="activeName" type="card">
                   <el-tab-pane label="舆情列表" name="first">
-                    <defaultNoData v-if="isNewCreate"></defaultNoData>
-                    <yuqingList v-else :caseid="caseid"></yuqingList>
+                    <!--<defaultNoData v-if="isNoShowData"></defaultNoData>-->
+                    <yuqingList :caseid="caseid"></yuqingList>
                   </el-tab-pane>
                   <el-tab-pane label="舆情分析" name="second">
                     <defaultNoData></defaultNoData>
@@ -54,15 +54,15 @@
                   <el-tab-pane label="舆情事件" name="fourth">
                     <defaultNoData></defaultNoData>
                   </el-tab-pane>
-                  <el-tab-pane label="方案设置" name="five"><caseConfig :caseid="caseid" @e-name="renameCompany"></caseConfig></el-tab-pane>
+                  <el-tab-pane label="方案设置" name="five">
+                    <caseConfig :caseid="caseid" :is-new-create="isNewCreate" @e-name="renameCompany" @e-addCaseItem="addCaseItem"></caseConfig>
+                  </el-tab-pane>
                 </el-tabs>
               </div>
-            </template>
-            <template v-if="!isNewCreate">
-              <div class="blank-data-wrapper">
-                <img :src="backgroundImage2" class="image-size">
-              </div>
-            </template>
+            </div>
+            <div v-show="!isShowConfigCase" class="blank-data-wrapper">
+              <img :src="backgroundImage2" class="image-size">
+            </div>
           </div>
         </div>
       </div>
@@ -76,6 +76,9 @@ import defaultNoData from './component/defaultNoData'
 import caseConfig from './component/caseConfig'
 import backgroundImage from '@/assets/fangan.png'
 import backgroundImage2 from '@/assets/shuju.png'
+import { getAllDataMonitorCase, delMonitorCase } from '@/api/opensrcinfo/dataset'
+// 引入uuid文件
+import uuidv1 from 'uuid/v1'
 export default {
   components: {
     yuqingList,
@@ -85,39 +88,23 @@ export default {
   data() {
     return {
       isNewCreate: true,
+      isShowConfigCase: false,
+      isNoShowData: true,
       name: '未命名',
       date: '暂无时间', // 2020-01-07  14:13:14
       backgroundImage: backgroundImage,
       backgroundImage2: backgroundImage2,
-      activeName: 'first',
+      activeName: 'five',
       input: '',
       caseid: '',
-      // 获取所有能力类型信息
-      allFunctionTypes: [
-        {
-          name: '南京中新赛克科技有限责任公司监控方案',
-          id: 22
-        },
-        {
-          name: '金琳涵是学神',
-          id: 11
-        },
-        {
-          name: '金琳涵不要骄傲',
-          id: 6
-        },
-        {
-          name: '监控方案3',
-          id: 2
-        },
-        {
-          name: '监控方案4',
-          id: 3
-        }
-      ]
+      // 获取所有监控方案信息
+      allMonitorCase: []
     }
   },
   created() {
+    this.$nextTick(() => {
+      this.getAllDataMonitorCaseTree()
+    })
   },
   beforeCreate () {
     document.querySelector('body').setAttribute('style', 'background-color: #F0F2F5;')
@@ -126,12 +113,54 @@ export default {
     document.querySelector('body').removeAttribute('style')
   },
   methods: {
+    getuuid() {
+      return uuidv1()
+    },
+    newCase() {
+      if (this.isNewCreate) {
+        return
+      }
+      // 1. 左侧菜单树临时追加一个临时菜单并选中当前菜单，显示未命名
+      let tmpMonitorCase = {
+        id: this.getuuid(),
+        name: '未命名'
+      }
+      this.allMonitorCase.push(tmpMonitorCase)
+      this.caseid = tmpMonitorCase.id
+
+      // 2. 右侧tab页自由方案设置中有显示，其余提示没有数据
+      this.isNoShowData = true
+      // 舆情列表显示为空
+      this.isShowConfigCase = true
+    },
+    creaeCase() {
+      this.isShowConfigCase = true
+      this.isNoShowData = true
+    },
+    addCaseItem(data) {
+      allMonitorCase.push(data)
+    },
+    getAllDataMonitorCaseTree() {
+      const rLoading = this.openLoading()
+      getAllDataMonitorCase().then(res => {
+        this.allMonitorCase = res.caseinfo
+        if (this.allMonitorCase.length > 0) {
+          this.activeName = 'first'
+          this.isNewCreate = false
+          this.isNoShowData = false
+          this.isShowConfigCase = true
+          // 默认显示第一个方案的详情信息
+          this.caseid = res.caseinfo[0].id
+        }
+        rLoading.close()
+      })
+    },
     handleNewCreate(size) {
       // 根据当前用户名查询对应的方案列表，若size数量为0，则显示新建状态
       this.isNewCreate = true
     },
     renameCompany(name) {
-      this.name= nanme
+      this.name = name
     },
     handleSelect(key, keyPath) {
       this.caseid = key
@@ -144,6 +173,13 @@ export default {
         type: 'warning'
       }).then(() => {
         // 向后台发送删除请求
+        let data = {
+          userid: '',
+          id: caseId
+        }
+        delMonitorCase(data).then(res => {
+
+        })
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -190,7 +226,9 @@ export default {
               line-height: 64px;
             }
             .create {
+              display: inline-block;
               font-size: 14px;
+              cursor: pointer;
             }
           }
           .creat-btn-wrapper {

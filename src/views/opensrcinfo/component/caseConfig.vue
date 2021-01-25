@@ -292,7 +292,7 @@
                         @blur="handleInputConfirm(tagTypes[8])"
                       >
                       </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[8])(tagType)" icon="el-icon-plus" round>添加</el-button>
+                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[8])" icon="el-icon-plus" round>添加</el-button>
                     </el-col>
                   </el-row>
                 </el-col>
@@ -308,28 +308,31 @@
 </template>
 
 <script type="text/ecmascript-6">
+import { getMonitorCase, saveMonitorCase } from '@/api/opensrcinfo/dataset'
+
 export default {
   props: {
-    caseid: String
+    caseid: String,
+    isNewCreate: Boolean
   },
   data() {
     return {
       userid: 'admin',
-      name: '南京中新赛克科技有限公司监控方案',
+      name: '未命名',
       monitorwords: {
-        company: ['南京中新赛克有限责任有限公司', '南京中新赛克'],
-        staff: ['凌东胜', '王明意'],
-        sub_company: ['南京中新赛克有限责任公司北京分公司', '南京中新赛克有限责任北京分公司'],
-        industry: ['计算机软件'],
-        technology: ['java', 'c++']
+        company: [],
+        staff: [],
+        sub_company: [],
+        industry: [],
+        technology: []
       },
       excludewords: {
-        words: ['排除词1']
+        words: []
       },
       alarmmode: {
-        words: ['冻结', '处罚'],
-        mediawords: ['新浪微博'],
-        author: ['李嘉诚']
+        words: [],
+        mediawords: [],
+        author: []
       },
       tagTypes: ['company', 'staff', 'subcompany', 'industry', 'technology', 'excludewords', 'alarmwords', 'mediawords', 'author'],
       date: '',
@@ -338,9 +341,34 @@ export default {
       inputValue: ''
     }
   },
+  created() {
+    if (!this.isNewCreate) {
+      this.$nextTick(() => {
+        this.getCusMonitorCase()
+      })
+    }
+  },
   methods: {
+    getCusMonitorCase() {
+      getMonitorCase().then(res => {
+        this.monitorwords = res.monitorwords
+        this.excludewords = res.excludewords
+        this.alarmmode = res.alarmmode
+      })
+    },
     saveName() {
       // 1.向后台发送保存公司名请求
+      let data = {
+        userid: this.userid,
+        name: this.name,
+        monitorwords: this.monitorwords,
+        excludewords: this.excludewords,
+        alarmmode: this.alarmmode
+      }
+      console.log(data)
+      // saveMonitorCase(data).then(res => {
+      //   console.log(res)
+      // })
       // 2.向父组件传值
       this.$emit('e-name', this.name) // 使用$emit()触发一个事件，发送数据，事件名自定义
     },
@@ -401,24 +429,22 @@ export default {
       let data = {
         userid: '',
         name: this.name,
-        monitorwords: {
-          company: this.monitorwords.company,
-          staff: this.monitorwords.staff,
-          sub_company: this.monitorwords.sub_company,
-          industry: this.monitorwords.industry,
-          technology: this.monitorwords.technology
-        },
-        excludewords: {
-          words: this.excludewords.words
-        },
-        alarmmode: {
-          words: this.alarmmode.words,
-          mediawords: this.alarmmode.mediawords,
-          author: this.alarmmode.author
-        }
+        monitorwords: this.monitorwords,
+        excludewords: this.excludewords,
+        alarmmode: this.alarmmode
       }
+      let tmpData = JSON.parse(JSON.stringify(data))
+      console.log(tmpData)
       // 保存配置属性
-      console.log(data)
+      saveMonitorCase(tmpData).then(res => {
+        console.log(res)
+        let aaa = {
+          id: '111',
+          name: 'test'
+        }
+        // 2.向父组件传值
+        this.$emit('e-addCaseItem', aaa) // 使用$emit()触发一个事件，发送数据，事件名自定义
+      })
     },
     startMonitor() {
       // 开启监控

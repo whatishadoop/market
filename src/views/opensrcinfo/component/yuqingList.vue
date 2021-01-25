@@ -1,6 +1,7 @@
 <template>
     <div>
-      <div class="list-content">
+      <defaultNoData v-if="isNoShowData"></defaultNoData>
+      <div v-else class="list-content">
         <el-scrollbar style="height:100%;">
           <div class="query-area-wrapper">
             <el-row>
@@ -102,13 +103,13 @@
           <div class="datalist-area-wrapper">
             <div class="datatabs">
               <el-tabs v-model="activeName">
-                <el-tab-pane label="全部" name="first"><yuqingDetail @e-page="getPage"></yuqingDetail></el-tab-pane>
+                <el-tab-pane label="全部" name="first"><yuqingDetail :detailData="detailData" @e-page="getPage"></yuqingDetail></el-tab-pane>
                 <el-tab-pane label="预警" name="second">预警</el-tab-pane>
                 <el-tab-pane label="收藏" name="third">收藏</el-tab-pane>
               </el-tabs>
               <div class="data-info">
                 <div class="sumcount">
-                  <span class="text-one">全部 <span style="color: #5075E7">1314</span> 篇    去重后 <span style="color: #5075E7">314</span> 篇</span>
+                  <span class="text-one">全部 <span style="color: #5075E7">{{detailData.total}}</span> 篇    去重后 <span style="color: #5075E7">{{detailData.filter_total}}</span> 篇</span>
                 </div>
                 <div class="data-action">
                   <el-button @click="getDetailDatas" size="mini" style="width: 97px;">刷新信息</el-button>
@@ -133,15 +134,19 @@
 <script type="text/ecmascript-6">
 import yuqingDetail from './yuqingDetail'
 import { getDay, getTimestamp } from '@/utils/date'
+import { delMonitorCase, getDataDetailByCondition, getMonitorCase, saveMonitorCase } from '@/api/opensrcinfo/dataset'
+import defaultNoData from './defaultNoData'
 export default {
   components: {
-    yuqingDetail
+    yuqingDetail,
+    defaultNoData
   },
   props: {
     caseid: String
   },
   data() {
     return {
+      isNoShowData: true,
       isActives: {
         dateTypes: true,
         eventsrcTypes: true,
@@ -178,8 +183,15 @@ export default {
         value: 'desc',
         label: '升序'
       }
-      ]
+      ],
+      detailData: {}
     }
+  },
+  created() {
+    this.$nextTick(() => {
+      console.log(this.caseid)
+      this.getDetailDatas()
+    })
   },
   methods: {
     getDate(type) {
@@ -238,7 +250,7 @@ export default {
         rows: 10,
         user_id: '',
         conditions: {
-          case_id: '',
+          case_id: this.caseid,
           type_full_alarm_favorite: '全部', // 包括：全部, 预警，收藏 三种
           date: { // timestamp时间格式，精确到秒
             start_date: this.conditions.date.start_date,
@@ -252,6 +264,15 @@ export default {
           time_order_type: this.conditions.order // 查询结果的时间排序方式， 包括： ‘asc’和’desc’，非这两种时，默认’desc’
         }
       }
+      getDataDetailByCondition(data).then(res => {
+        const rLoading = this.openLoading()
+        this.detailData = res
+        if (this.detailData.filter_total > 0) {
+          this.isNoShowData = false
+        }
+        rLoading.close()
+        console.log(this.detailData)
+      })
     },
     getPage(page) {
       this.page = page

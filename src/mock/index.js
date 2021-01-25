@@ -1,5 +1,6 @@
 import Mock from 'mockjs'
 import dataSetApi from './datamarket/datasetMock.js'
+import yuqingDataSetApi from './opensrcinfo/datasetMock.js'
 
 // 设置200-2000毫秒随机的延迟请求数据  ，模拟从后台获取数据延迟
 Mock.setup({
@@ -41,3 +42,10 @@ Mock.mock(/\/market\/function\/getFunctionDetailByType/, 'get', dataSetApi.getFu
 Mock.mock(/\/market\/function\/getFunctionDetailByCondition/, 'get', dataSetApi.getFunctionDetailByCondition())
 // 16.根据条件获取能力信息
 Mock.mock(/\/market\/function\/getAllTypesByCondition/, 'get', dataSetApi.getAllTypesByCondition())
+
+// 1.获取所有监控树方案接口
+Mock.mock(/\/osintelligence\/dataset\/getAllDataMonitorCase/, 'post', yuqingDataSetApi.getAllDataMonitorCase())
+// 3.查询舆情详情信息列表接口
+Mock.mock(/\/osintelligence\/dataset\/getDataDetailByCondition/, 'post', yuqingDataSetApi.getDataDetailByCondition())
+// 4.查询监控方案配置详情接口
+Mock.mock(/\/osintelligence\/dataset\/getMonitorCase/, 'post', yuqingDataSetApi.getMonitorCase())
