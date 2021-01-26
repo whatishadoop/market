@@ -40,10 +40,10 @@
                 <div class="date"><span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">数据截止：{{date}}</span></div>
               </div>
               <div class="search-wrapper">
-                <el-tabs v-model="activeName" type="card">
+                <el-tabs @tab-click="handleClick" v-model="activeName" type="card">
                   <el-tab-pane label="舆情列表" name="first">
                     <!--<defaultNoData v-if="isNoShowData"></defaultNoData>-->
-                    <yuqingList :caseid="caseid"></yuqingList>
+                    <yuqingList :cid="caseid"></yuqingList>
                   </el-tab-pane>
                   <el-tab-pane label="舆情分析" name="second">
                     <defaultNoData></defaultNoData>
@@ -55,7 +55,7 @@
                     <defaultNoData></defaultNoData>
                   </el-tab-pane>
                   <el-tab-pane label="方案设置" name="five">
-                    <caseConfig :caseid="caseid" :is-new-create="isNewCreate" @e-name="renameCompany" @e-addCaseItem="addCaseItem"></caseConfig>
+                    <caseConfig ref="caseconfig" :userid="userid" :cid="caseid" :is-new-create="isNewCreate" @e-name="renameCompany" @e-refreshCaseItem="refreshCaseItem" @e-refreshDefaultCaseItem="getDefaultAllDataMonitorCaseTree"></caseConfig>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -77,8 +77,6 @@ import caseConfig from './component/caseConfig'
 import backgroundImage from '@/assets/fangan.png'
 import backgroundImage2 from '@/assets/shuju.png'
 import { getAllDataMonitorCase, delMonitorCase } from '@/api/opensrcinfo/dataset'
-// 引入uuid文件
-import uuidv1 from 'uuid/v1'
 export default {
   components: {
     yuqingList,
@@ -87,6 +85,7 @@ export default {
   },
   data() {
     return {
+      userid: 'admin',
       isNewCreate: true,
       isShowConfigCase: false,
       isNoShowData: true,
@@ -113,44 +112,73 @@ export default {
     document.querySelector('body').removeAttribute('style')
   },
   methods: {
-    getuuid() {
-      return uuidv1()
-    },
     newCase() {
+      // 加号创建
       if (this.isNewCreate) {
         return
       }
-      // 1. 左侧菜单树临时追加一个临时菜单并选中当前菜单，显示未命名
-      let tmpMonitorCase = {
-        id: this.getuuid(),
-        name: '未命名'
-      }
-      this.allMonitorCase.push(tmpMonitorCase)
-      this.caseid = tmpMonitorCase.id
-
+      this.activeName = 'five'
       // 2. 右侧tab页自由方案设置中有显示，其余提示没有数据
       this.isNoShowData = true
       // 舆情列表显示为空
       this.isShowConfigCase = true
+      // 调用子组件方法保存方案默认值
+      this.$refs.caseconfig.saveDefaultConfigInfo(this.userid, '未命名')
     },
     creaeCase() {
+      // 新建
       this.isShowConfigCase = true
       this.isNoShowData = true
+      this.caseid = ''
     },
-    addCaseItem(data) {
-      allMonitorCase.push(data)
+    refreshCaseItem(data) {
+      this.getAllDataMonitorCaseTree()
     },
     getAllDataMonitorCaseTree() {
       const rLoading = this.openLoading()
-      getAllDataMonitorCase().then(res => {
-        this.allMonitorCase = res.caseinfo
+      let data = {
+        data: {
+          userid: this.userid
+        }
+      }
+      getAllDataMonitorCase(data).then(res => {
+        debugger
+        this.allMonitorCase = res.caseinfo.reverse()
         if (this.allMonitorCase.length > 0) {
           this.activeName = 'first'
           this.isNewCreate = false
           this.isNoShowData = false
           this.isShowConfigCase = true
           // 默认显示第一个方案的详情信息
-          this.caseid = res.caseinfo[0].id
+          this.caseid = this.allMonitorCase[0].id
+        } else {
+          this.activeName = 'five'
+          this.isNewCreate = true
+          this.isNoShowData = true
+          this.isShowConfigCase = false
+          this.$refs.caseconfig.saveDefaultConfigInfo(this.userid, '未命名')
+        }
+        rLoading.close()
+      })
+    },
+    getDefaultAllDataMonitorCaseTree() {
+      const rLoading = this.openLoading()
+      let data = {
+        data: {
+          userid: this.userid
+        }
+      }
+      getAllDataMonitorCase(data).then(res => {
+        debugger
+        this.allMonitorCase = res.caseinfo.reverse()
+        if (this.allMonitorCase.length > 0) {
+          this.activeName = 'five'
+          this.isNewCreate = false
+          this.isNoShowData = false
+          this.isShowConfigCase = true
+          // 默认显示最后一个方案的详情信息
+          let size = res.caseinfo.length
+          this.caseid = this.allMonitorCase[0].id
         }
         rLoading.close()
       })
@@ -163,10 +191,22 @@ export default {
       this.name = name
     },
     handleSelect(key, keyPath) {
+      // 设置caseid
       this.caseid = key
+      // 设置公司名称
       alert(this.caseid)
+      // 调用tab子类方法进行刷新，直接刷新fist和five tab页
+    },
+    handleClick(tab, event) {
+      // 点击tab页显示事件
+      if (tab.name == 'first'){
+        alert(1)
+      } else if(tab.name == 'five') {
+        alert(5)
+      }
     },
     deleteCaseById(caseId) {
+      debugger
       this.$confirm('此操作将删除该监控方案, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -174,15 +214,17 @@ export default {
       }).then(() => {
         // 向后台发送删除请求
         let data = {
-          userid: '',
-          id: caseId
+          data: {
+            userid: this.userid,
+            id: caseId
+          }
         }
         delMonitorCase(data).then(res => {
-
-        })
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getAllDataMonitorCaseTree()
         })
       }).catch(() => {
         this.$message({
@@ -286,7 +328,7 @@ export default {
           .search-wrapper {
             background-color: #FFFFFF;
             border-radius: 12px;
-            height: calc(100% - 88px);
+            height: 100%;
           }
         }
       }

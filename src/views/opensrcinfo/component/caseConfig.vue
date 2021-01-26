@@ -300,7 +300,7 @@
             </div>
           </div>
           <div class="action-btn-wrapper">
-            <el-button size="small" type="primary">开始监控</el-button><el-button @click="saveConfigInfo" size="small" type="primary">保存</el-button><el-button size="small">返回</el-button>
+            <el-button @click="startSpider" size="small" type="primary">开始监控</el-button><el-button @click="saveConfigInfo" size="small" type="primary">保存</el-button>
           </div>
         </el-scrollbar>
       </div>
@@ -308,16 +308,17 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getMonitorCase, saveMonitorCase } from '@/api/opensrcinfo/dataset'
+import { getMonitorCase, saveMonitorCase, startSpider } from '@/api/opensrcinfo/dataset'
 
 export default {
   props: {
-    caseid: String,
-    isNewCreate: Boolean
+    cid: String,
+    isNewCreate: Boolean,
+    userid: String
   },
   data() {
     return {
-      userid: 'admin',
+      caseid: this.cid,
       name: '未命名',
       monitorwords: {
         company: [],
@@ -341,16 +342,43 @@ export default {
       inputValue: ''
     }
   },
+  wacth:{
+    cid:{
+      immediate: true,
+      handler(val){
+        alert(val+ 'haaha')
+      }
+    }
+  },
   created() {
     if (!this.isNewCreate) {
       this.$nextTick(() => {
         this.getCusMonitorCase()
       })
     }
+    // 对于新增方案默认保存一份
   },
   methods: {
+    startSpider() {
+      let data = {
+        id: this.caseid,
+        userid: this.userid
+      }
+      startSpider(data).then(res => {
+        this.$message({
+          type: 'success',
+          message: '启动成功!'
+        })
+      })
+    },
     getCusMonitorCase() {
-      getMonitorCase().then(res => {
+      let data = {
+        id: this.caseid,
+        userid: this.userid
+      }
+      alert(this.caseid)
+      getMonitorCase(data).then(res => {
+        debugger
         this.monitorwords = res.monitorwords
         this.excludewords = res.excludewords
         this.alarmmode = res.alarmmode
@@ -427,24 +455,65 @@ export default {
     },
     saveConfigInfo() {
       let data = {
-        userid: '',
-        name: this.name,
-        monitorwords: this.monitorwords,
-        excludewords: this.excludewords,
-        alarmmode: this.alarmmode
+        data: {
+          userid: this.userid,
+          caseid: '',
+          name: this.name,
+          monitorwords: this.monitorwords,
+          excludewords: this.excludewords,
+          alarmmode: this.alarmmode
+        }
       }
       let tmpData = JSON.parse(JSON.stringify(data))
       console.log(tmpData)
       // 保存配置属性
       saveMonitorCase(tmpData).then(res => {
         console.log(res)
-        let aaa = {
-          id: '111',
-          name: 'test'
-        }
         // 2.向父组件传值
-        this.$emit('e-addCaseItem', aaa) // 使用$emit()触发一个事件，发送数据，事件名自定义
+        this.$emit('e-refreshCaseItem') // 使用$emit()触发一个事件，发送数据，事件名自定义
       })
+    },
+    saveDefaultConfigInfo(userid, name) {
+      this.userid = userid
+      this.caseid = ''
+      this.name = name
+      this.monitorwords = {
+        company: [],
+        staff: [],
+        sub_company: [],
+        industry: [],
+        technology: []
+      }
+      this.excludewords = {
+        words: []
+      }
+      this.alarmmode = {
+        words: [],
+          mediawords: [],
+          author: []
+      }
+      let data = {
+        data: {
+          userid: userid,
+          name: name,
+          caseid: '',
+          monitorwords: {
+            company: [],
+            staff: [],
+            sub_company: [],
+            industry: [],
+            technology: []
+          },
+          excludewords: {
+            words: []
+          },
+          alarmmode: {
+            words: [],
+            mediawords: [],
+            author: []
+          }
+        }
+      }
     },
     startMonitor() {
       // 开启监控
@@ -471,7 +540,7 @@ export default {
 }
 .main-wrapper {
   width: 100%;
-  height: calc(100vh - 240px);
+  height: calc(100vh - 231px);
   .case-name-wrapper {
     width: 400px;
     display: flex;

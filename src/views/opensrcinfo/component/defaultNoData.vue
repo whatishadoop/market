@@ -19,7 +19,7 @@ export default {
 
 <style type="text/scss" rel="stylesheet/scss" lang="scss" scoped>
 .default-nodata-wrapper {
-  height: calc(100vh - 240px);
+  height: calc(100vh - 231px);
   width: 100%;
   display: flex;
   justify-content: center;

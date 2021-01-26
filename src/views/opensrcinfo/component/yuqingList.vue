@@ -63,9 +63,9 @@
                     </div>
                   </el-col>
                   <el-col :span="20">
-                    <div class="condition" v-for="(name, index) in importanteventTypes" :key="index">
-                      <el-button v-if="0 === index" :class="{active: isActives.importanteventTypes}"  @click="getImportantevent(name)" size="mini" round>{{name}}</el-button>
-                      <el-button v-else @click="getImportantevent(name)" size="mini" round>{{name}}</el-button>
+                    <div class="condition" v-for="(item, index) in importanteventTypes" :key="index">
+                      <el-button v-if="0 === index" :class="{active: isActives.importanteventTypes}"  @click="getImportantevent(item.key)" size="mini" round>{{item.name}}</el-button>
+                      <el-button v-else @click="getImportantevent(item.key)" size="mini" round>{{item.name}}</el-button>
                     </div>
                   </el-col>
                 </el-row>
@@ -91,9 +91,9 @@
                     </div>
                   </el-col>
                   <el-col :span="18">
-                    <div class="condition" v-for="(name, index) in duplicateinfoTypes" :key="index">
-                      <el-button v-if="0 === index" :class="{active: isActives.duplicateinfoTypes}" @click="getDuplicateinfo(name)" size="mini" round>{{name}}</el-button>
-                      <el-button v-else @click="getDuplicateinfo(name)" size="mini" round>{{name}}</el-button>
+                    <div class="condition" v-for="(item, index) in duplicateinfoTypes" :key="index">
+                      <el-button v-if="0 === index" :class="{active: isActives.duplicateinfoTypes}" @click="getDuplicateinfo(item.key)" size="mini" round>{{item.name}}</el-button>
+                      <el-button v-else @click="getDuplicateinfo(item.key)" size="mini" round>{{item.name}}</el-button>
                     </div>
                   </el-col>
                 </el-row>
@@ -142,10 +142,12 @@ export default {
     defaultNoData
   },
   props: {
-    caseid: String
+    cid: String,
+    default: '-1'
   },
   data() {
     return {
+      caseid: this.cid,
       isNoShowData: true,
       isActives: {
         dateTypes: true,
@@ -159,21 +161,21 @@ export default {
       dateTypes: ['今天', '24小时', '三天', '七天'],
       eventsrcTypes: ['全部', '报刊', '微信'],
       noisefilterTypes: ['全部', '精准舆情', '关联舆情'],
-      importanteventTypes: ['全部', '含重大事件', '不含重大事件'],
+      importanteventTypes: [{ key: '全部' ,name: '0' }, { key: '含重大事件' ,name: '1' }, { key: '不含重大事件' ,name: '2' }],
       emotionaloriTypes: ['全部', '正向', '中性', '负向'],
-      duplicateinfoTypes: ['去重', '不去重'],
+      duplicateinfoTypes: [{ key: '去重', name: '1' }, { key: '不去重', name: '0' }],
       page: 1,
       value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
       conditions: {
         date: {
-          start_date: '',
-          end_date: ''
+          start_date: new Date().getTime(),
+          end_date: new Date().getTime()
         },
-        eventsrc: '',
-        noisefilter: '',
-        importantevent: '',
-        emotionalori: '正向',
-        duplicateinfo: '不去重',
+        eventsrc: '全部',
+        noisefilter: '全部',
+        importantevent: 0,
+        emotionalori: '全部',
+        duplicateinfo: 1,
         order: ''
       },
       options: [{
@@ -187,11 +189,21 @@ export default {
       detailData: {}
     }
   },
-  created() {
-    this.$nextTick(() => {
-      console.log(this.caseid)
-      this.getDetailDatas()
-    })
+  // created() {
+  //   this.$nextTick(() => {
+  //     console.log(this.caseid)
+  //
+  //   })
+  // },
+  wacth: {
+    cid: {
+      handler (val) {
+        alert(val + 'haaha')
+      }
+    }
+  },
+  mounted() {
+    this.getDetailDatas(this.caseid)
   },
   methods: {
     getDate(type) {
@@ -244,24 +256,26 @@ export default {
       this.duplicateinfo = value
       this.isActives.duplicateinfoTypes = false
     },
-    getDetailDatas() {
+    getDetailDatas(caseid) {
       let data = {
-        page: this.page,
-        rows: 10,
-        user_id: '',
-        conditions: {
-          case_id: this.caseid,
-          type_full_alarm_favorite: '全部', // 包括：全部, 预警，收藏 三种
-          date: { // timestamp时间格式，精确到秒
-            start_date: this.conditions.date.start_date,
-            end_date: this.conditions.date.end_date
-          },
-          media_type: this.conditions.eventsrc, // 包括网媒、报纸、微博、微信公众号、论坛、其他
-          relevant_or_precise: this.conditions.noisefilter, // 包括：精准，关联 两种
-          is_contain_important_events: this.conditions.importantevent, // 0:全部， 1：含重大事件， 2：不含重大事件
-          sentiment_type: this.conditions.emotionalori, // 包括：全部，正面，负面，中立 四种，
-          is_repeat: this.conditions.duplicateinfo, // 0: 不去重， 1：去重
-          time_order_type: this.conditions.order // 查询结果的时间排序方式， 包括： ‘asc’和’desc’，非这两种时，默认’desc’
+        data: {
+          page: this.page,
+          rows: 10,
+          user_id: '',
+          conditions: {
+            case_id: caseid,
+            type_full_alarm_favorite: '全部', // 包括：全部, 预警，收藏 三种
+            date: { // timestamp时间格式，精确到秒
+              start_date: this.conditions.date.start_date,
+              end_date: this.conditions.date.end_date
+            },
+            media_type: this.conditions.eventsrc, // 包括网媒、报纸、微博、微信公众号、论坛、其他
+            relevant_or_precise: this.conditions.noisefilter, // 包括：精准，关联 两种
+            is_contain_important_events: this.conditions.importantevent, // 0:全部， 1：含重大事件， 2：不含重大事件
+            sentiment_type: this.conditions.emotionalori, // 包括：全部，正面，负面，中立 四种，
+            is_repeat: this.conditions.duplicateinfo, // 0: 不去重， 1：去重
+            time_order_type: this.conditions.order // 查询结果的时间排序方式， 包括： ‘asc’和’desc’，非这两种时，默认’desc’
+          }
         }
       }
       getDataDetailByCondition(data).then(res => {
@@ -272,6 +286,9 @@ export default {
         }
         rLoading.close()
         console.log(this.detailData)
+      }).catch(res => {
+        alert(1111)
+        this.isNoShowData = true
       })
     },
     getPage(page) {
@@ -291,7 +308,7 @@ export default {
 <style type="text/scss" rel="stylesheet/scss" lang="scss" scoped>
 .list-content {
   width: 100%;
-  height: calc(100vh - 240px);
+  height: calc(100vh - 231px);
   .query-area-wrapper {
     height: 100%;
     weight: 100%;

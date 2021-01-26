@@ -44,8 +44,8 @@ Mock.mock(/\/market\/function\/getFunctionDetailByCondition/, 'get', dataSetApi.
 Mock.mock(/\/market\/function\/getAllTypesByCondition/, 'get', dataSetApi.getAllTypesByCondition())
 
 // 1.获取所有监控树方案接口
-Mock.mock(/\/osintelligence\/dataset\/getAllDataMonitorCase/, 'post', yuqingDataSetApi.getAllDataMonitorCase())
+Mock.mock(/\/osintelligence\/dataset\/getAllDataMonitorCase\//, 'post', yuqingDataSetApi.getAllDataMonitorCase())
 // 3.查询舆情详情信息列表接口
-Mock.mock(/\/osintelligence\/dataset\/getDataDetailByCondition/, 'post', yuqingDataSetApi.getDataDetailByCondition())
+Mock.mock(/\/osintelligence\/dataset\/getDataDetailByCondition\//, 'post', yuqingDataSetApi.getDataDetailByCondition())
 // 4.查询监控方案配置详情接口
-Mock.mock(/\/osintelligence\/dataset\/getMonitorCase/, 'post', yuqingDataSetApi.getMonitorCase())
+Mock.mock(/\/osintelligence\/dataset\/getMonitorCase\//, 'post', yuqingDataSetApi.getMonitorCase())

@@ -9,7 +9,7 @@ import '@/assets/icons' // icon
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
 // 开发环境支持mock
-process.env.NODE_ENV === 'development' && require('@/mock/index.js')
+// process.env.NODE_ENV === 'development' && require('@/mock/index.js')
 
 // 声明一个loading对象
 Vue.prototype.openLoading = function() {

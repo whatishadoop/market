@@ -42,7 +42,21 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           '^/auth': 'auth'
-        }
+        },
+      },
+      '/osintelligence': {
+        target: process.env.VUE_APP_BASE_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/osintelligence': 'osintelligence'
+        },
+      },
+      '/spider': {
+        target: process.env.VUE_APP_BASE_API,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/spider': 'spider'
+        },
       }
     }
   },
