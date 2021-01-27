@@ -47,7 +47,7 @@ export function saveMonitorCase(data) {
 // 6.爬虫启动接口
 export function startSpider(data) {
   return request({
-    url: 'spider/start',
+    url: 'osintelligence/spider/start/',
     method: 'post',
     data
   })

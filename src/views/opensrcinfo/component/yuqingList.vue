@@ -143,7 +143,8 @@ export default {
   },
   props: {
     cid: String,
-    default: '-1'
+    userid: String,
+    isNewCreate: Boolean
   },
   data() {
     return {
@@ -161,22 +162,22 @@ export default {
       dateTypes: ['今天', '24小时', '三天', '七天'],
       eventsrcTypes: ['全部', '报刊', '微信'],
       noisefilterTypes: ['全部', '精准舆情', '关联舆情'],
-      importanteventTypes: [{ key: '全部' ,name: '0' }, { key: '含重大事件' ,name: '1' }, { key: '不含重大事件' ,name: '2' }],
+      importanteventTypes: [{ key: '全部', name: '0' }, { key: '含重大事件', name: '1' }, { key: '不含重大事件', name: '2' }],
       emotionaloriTypes: ['全部', '正向', '中性', '负向'],
       duplicateinfoTypes: [{ key: '去重', name: '1' }, { key: '不去重', name: '0' }],
       page: 1,
       value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
       conditions: {
         date: {
-          start_date: new Date().getTime(),
-          end_date: new Date().getTime()
+          start_date: 1611127862,
+          end_date: 1611744767
         },
         eventsrc: '全部',
         noisefilter: '全部',
         importantevent: 0,
         emotionalori: '全部',
         duplicateinfo: 1,
-        order: ''
+        order: 'desc'
       },
       options: [{
         value: 'asc',
@@ -189,22 +190,20 @@ export default {
       detailData: {}
     }
   },
-  // created() {
-  //   this.$nextTick(() => {
-  //     console.log(this.caseid)
-  //
-  //   })
-  // },
-  wacth: {
-    cid: {
-      handler (val) {
-        alert(val + 'haaha')
-      }
+  created() {
+    if (!this.isNewCreate) {
+      this.$nextTick(() => {
+        this.getDetailDatas(this.caseid)
+      })
     }
   },
-  mounted() {
-    this.getDetailDatas(this.caseid)
-  },
+  // wacth: {
+  //   cid: {
+  //     handler (val) {
+  //       alert(val + 'haaha')
+  //     }
+  //   }
+  // },
   methods: {
     getDate(type) {
       if (type === '今天') {
@@ -256,12 +255,50 @@ export default {
       this.duplicateinfo = value
       this.isActives.duplicateinfoTypes = false
     },
-    getDetailDatas(caseid) {
+    refresh(caseid) {
+      this.caseid = caseid
       let data = {
         data: {
           page: this.page,
           rows: 10,
-          user_id: '',
+          user_id: this.userid,
+          conditions: {
+            case_id: caseid,
+            type_full_alarm_favorite: '全部', // 包括：全部, 预警，收藏 三种
+            date: { // timestamp时间格式，精确到秒
+              start_date: this.conditions.date.start_date,
+              end_date: this.conditions.date.end_date
+            },
+            media_type: this.conditions.eventsrc, // 包括网媒、报纸、微博、微信公众号、论坛、其他
+            relevant_or_precise: this.conditions.noisefilter, // 包括：精准，关联 两种
+            is_contain_important_events: this.conditions.importantevent, // 0:全部， 1：含重大事件， 2：不含重大事件
+            sentiment_type: this.conditions.emotionalori, // 包括：全部，正面，负面，中立 四种，
+            is_repeat: this.conditions.duplicateinfo, // 0: 不去重， 1：去重
+            time_order_type: this.conditions.order // 查询结果的时间排序方式， 包括： ‘asc’和’desc’，非这两种时，默认’desc’
+          }
+        }
+      }
+      debugger
+      getDataDetailByCondition(data).then(res => {
+        const rLoading = this.openLoading()
+        this.detailData = res
+        if (this.detailData.filter_total > 0) {
+          this.isNoShowData = false
+        }
+        rLoading.close()
+        console.log(this.detailData)
+      }).catch(res => {
+        console.log(res)
+        this.isNoShowData = true
+      })
+    },
+    getDetailDatas(caseid) {
+      debugger
+      let data = {
+        data: {
+          page: this.page,
+          rows: 10,
+          user_id: this.userid,
           conditions: {
             case_id: caseid,
             type_full_alarm_favorite: '全部', // 包括：全部, 预警，收藏 三种
@@ -287,7 +324,7 @@ export default {
         rLoading.close()
         console.log(this.detailData)
       }).catch(res => {
-        alert(1111)
+        console.log(res)
         this.isNoShowData = true
       })
     },

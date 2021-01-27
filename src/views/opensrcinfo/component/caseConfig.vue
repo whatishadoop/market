@@ -342,14 +342,14 @@ export default {
       inputValue: ''
     }
   },
-  wacth:{
-    cid:{
-      immediate: true,
-      handler(val){
-        alert(val+ 'haaha')
-      }
-    }
-  },
+  // wacth:{
+  //   cid:{
+  //     immediate: true,
+  //     handler(val){
+  //       alert(val+ 'haaha')
+  //     }
+  //   }
+  // },
   created() {
     if (!this.isNewCreate) {
       this.$nextTick(() => {
@@ -360,9 +360,12 @@ export default {
   },
   methods: {
     startSpider() {
+      debugger
       let data = {
-        id: this.caseid,
-        userid: this.userid
+        data: {
+          id: this.caseid,
+          userid: this.userid
+        }
       }
       startSpider(data).then(res => {
         this.$message({
@@ -371,17 +374,35 @@ export default {
         })
       })
     },
-    getCusMonitorCase() {
+    refresh(caseId) {
+      this.caseid = caseId
       let data = {
-        id: this.caseid,
-        userid: this.userid
+        data: {
+          id: caseId,
+          userid: this.userid
+        }
       }
-      alert(this.caseid)
+      debugger
       getMonitorCase(data).then(res => {
         debugger
-        this.monitorwords = res.monitorwords
-        this.excludewords = res.excludewords
-        this.alarmmode = res.alarmmode
+        this.name = res.data.name
+        this.monitorwords = res.data.monitorwords
+        this.excludewords = res.data.excludewords
+        this.alarmmode = res.data.alarmmode
+      })
+    },
+    getCusMonitorCase() {
+      let data = {
+        data: {
+          id: this.caseid,
+          userid: this.userid
+        }
+      }
+      getMonitorCase(data).then(res => {
+        debugger
+        this.monitorwords = res.data.monitorwords
+        this.excludewords = res.data.excludewords
+        this.alarmmode = res.data.alarmmode
       })
     },
     saveName() {
@@ -457,7 +478,7 @@ export default {
       let data = {
         data: {
           userid: this.userid,
-          caseid: '',
+          caseid: this.caseid,
           name: this.name,
           monitorwords: this.monitorwords,
           excludewords: this.excludewords,
@@ -468,7 +489,8 @@ export default {
       console.log(tmpData)
       // 保存配置属性
       saveMonitorCase(tmpData).then(res => {
-        console.log(res)
+        // 1.刷新方案名称
+        this.$emit('e-name', this.name)
         // 2.向父组件传值
         this.$emit('e-refreshCaseItem') // 使用$emit()触发一个事件，发送数据，事件名自定义
       })
@@ -489,34 +511,9 @@ export default {
       }
       this.alarmmode = {
         words: [],
-          mediawords: [],
-          author: []
+        mediawords: [],
+        author: []
       }
-      let data = {
-        data: {
-          userid: userid,
-          name: name,
-          caseid: '',
-          monitorwords: {
-            company: [],
-            staff: [],
-            sub_company: [],
-            industry: [],
-            technology: []
-          },
-          excludewords: {
-            words: []
-          },
-          alarmmode: {
-            words: [],
-            mediawords: [],
-            author: []
-          }
-        }
-      }
-    },
-    startMonitor() {
-      // 开启监控
     }
   }
 }

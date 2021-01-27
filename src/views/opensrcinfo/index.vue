@@ -12,7 +12,7 @@
               </div>
               <el-menu
                 v-if="!isNewCreate"
-                :default-active="caseid"
+                :default-active="activeid"
                 class="el-menu-vertical-demo"
                 style="overflow-y: hidden"
                 @select="handleSelect">
@@ -22,7 +22,7 @@
                       <span slot="title" style="font-family: PingFangSC-Regular;font-size: 14px;color: #949494;letter-spacing: 0;">{{item.name}}</span>
                     </div>
                     <div class="menu-content-icon">
-                      <i @click="deleteCaseById(item.id)" class="el-icon-delete"></i>
+                      <i @click.stop="deleteCaseById(item.id)" class="el-icon-delete"></i>
                     </div>
                   </div>
                 </el-menu-item>
@@ -34,7 +34,7 @@
             </el-scrollbar>
           </div>
           <div class="right-content">
-            <div v-show="isShowConfigCase">
+            <div v-if="isShowConfigCase">
               <div class="monitor-name-wrapper">
                 <div class="name"><span style="font-family: PingFangSC-Semibold;font-size: 20px;color: #FFFFFF;">{{name}}</span></div>
                 <div class="date"><span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">数据截止：{{date}}</span></div>
@@ -43,7 +43,7 @@
                 <el-tabs @tab-click="handleClick" v-model="activeName" type="card">
                   <el-tab-pane label="舆情列表" name="first">
                     <!--<defaultNoData v-if="isNoShowData"></defaultNoData>-->
-                    <yuqingList :cid="caseid"></yuqingList>
+                    <yuqingList ref="yuqingList" :cid="caseid" :userid="userid" :is-new-create="isNewCreate"></yuqingList>
                   </el-tab-pane>
                   <el-tab-pane label="舆情分析" name="second">
                     <defaultNoData></defaultNoData>
@@ -55,12 +55,12 @@
                     <defaultNoData></defaultNoData>
                   </el-tab-pane>
                   <el-tab-pane label="方案设置" name="five">
-                    <caseConfig ref="caseconfig" :userid="userid" :cid="caseid" :is-new-create="isNewCreate" @e-name="renameCompany" @e-refreshCaseItem="refreshCaseItem" @e-refreshDefaultCaseItem="getDefaultAllDataMonitorCaseTree"></caseConfig>
+                    <caseConfig ref="caseconfig" :userid="userid" :cid="caseid" :is-new-create="isNewCreate" @e-name="renameCompany" @e-refreshCaseItem="getDefaultAllDataMonitorCaseTree"></caseConfig>
                   </el-tab-pane>
                 </el-tabs>
               </div>
             </div>
-            <div v-show="!isShowConfigCase" class="blank-data-wrapper">
+            <div v-if="!isShowConfigCase" class="blank-data-wrapper">
               <img :src="backgroundImage2" class="image-size">
             </div>
           </div>
@@ -85,6 +85,7 @@ export default {
   },
   data() {
     return {
+      activeid: '',
       userid: 'admin',
       isNewCreate: true,
       isShowConfigCase: false,
@@ -100,10 +101,8 @@ export default {
       allMonitorCase: []
     }
   },
-  created() {
-    this.$nextTick(() => {
-      this.getAllDataMonitorCaseTree()
-    })
+  mounted() {
+    this.getAllDataMonitorCaseTree()
   },
   beforeCreate () {
     document.querySelector('body').setAttribute('style', 'background-color: #F0F2F5;')
@@ -123,6 +122,7 @@ export default {
       // 舆情列表显示为空
       this.isShowConfigCase = true
       // 调用子组件方法保存方案默认值
+      this.caseid = ''
       this.$refs.caseconfig.saveDefaultConfigInfo(this.userid, '未命名')
     },
     creaeCase() {
@@ -143,13 +143,14 @@ export default {
       }
       getAllDataMonitorCase(data).then(res => {
         debugger
-        this.allMonitorCase = res.caseinfo.reverse()
+        this.allMonitorCase = res.caseinfo
         if (this.allMonitorCase.length > 0) {
           this.activeName = 'first'
           this.isNewCreate = false
           this.isNoShowData = false
           this.isShowConfigCase = true
           // 默认显示第一个方案的详情信息
+          this.activeid = this.allMonitorCase[0].id
           this.caseid = this.allMonitorCase[0].id
         } else {
           this.activeName = 'five'
@@ -170,16 +171,22 @@ export default {
       }
       getAllDataMonitorCase(data).then(res => {
         debugger
-        this.allMonitorCase = res.caseinfo.reverse()
+        this.allMonitorCase = res.caseinfo
         if (this.allMonitorCase.length > 0) {
           this.activeName = 'five'
           this.isNewCreate = false
           this.isNoShowData = false
           this.isShowConfigCase = true
-          // 默认显示最后一个方案的详情信息
-          let size = res.caseinfo.length
-          this.caseid = this.allMonitorCase[0].id
+          this.activeid = this.allMonitorCase[0].id
+          // 默认显示第一个方案的详情信息
+          alert('激活值===============' + this.activeid)
         }
+        // let arrtmp = this.allMonitorCase
+        // this.caseid = arrtmp[0].id
+        // this.$nextTick(() => {
+        //   let arrtmp = this.allMonitorCase
+        //   this.caseid = arrtmp[0].id
+        // })
         rLoading.close()
       })
     },
@@ -191,46 +198,48 @@ export default {
       this.name = name
     },
     handleSelect(key, keyPath) {
+      debugger
       // 设置caseid
       this.caseid = key
-      // 设置公司名称
-      alert(this.caseid)
+      console.log(this.allMonitorCase)
+      this.allMonitorCase.forEach(item => {
+        if (item.id === key) {
+          this.name = item.name
+        }
+      })
+      // 选中默认第一tab页
+      this.activeName = 'first'
+      // 设置方案名称
+      this.$refs.yuqingList.refresh(this.caseid)
+      this.$refs.caseconfig.refresh(this.caseid)
       // 调用tab子类方法进行刷新，直接刷新fist和five tab页
     },
     handleClick(tab, event) {
+      debugger
       // 点击tab页显示事件
-      if (tab.name == 'first'){
-        alert(1)
-      } else if(tab.name == 'five') {
-        alert(5)
+      if (tab.name === 'first') {
+        // alert(1 + ' ' + this.caseid )
+        // this.$refs.yuqingList.refresh(this.caseid)
+      } else if (tab.name === 'five') {
+        // alert(5 + ' ' + this.caseid)
+        // this.$refs.caseconfig.refresh(this.caseid)
       }
     },
     deleteCaseById(caseId) {
       debugger
-      this.$confirm('此操作将删除该监控方案, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 向后台发送删除请求
-        let data = {
-          data: {
-            userid: this.userid,
-            id: caseId
-          }
+      // 向后台发送删除请求
+      let data = {
+        data: {
+          userid: this.userid,
+          id: caseId
         }
-        delMonitorCase(data).then(res => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-          this.getAllDataMonitorCaseTree()
-        })
-      }).catch(() => {
+      }
+      delMonitorCase(data).then(res => {
         this.$message({
-          type: 'info',
-          message: '已取消删除'
+          type: 'success',
+          message: '删除成功!'
         })
+        this.getAllDataMonitorCaseTree()
       })
     }
   }
@@ -482,6 +491,7 @@ export default {
       display: flex;
       flex-direction: row-reverse;
       justify-content: right;
+      cursor: pointer;
     }
   }
 </style>
