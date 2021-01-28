@@ -32,12 +32,12 @@
                   </div>
                   <div class="part-two">
                     <svg-icon icon-class="关键字" style="height: 20px;width: 20px;margin-right: 10px;"/>
-                    <el-tag v-for="(keyword, index) in item.match_key_words" size="small" style="margin-right: 5px;" type="success" plain>{{keyword}}</el-tag>
+                    <el-tag v-for="(keyword, index) in item.match_key_words" size="small" style="margin-right: 5px;" type="success" plain :key="index">{{keyword}}</el-tag>
                   </div>
                 </div>
                 <div class="three-content">
                   <div class="part-one">
-                    <span class="text">{{item.website_name}}</span><span class="text" style="margin-right: 43px;">{{item.publisher}}</span><span class="text">{{item.date}}</span>
+                    <span class="text">{{item.website_name}}</span><span class="text" style="margin-right: 43px;">{{item.publisher}}</span><span class="text" style="width: 160px;">{{item.date}}</span>
                   </div>
                   <div class="part-two">
                     <div class="text">预警 <span
@@ -72,6 +72,10 @@ export default {
     detailData: {
       type: Object,
       default: () => ({}) // 若page没有传递给子组件，则使用默认值
+    },
+    page: {
+      type: Number,
+      default: 1
     }
   },
   data() {
@@ -79,13 +83,18 @@ export default {
       date: '',
       activeName: 'first',
       checked: false,
-      total: 200,
-      currentPage: 5,
+      total: this.detailData.filter_total,
+      currentPage: this.page,
       pageSize: 20
     }
   },
   methods: {
+    refreshPage(total) {
+      this.total = total
+      this.currentPage = 1
+    },
     handleCurrentChange(val) {
+      debugger
       console.log(`当前页: ${val}`)
       this.currentPage = val
       // 向父组件传值
@@ -123,12 +132,15 @@ export default {
             justify-content: space-between;
             align-items: center;
             .name {
-              width: 200px;
+              width: 600px;
               font-family: PingFangSC-Medium;
               font-size: 14px;
               color: rgba(0,0,0,0.65);
               text-align: left;
               line-height: 22px;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
             }
             .num {
               flex: 1;
@@ -146,6 +158,7 @@ export default {
         padding: 0px 30px 0px 30px;
         .one-content {
           width: calc(100% - 60px);
+          height: 44px;
           margin-top: 10px;
           font-family: PingFangSC-Regular;
           font-size: 14px;
@@ -181,15 +194,19 @@ export default {
           align-items: center;
           margin-top: 10px;
           .part-one {
-            width: 370px;
+            width: 500px;
             .text {
+              width: 70px;
               display: inline-block;
               font-family: PingFangSC-Regular;
               font-size: 14px;
               color: rgba(0,0,0,0.45);
               text-align: left;
               line-height: 22px;
-              margin-right: 33px;
+              margin-right: 21px;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
               &:last-child {
                 margin: 0px;
               }

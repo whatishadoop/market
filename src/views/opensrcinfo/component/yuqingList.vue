@@ -1,7 +1,6 @@
 <template>
     <div>
-      <defaultNoData v-if="isNoShowData"></defaultNoData>
-      <div v-else class="list-content">
+      <div class="list-content">
         <el-scrollbar style="height:100%;">
           <div class="query-area-wrapper">
             <el-row>
@@ -14,8 +13,7 @@
                   </el-col>
                   <el-col :span="20">
                     <div class="condition" v-for="(name, index) in dateTypes" :key="index">
-                      <el-button v-if="0 === index" :class="{active: isActives.dateTypes}" @click="getDate(name)" size="mini" round>{{name}}</el-button>
-                      <el-button v-else @click="getDate(name)" size="mini" round>{{name}}</el-button>
+                      <el-button :class="{active: isActives.dateTypes === index}" @click="getDate(name, index)" size="mini" round>{{name}}</el-button>
                     </div>
                     <!--@change="(value) => getPickerDate(value, '111')"同时传递两个值-->
                     <div class="condition">
@@ -23,6 +21,8 @@
                         @change="(value) => getPickerDate(value, '')"
                         v-model="value1"
                         type="datetimerange"
+                        format="yyyy/MM/dd HH:mm:ss"
+                        value-format="yyyy/MM/dd HH:mm:ss"
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期">
@@ -38,8 +38,7 @@
                   </el-col>
                   <el-col :span="20">
                     <div class="condition" v-for="(name, index) in eventsrcTypes" :key="index">
-                      <el-button v-if="0 === index" :class="{active: isActives.eventsrcTypes}" @click="getEventsrc(name)" size="mini" round>{{name}}</el-button>
-                      <el-button v-else @click="getEventsrc(name)" size="mini" round>{{name}}</el-button>
+                      <el-button :class="{active: isActives.eventsrcTypes === index}" @click="getEventsrc(name,index)" size="mini" round>{{name}}</el-button>
                     </div>
                   </el-col>
                 </el-row>
@@ -51,8 +50,7 @@
                   </el-col>
                   <el-col :span="20">
                     <div class="condition" v-for="(name, index) in noisefilterTypes" :key="index">
-                      <el-button v-if="0 === index" :class="{active: isActives.noisefilterTypes}" @click="getNoisefilter(name)" size="mini" round>{{name}}</el-button>
-                      <el-button v-else @click="getNoisefilter(name)" size="mini" round>{{name}}</el-button>
+                      <el-button :class="{active: isActives.noisefilterTypes === index}" @click="getNoisefilter(name,index)" size="mini" round>{{name}}</el-button>
                     </div>
                   </el-col>
                 </el-row>
@@ -64,8 +62,7 @@
                   </el-col>
                   <el-col :span="20">
                     <div class="condition" v-for="(item, index) in importanteventTypes" :key="index">
-                      <el-button v-if="0 === index" :class="{active: isActives.importanteventTypes}"  @click="getImportantevent(item.key)" size="mini" round>{{item.name}}</el-button>
-                      <el-button v-else @click="getImportantevent(item.key)" size="mini" round>{{item.name}}</el-button>
+                      <el-button :class="{active: isActives.importanteventTypes === index}" @click="getImportantevent(item.key,index)" size="mini" round>{{item.name}}</el-button>
                     </div>
                   </el-col>
                 </el-row>
@@ -79,8 +76,7 @@
                   </el-col>
                   <el-col :span="18">
                     <div class="condition" v-for="(name, index) in emotionaloriTypes" :key="index">
-                      <el-button v-if="0 === index" :class="{active: isActives.emotionaloriTypes}" @click="getEmotionalori(name)" size="mini" round>{{name}}</el-button>
-                      <el-button v-else @click="getEmotionalori(name)" size="mini" round>{{name}}</el-button>
+                      <el-button :class="{active: isActives.emotionaloriTypes === index}" @click="getEmotionalori(name,index)" size="mini" round>{{name}}</el-button>
                     </div>
                   </el-col>
                 </el-row>
@@ -92,8 +88,7 @@
                   </el-col>
                   <el-col :span="18">
                     <div class="condition" v-for="(item, index) in duplicateinfoTypes" :key="index">
-                      <el-button v-if="0 === index" :class="{active: isActives.duplicateinfoTypes}" @click="getDuplicateinfo(item.key)" size="mini" round>{{item.name}}</el-button>
-                      <el-button v-else @click="getDuplicateinfo(item.key)" size="mini" round>{{item.name}}</el-button>
+                      <el-button :class="{active: isActives.duplicateinfoTypes === index}" @click="getDuplicateinfo(item.key, index)" size="mini" round>{{item.name}}</el-button>
                     </div>
                   </el-col>
                 </el-row>
@@ -103,7 +98,10 @@
           <div class="datalist-area-wrapper">
             <div class="datatabs">
               <el-tabs v-model="activeName">
-                <el-tab-pane label="全部" name="first"><yuqingDetail :detailData="detailData" @e-page="getPage"></yuqingDetail></el-tab-pane>
+                <el-tab-pane label="全部" name="first">
+                  <defaultNoData v-if="isNoShowData"></defaultNoData>
+                  <yuqingDetail v-else :detailData="detailData" :page="page" @e-page="getPage" ref="yuqingDetail"></yuqingDetail>
+                </el-tab-pane>
                 <el-tab-pane label="预警" name="second">预警</el-tab-pane>
                 <el-tab-pane label="收藏" name="third">收藏</el-tab-pane>
               </el-tabs>
@@ -112,7 +110,7 @@
                   <span class="text-one">全部 <span style="color: #5075E7">{{detailData.total}}</span> 篇    去重后 <span style="color: #5075E7">{{detailData.filter_total}}</span> 篇</span>
                 </div>
                 <div class="data-action">
-                  <el-button @click="getDetailDatas" size="mini" style="width: 97px;">刷新信息</el-button>
+                  <el-button @click="refresh2(caseid)" size="mini" style="width: 97px;">刷新信息</el-button>
                   <el-button size="mini" style="width: 97px;">全部导出</el-button>
                   <el-select @change="currentSel" v-model="conditions.order" placeholder="时间排序" size="mini" style="width: 97px;margin-left: 10px;">
                     <el-option
@@ -151,26 +149,26 @@ export default {
       caseid: this.cid,
       isNoShowData: true,
       isActives: {
-        dateTypes: true,
-        eventsrcTypes: true,
-        noisefilterTypes: true,
-        importanteventTypes: true,
-        emotionaloriTypes: true,
-        duplicateinfoTypes: true
+        dateTypes: 0,
+        eventsrcTypes: 0,
+        noisefilterTypes: 0,
+        importanteventTypes: 0,
+        emotionaloriTypes: 0,
+        duplicateinfoTypes: 0
       },
       activeName: 'first',
       dateTypes: ['今天', '24小时', '三天', '七天'],
       eventsrcTypes: ['全部', '报刊', '微信'],
-      noisefilterTypes: ['全部', '精准舆情', '关联舆情'],
-      importanteventTypes: [{ key: '全部', name: '0' }, { key: '含重大事件', name: '1' }, { key: '不含重大事件', name: '2' }],
-      emotionaloriTypes: ['全部', '正向', '中性', '负向'],
-      duplicateinfoTypes: [{ key: '去重', name: '1' }, { key: '不去重', name: '0' }],
+      noisefilterTypes: ['全部', '精准', '关联'],
+      importanteventTypes: [{ name: '全部', key: 0 }, { name: '含重大事件', key: 1 }, { name: '不含重大事件', key: 2 }],
+      emotionaloriTypes: ['全部', '正面', '中立', '负面'],
+      duplicateinfoTypes: [{ name: '去重', key: 1 }, { name: '不去重', key: 0 }],
       page: 1,
-      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+      value1: [new Date(2021, 1, 0, 10, 10), new Date(2021, 1, 0, 10, 10)],
       conditions: {
         date: {
-          start_date: 1611127862,
-          end_date: 1611744767
+          start_date: Math.floor(getTimestamp(-1) / 1000),
+          end_date: Math.floor(new Date().getTime() / 1000)
         },
         eventsrc: '全部',
         noisefilter: '全部',
@@ -181,13 +179,18 @@ export default {
       },
       options: [{
         value: 'asc',
-        label: '降序'
+        label: '升序'
       }, {
         value: 'desc',
-        label: '升序'
+        label: '降序'
       }
       ],
-      detailData: {}
+      detailData: {
+        case_id: '',
+        total: 0,
+        filter_total: 0,
+        rows: []
+      }
     }
   },
   created() {
@@ -205,62 +208,140 @@ export default {
   //   }
   // },
   methods: {
-    getDate(type) {
+    getDate(type, index) {
       if (type === '今天') {
         let today = new Date()
-        this.conditions.date.start_date = today.getTime()
-        this.conditions.date.end_date = today.getTime()
+        this.conditions.date.start_date = Math.floor(getTimestamp(-1) / 1000)
+        this.conditions.date.end_date = Math.floor(today.getTime() / 1000)
       } else if (type === '24小时') {
         let today = new Date()
         // 计算24小时前时间
-        this.conditions.date.start_date = getTimestamp(-1)
-        this.conditions.date.end_date = today.getTime()
-        this.isActives.dateTypes = false
+        this.conditions.date.start_date = Math.floor(getTimestamp(-1) / 1000)
+        this.conditions.date.end_date = Math.floor(today.getTime() / 1000)
       } else if (type === '三天') {
         let today = new Date()
         // 计算24小时前时间
-        this.conditions.date.start_date = getTimestamp(-3)
-        this.conditions.date.end_date = today.getTime()
-        this.isActives.dateTypes = false
+        this.conditions.date.start_date = Math.floor(getTimestamp(-3) / 1000)
+        this.conditions.date.end_date = Math.floor(today.getTime() / 1000)
       } else if (type === '七天') {
         let today = new Date()
         // 计算24小时前时间
-        this.conditions.date.start_date = getTimestamp(-7)
-        this.conditions.date.end_date = today.getTime()
-        this.isActives.dateTypes = false
+        this.conditions.date.start_date = Math.floor(getTimestamp(-7) / 1000)
+        this.conditions.date.end_date = Math.floor(today.getTime() / 1000)
       }
+      this.isActives.dateTypes = index
+      this.refresh2(this.caseid)
     },
     getPickerDate(value, name) {
-      this.conditions.date.start_date = value[0].getTime()
-      this.conditions.date.end_date = value[1].getTime()
-      this.isActives.dateTypes = false
+      debugger
+      /* eslint-disable */
+      let start_date = Date.parse(value[0])
+      let end_date = Date.parse(value[1])
+      this.conditions.date.start_date = Math.floor(start_date / 1000)
+      this.conditions.date.end_date = Math.floor(end_date / 1000)
+      this.isActives.dateTypes = -1
+      this.refresh2(this.caseid)
     },
-    getEventsrc(value) {
-      this.eventsrc = value
-      this.isActives.eventsrcTypes = false
+    getEventsrc(value, index) {
+      this.conditions.eventsrc = value
+      this.isActives.eventsrcTypes = index
+      this.refresh2(this.caseid)
     },
-    getNoisefilter(value) {
-      this.noisefilter = value
-      this.isActives.noisefilterTypes = false
+    getNoisefilter(value, index) {
+      this.conditions.noisefilter = value
+      this.isActives.noisefilterTypes = index
+      this.refresh2(this.caseid)
     },
-    getImportantevent(value) {
-      this.importantevent = value
-      this.isActives.importanteventTypes = false
+    getImportantevent(value, index) {
+      this.conditions.importantevent = value
+      this.isActives.importanteventTypes = index
+      this.refresh2(this.caseid)
     },
-    getEmotionalori(value) {
-      this.emotionalori = value
-      this.isActives.emotionaloriTypes = false
+    getEmotionalori(value, index) {
+      this.conditions.emotionalori = value
+      this.isActives.emotionaloriTypes = index
+      this.refresh2(this.caseid)
     },
-    getDuplicateinfo(value) {
-      this.duplicateinfo = value
-      this.isActives.duplicateinfoTypes = false
+    getDuplicateinfo(value, index) {
+      this.conditions.duplicateinfo = value
+      this.isActives.duplicateinfoTypes = index
+      this.refresh2(this.caseid)
     },
     refresh(caseid) {
+      this.page = 1
+      // 按钮初始化
+      this.isActives.dateTypes = 0
+      this.isActives.eventsrcTypes = 0
+      this.isActives.noisefilterTypes = 0
+      this.isActives.importanteventTypes = 0
+      this.isActives.emotionaloriTypes = 0
+      this.isActives.duplicateinfoTypes = 0
+      this.caseid = caseid
+
+      this.conditions.date.start_date = Math.floor(getTimestamp(-1) / 1000)
+      this.conditions.date.end_date = Math.floor(new Date().getTime() / 1000)
+      this.conditions.eventsrc = '全部'
+      this.conditions.noisefilter = '全部'
+      this.conditions.importantevent = 0
+      this.conditions.emotionalori =  '全部'
+      this.conditions.duplicateinfo = 1
+      this.conditions.order = 'desc'
+      let data = {
+        data: {
+          page: this.page,
+          rows: 20,
+          user_id: this.userid,
+          conditions: {
+            case_id: caseid,
+            type_full_alarm_favorite: '全部', // 包括：全部, 预警，收藏 三种
+            date: { // timestamp时间格式，精确到秒
+              start_date: Math.floor(getTimestamp(-1) / 1000),
+              end_date: Math.floor(new Date().getTime() / 1000)
+            },
+            media_type: '全部', // 包括网媒、报纸、微博、微信公众号、论坛、其他
+            relevant_or_precise: '全部', // 包括：精准，关联 两种
+            is_contain_important_events: 0, // 0:全部， 1：含重大事件， 2：不含重大事件
+            sentiment_type: '全部', // 包括：全部，正面，负面，中立 四种，
+            is_repeat: 1, // 0: 不去重， 1：去重
+            time_order_type: 'desc' // 查询结果的时间排序方式， 包括： ‘asc’和’desc’，非这两种时，默认’desc’
+          }
+        }
+      }
+      debugger
+      getDataDetailByCondition(data).then(res => {
+        const rLoading = this.openLoading()
+        this.detailData.total = res.total
+        this.detailData.filter_total = res.filter_total
+        this.detailData.rows = res.rows
+        if (this.detailData.filter_total > 0) {
+          this.isNoShowData = false
+        } else {
+          this.isNoShowData = true
+        }
+        this.$nextTick(() => {
+          if (!this.isNoShowData) {
+            // 不去重
+            if (this.conditions.duplicateinfo === 0) {
+              this.$refs.yuqingDetail.refreshPage(this.detailData.total)
+            } else {
+              this.$refs.yuqingDetail.refreshPage(this.detailData.filter_total)
+            }
+          }
+        })
+        rLoading.close()
+        console.log(this.detailData)
+      }).catch(res => {
+        console.log(res)
+        this.isNoShowData = true
+      })
+    },
+    refresh2(caseid) {
+      this.page = 1
       this.caseid = caseid
       let data = {
         data: {
           page: this.page,
-          rows: 10,
+          rows: 20,
           user_id: this.userid,
           conditions: {
             case_id: caseid,
@@ -281,10 +362,24 @@ export default {
       debugger
       getDataDetailByCondition(data).then(res => {
         const rLoading = this.openLoading()
-        this.detailData = res
+        this.detailData.total = res.total
+        this.detailData.filter_total = res.filter_total
+        this.detailData.rows = res.rows
         if (this.detailData.filter_total > 0) {
           this.isNoShowData = false
+        } else {
+          this.isNoShowData = true
         }
+        this.$nextTick(() => {
+          if (!this.isNoShowData) {
+            // 不去重
+            if (this.conditions.duplicateinfo === 0) {
+              this.$refs.yuqingDetail.refreshPage(this.detailData.total)
+            } else {
+              this.$refs.yuqingDetail.refreshPage(this.detailData.filter_total)
+            }
+          }
+        })
         rLoading.close()
         console.log(this.detailData)
       }).catch(res => {
@@ -297,7 +392,7 @@ export default {
       let data = {
         data: {
           page: this.page,
-          rows: 10,
+          rows: 20,
           user_id: this.userid,
           conditions: {
             case_id: caseid,
@@ -317,7 +412,9 @@ export default {
       }
       getDataDetailByCondition(data).then(res => {
         const rLoading = this.openLoading()
-        this.detailData = res
+        this.detailData.total = res.total
+        this.detailData.filter_total = res.filter_total
+        this.detailData.rows = res.rows
         if (this.detailData.filter_total > 0) {
           this.isNoShowData = false
         }
@@ -331,7 +428,7 @@ export default {
     getPage(page) {
       this.page = page
       // 发送查询详情请求
-      this.getDetailDatas()
+      this.getDetailDatas(this.caseid)
     },
     currentSel(selVal) {
       this.conditions.order = selVal

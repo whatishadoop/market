@@ -101,6 +101,14 @@ export default {
       allMonitorCase: []
     }
   },
+  watch: {
+    allMonitorCase: {
+      handler (val) {
+        this.activeid = this.allMonitorCase[0].id
+      },
+      deep: true
+    }
+  },
   mounted() {
     this.getAllDataMonitorCaseTree()
   },
@@ -171,15 +179,20 @@ export default {
       }
       getAllDataMonitorCase(data).then(res => {
         debugger
+        // 数据复制
         this.allMonitorCase = res.caseinfo
         if (this.allMonitorCase.length > 0) {
           this.activeName = 'five'
+          // 默认显示第一个方案的详情信息
+          // alert('激活值===============' + this.activeid)
           this.isNewCreate = false
           this.isNoShowData = false
           this.isShowConfigCase = true
-          this.activeid = this.allMonitorCase[0].id
-          // 默认显示第一个方案的详情信息
-          alert('激活值===============' + this.activeid)
+          this.$nextTick(() => {
+            this.caseid = this.allMonitorCase[0].id
+            this.activeid = this.allMonitorCase[0].id
+            this.handleSelect2(this.caseid, '')
+          })
         }
         // let arrtmp = this.allMonitorCase
         // this.caseid = arrtmp[0].id
@@ -201,7 +214,6 @@ export default {
       debugger
       // 设置caseid
       this.caseid = key
-      console.log(this.allMonitorCase)
       this.allMonitorCase.forEach(item => {
         if (item.id === key) {
           this.name = item.name
@@ -209,6 +221,22 @@ export default {
       })
       // 选中默认第一tab页
       this.activeName = 'first'
+      // 设置方案名称
+      this.$refs.yuqingList.refresh(this.caseid)
+      this.$refs.caseconfig.refresh(this.caseid)
+      // 调用tab子类方法进行刷新，直接刷新fist和five tab页
+    },
+    handleSelect2(key, keyPath) {
+      debugger
+      // 设置caseid
+      this.caseid = key
+      this.allMonitorCase.forEach(item => {
+        if (item.id === key) {
+          this.name = item.name
+        }
+      })
+      // 选中默认第一tab页
+      this.activeName = 'five'
       // 设置方案名称
       this.$refs.yuqingList.refresh(this.caseid)
       this.$refs.caseconfig.refresh(this.caseid)

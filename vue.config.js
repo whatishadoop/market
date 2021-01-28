@@ -14,7 +14,7 @@ module.exports = {
       entry: 'src/main.js',
       template: 'public/index.html',
       filename: 'index.html',
-      title: '海睿思-大数据平台'
+      title: '睿企企业开源情报专家'
     }
   },
   outputDir: 'dist',

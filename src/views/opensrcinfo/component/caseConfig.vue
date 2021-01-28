@@ -489,10 +489,15 @@ export default {
       console.log(tmpData)
       // 保存配置属性
       saveMonitorCase(tmpData).then(res => {
+        debugger
         // 1.刷新方案名称
         this.$emit('e-name', this.name)
         // 2.向父组件传值
         this.$emit('e-refreshCaseItem') // 使用$emit()触发一个事件，发送数据，事件名自定义
+        this.$message({
+          type: 'success',
+          message: '保存成功!'
+        })
       })
     },
     saveDefaultConfigInfo(userid, name) {
