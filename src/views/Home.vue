@@ -4,7 +4,7 @@
       <el-header height="58px" class="header-wapper">
         <div class="logo-wrapper">
           <img :src="backgroundImage" class="image-size">
-          <span style="font-size: 20px;color: #FFFFFF;font-family: PingFang SC;margin-left: 12px;line-height: 28px">睿企企业开源情报专家</span>
+          <span style="font-size: 20px;color: #FFFFFF;font-family: PingFang SC;margin-left: 12px;line-height: 28px">企业开源商情监测管家</span>
         </div>
       </el-header>
       <el-main style="padding: 0px;">

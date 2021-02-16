@@ -57,7 +57,7 @@
               :current-page="currentPage"
               :page-size="pageSize"
               :total="total"
-              layout="prev, pager, next"
+              layout="total, prev, pager, next, jumper"
               @current-change="handleCurrentChange"
             />
           </div>

@@ -71,7 +71,7 @@
                 <el-row class="right-wrapper">
                   <el-col :span="6">
                     <div class="label">
-                      <span class="text-one">情感倾向度：</span>
+                      <span class="text-one">情感倾向：</span>
                     </div>
                   </el-col>
                   <el-col :span="18">
@@ -100,10 +100,14 @@
               <el-tabs v-model="activeName">
                 <el-tab-pane label="全部" name="first">
                   <defaultNoData v-if="isNoShowData"></defaultNoData>
-                  <yuqingDetail v-else :detailData="detailData" :page="page" @e-page="getPage" ref="yuqingDetail"></yuqingDetail>
+                  <yuqingDetail v-if="!isNoShowData" :detailData="detailData" :page="page" @e-page="getPage" ref="yuqingDetail"></yuqingDetail>
                 </el-tab-pane>
-                <el-tab-pane label="预警" name="second">预警</el-tab-pane>
-                <el-tab-pane label="收藏" name="third">收藏</el-tab-pane>
+                <el-tab-pane label="预警" name="second">
+                  <defaultNoData v-if="isNoShowData"></defaultNoData>
+                  <yuqingDetail v-if="!isNoShowData" :detailData="detailData" :page="page" @e-page="getPage" ref="yuqingDetail"></yuqingDetail></el-tab-pane>
+                <el-tab-pane label="收藏" name="third">
+                  <defaultNoData v-if="isNoShowData"></defaultNoData>
+                  <yuqingDetail v-if="!isNoShowData" :detailData="detailData" :page="page" @e-page="getPage" ref="yuqingDetail"></yuqingDetail></el-tab-pane>
               </el-tabs>
               <div class="data-info">
                 <div class="sumcount">
@@ -158,13 +162,14 @@ export default {
       },
       activeName: 'first',
       dateTypes: ['今天', '24小时', '三天', '七天'],
-      eventsrcTypes: ['全部', '报刊', '微信'],
+      eventsrcTypes: ['全部', '网媒' ,'报刊', '微博', '微信', '论坛', '其它'],
       noisefilterTypes: ['全部', '精准', '关联'],
-      importanteventTypes: [{ name: '全部', key: 0 }, { name: '含重大事件', key: 1 }, { name: '不含重大事件', key: 2 }],
+      importanteventTypes: [{ name: '全部', key: 0 }, { name: '重大事件', key: 1 }, { name: '非重大事件', key: 2 }],
       emotionaloriTypes: ['全部', '正面', '中立', '负面'],
       duplicateinfoTypes: [{ name: '去重', key: 1 }, { name: '不去重', key: 0 }],
       page: 1,
-      value1: [new Date(2021, 1, 0, 10, 10), new Date(2021, 1, 0, 10, 10)],
+      // value1: [new Date(getTimestamp(-7)), new Date()],
+      value1: ['', ''],
       conditions: {
         date: {
           start_date: Math.floor(getTimestamp(-1) / 1000),
@@ -179,10 +184,10 @@ export default {
       },
       options: [{
         value: 'asc',
-        label: '升序'
+        label: '时间升序'
       }, {
         value: 'desc',
-        label: '降序'
+        label: '时间降序'
       }
       ],
       detailData: {
@@ -308,8 +313,8 @@ export default {
         }
       }
       debugger
+      const rLoading = this.openLoading()
       getDataDetailByCondition(data).then(res => {
-        const rLoading = this.openLoading()
         this.detailData.total = res.total
         this.detailData.filter_total = res.filter_total
         this.detailData.rows = res.rows
@@ -329,7 +334,6 @@ export default {
           }
         })
         rLoading.close()
-        console.log(this.detailData)
       }).catch(res => {
         console.log(res)
         this.isNoShowData = true
@@ -360,8 +364,10 @@ export default {
         }
       }
       debugger
+      const rLoading = this.openLoading()
+      console.log(data)
       getDataDetailByCondition(data).then(res => {
-        const rLoading = this.openLoading()
+        console.log(this.detailData)
         this.detailData.total = res.total
         this.detailData.filter_total = res.filter_total
         this.detailData.rows = res.rows
@@ -381,7 +387,6 @@ export default {
           }
         })
         rLoading.close()
-        console.log(this.detailData)
       }).catch(res => {
         console.log(res)
         this.isNoShowData = true
@@ -410,8 +415,8 @@ export default {
           }
         }
       }
+      const rLoading = this.openLoading()
       getDataDetailByCondition(data).then(res => {
-        const rLoading = this.openLoading()
         this.detailData.total = res.total
         this.detailData.filter_total = res.filter_total
         this.detailData.rows = res.rows
@@ -431,9 +436,9 @@ export default {
       this.getDetailDatas(this.caseid)
     },
     currentSel(selVal) {
-      this.conditions.order = selVal
-      // 发送查询详情请求
-      this.getDetailDatas()
+      // this.conditions.order = selVal
+      // // 发送查询详情请求
+      // this.getDetailDatas()
     }
   }
 }

@@ -7,7 +7,7 @@
           <div class="left-content">
             <el-scrollbar style="height:100%;">
               <div class="headline">
-                <div class="name"><span style="font-size: 16px;font-weight: bold;font-family: PingFangSC-Semibold;color: #333436;letter-spacing: 0;">监控方案</span></div>
+                <div class="name"><span style="font-size: 16px;font-weight: bold;font-family: PingFangSC-Semibold;color: #333436;letter-spacing: 0;">商情监测方案</span></div>
                 <div @click="newCase" class="create"><i class="el-icon-circle-plus" style="font-size: 20px;"></i></div>
               </div>
               <el-menu
@@ -37,24 +37,27 @@
             <div v-if="isShowConfigCase">
               <div class="monitor-name-wrapper">
                 <div class="name"><span style="font-family: PingFangSC-Semibold;font-size: 20px;color: #FFFFFF;">{{name}}</span></div>
-                <div class="date"><span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">数据截止：{{date}}</span></div>
+                <div class="date"><span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">开始时间：{{start_time || '暂无时间'}} </span> <span style="font-family: PingFangSC-Regular;font-size: 14px;color: rgba(255,255,255,0.62);">  结束时间：{{latest_data_time || '暂无时间'}}</span></div>
               </div>
               <div class="search-wrapper">
                 <el-tabs @tab-click="handleClick" v-model="activeName" type="card">
                   <el-tab-pane label="舆情列表" name="first">
                     <!--<defaultNoData v-if="isNoShowData"></defaultNoData>-->
-                    <yuqingList ref="yuqingList" :cid="caseid" :userid="userid" :is-new-create="isNewCreate"></yuqingList>
+                    <yuqingList v-if="isShowYuqingList" ref="yuqingList" :cid="caseid" :userid="userid" :is-new-create="isNewCreate"></yuqingList>
                   </el-tab-pane>
                   <el-tab-pane label="舆情分析" name="second">
                     <defaultNoData></defaultNoData>
                   </el-tab-pane>
-                  <el-tab-pane label="舆情预警" name="third">
+                  <el-tab-pane label="商业图谱" name="third">
+                    <busiGraph></busiGraph>
+                  </el-tab-pane>
+                  <el-tab-pane label="舆情预警" name="fourth">
                     <defaultNoData></defaultNoData>
                   </el-tab-pane>
-                  <el-tab-pane label="舆情事件" name="fourth">
+                  <el-tab-pane label="舆情事件" name="five">
                     <defaultNoData></defaultNoData>
                   </el-tab-pane>
-                  <el-tab-pane label="方案设置" name="five">
+                  <el-tab-pane label="方案设置" name="six">
                     <caseConfig ref="caseconfig" :userid="userid" :cid="caseid" :is-new-create="isNewCreate" @e-name="renameCompany" @e-refreshCaseItem="getDefaultAllDataMonitorCaseTree"></caseConfig>
                   </el-tab-pane>
                 </el-tabs>
@@ -72,6 +75,7 @@
 
 <script type="text/ecmascript-6">
 import yuqingList from './component/yuqingList'
+import busiGraph from './component/busiGraph'
 import defaultNoData from './component/defaultNoData'
 import caseConfig from './component/caseConfig'
 import backgroundImage from '@/assets/fangan.png'
@@ -81,10 +85,12 @@ export default {
   components: {
     yuqingList,
     caseConfig,
-    defaultNoData
+    defaultNoData,
+    busiGraph
   },
   data() {
     return {
+      isShowYuqingList: true,
       activeid: '',
       userid: 'admin',
       isNewCreate: true,
@@ -92,9 +98,11 @@ export default {
       isNoShowData: true,
       name: '未命名',
       date: '暂无时间', // 2020-01-07  14:13:14
+      start_time: '暂无时间',
+      latest_data_time: '暂无时间',
       backgroundImage: backgroundImage,
       backgroundImage2: backgroundImage2,
-      activeName: 'five',
+      activeName: 'six',
       input: '',
       caseid: '',
       // 获取所有监控方案信息
@@ -132,6 +140,7 @@ export default {
       // 调用子组件方法保存方案默认值
       this.caseid = ''
       this.$refs.caseconfig.saveDefaultConfigInfo(this.userid, '未命名')
+      this.name = '未命名'
     },
     creaeCase() {
       // 新建
@@ -160,6 +169,13 @@ export default {
           // 默认显示第一个方案的详情信息
           this.activeid = this.allMonitorCase[0].id
           this.caseid = this.allMonitorCase[0].id
+          this.allMonitorCase.forEach(item => {
+            if (item.id === this.caseid) {
+              this.name = item.name
+              this.start_time = item.start_time
+              this.latest_data_time = item.latest_data_time
+            }
+          })
         } else {
           this.activeName = 'five'
           this.isNewCreate = true
@@ -211,34 +227,55 @@ export default {
       this.name = name
     },
     handleSelect(key, keyPath) {
+      // 局部刷新
+      this.isShowYuqingList = false
+      this.$nextTick(() => {
+        this.isShowYuqingList = true
+        this.$nextTick(() => {
+          this.$refs.yuqingList.refresh(this.caseid)
+        })
+      })
       debugger
       // 设置caseid
       this.caseid = key
       this.allMonitorCase.forEach(item => {
         if (item.id === key) {
           this.name = item.name
+          this.start_time = item.start_time
+          this.latest_data_time = item.latest_data_time
         }
       })
       // 选中默认第一tab页
       this.activeName = 'first'
       // 设置方案名称
-      this.$refs.yuqingList.refresh(this.caseid)
+      // this.$refs.yuqingList.refresh(this.caseid)
       this.$refs.caseconfig.refresh(this.caseid)
       // 调用tab子类方法进行刷新，直接刷新fist和five tab页
     },
     handleSelect2(key, keyPath) {
+      // 局部刷新
+      // 局部刷新
+      this.isShowYuqingList = false
+      this.$nextTick(() => {
+        this.isShowYuqingList = true
+        this.$nextTick(() => {
+          this.$refs.yuqingList.refresh(this.caseid)
+        })
+      })
       debugger
       // 设置caseid
       this.caseid = key
       this.allMonitorCase.forEach(item => {
         if (item.id === key) {
           this.name = item.name
+          this.start_time = '暂无时间'
+          this.latest_data_time = '暂无时间'
         }
       })
       // 选中默认第一tab页
       this.activeName = 'five'
       // 设置方案名称
-      this.$refs.yuqingList.refresh(this.caseid)
+      // this.$refs.yuqingList.refresh(this.caseid)
       this.$refs.caseconfig.refresh(this.caseid)
       // 调用tab子类方法进行刷新，直接刷新fist和five tab页
     },
@@ -254,20 +291,30 @@ export default {
       }
     },
     deleteCaseById(caseId) {
-      debugger
-      // 向后台发送删除请求
-      let data = {
-        data: {
-          userid: this.userid,
-          id: caseId
+      this.$confirm('此操作将删除该监控方案, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 向后台发送删除请求
+        let data = {
+          data: {
+            userid: this.userid,
+            id: caseId
+          }
         }
-      }
-      delMonitorCase(data).then(res => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
+        delMonitorCase(data).then(res => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getAllDataMonitorCaseTree()
         })
-        this.getAllDataMonitorCaseTree()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     }
   }
