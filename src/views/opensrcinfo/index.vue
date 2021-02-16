@@ -162,7 +162,7 @@ export default {
         debugger
         this.allMonitorCase = res.caseinfo
         if (this.allMonitorCase.length > 0) {
-          this.activeName = 'first'
+          this.activeName = 'third'
           this.isNewCreate = false
           this.isNoShowData = false
           this.isShowConfigCase = true
@@ -246,7 +246,7 @@ export default {
         }
       })
       // 选中默认第一tab页
-      this.activeName = 'first'
+      this.activeName = 'third'
       // 设置方案名称
       // this.$refs.yuqingList.refresh(this.caseid)
       this.$refs.caseconfig.refresh(this.caseid)

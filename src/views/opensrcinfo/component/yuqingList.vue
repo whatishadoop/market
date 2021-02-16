@@ -162,7 +162,7 @@ export default {
       },
       activeName: 'first',
       dateTypes: ['今天', '24小时', '三天', '七天'],
-      eventsrcTypes: ['全部', '网媒' ,'报刊', '微博', '微信', '论坛', '其它'],
+      eventsrcTypes: ['全部', '网媒', '报刊', '微博', '微信', '论坛', '其它'],
       noisefilterTypes: ['全部', '精准', '关联'],
       importanteventTypes: [{ name: '全部', key: 0 }, { name: '重大事件', key: 1 }, { name: '非重大事件', key: 2 }],
       emotionaloriTypes: ['全部', '正面', '中立', '负面'],
