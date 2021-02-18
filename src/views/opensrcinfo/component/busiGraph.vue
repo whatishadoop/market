@@ -44,7 +44,16 @@
           </el-scrollbar>
         </div>
         <div class="right-wrapper">
-          <div ref="visualization" style="width: 100%;height: 100%;" />
+          <div class="relation-graph-wrapper">
+            <div ref="visualization" style="width: 100%;height: 100%;" />
+          </div>
+          <div class="config-animate">
+            <transition name="config">
+              <div class="node-detailinfo-wrapper" v-show="isshow">
+                <div style="width: 420px;height: 100%;"></div>
+              </div>
+            </transition>
+          </div>
         </div>
       </div>
     </div>
@@ -60,6 +69,7 @@ let DIR = process.env.BASE_URL + 'indonesia/'
 export default {
   data() {
     return {
+      isshow: true,
       activeName: 'first',
       input: '',
       nodesArray: [
@@ -218,6 +228,7 @@ export default {
       // add event listeners
       network.on('selectNode', e => {
         this.selectNodeId = e.nodes[0] + ''
+        this.isshow = !this.isshow
       })
       network.on('hoverNode', e => {
         console.log(e)
@@ -438,6 +449,7 @@ export default {
     }
   }
   .right-wrapper {
+    display: flex;
     height: calc(100vh - 248px);
     width: 100%;
     margin-left: 13px;
@@ -448,6 +460,29 @@ export default {
     box-shadow: 0 2px 10px 0 rgba(56,56,56,0.12);
     border-radius: 2px;
     border-radius: 2px;
+    .relation-graph-wrapper {
+      flex: 1
+    }
+    .config-animate {
+      height: 100%;
+      /*进入中或离开中*/
+      .config-enter-active, .config-leave-active {
+        transition: all 0.4s ease;
+      }
+      /*开始进入*/
+      .config-enter, .config-leave-to {
+        width: 0px;
+      }
+      /*进入结束*/
+      .config-enter-to, .config-leave {
+        width: 420px;
+      }
+      .node-detailinfo-wrapper {
+        flex: 0 1 420px;
+        height: 100%;
+        background-color: #97a8be;
+      }
+    }
   }
 }
 </style>
