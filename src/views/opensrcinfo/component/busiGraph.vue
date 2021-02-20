@@ -50,7 +50,46 @@
           <div class="config-animate">
             <transition name="config">
               <div class="node-detailinfo-wrapper" v-show="isshow">
-                <div style="width: 420px;height: 100%;"></div>
+                <div style="width: 420px;height: calc(100vh - 250px);padding-left: 24px;">
+                  <el-scrollbar style="height:100%;">
+                    <el-tabs v-model="activeName" @tab-click="handleClick">
+                      <el-tab-pane label="基本信息" name="first">
+                        <div class="company-wrapper">
+                          <div class="company-header">
+                            <div class="logo-wrapper">
+                              <!--<img :src="" class="image-size">-->
+                            </div>
+                            <div class="company-name">
+                              <div>南京中新赛克科技有限公司</div>
+                              <div><span>法人: 凌东胜</span><span>成立日期: 2007-08-31</span></div>
+                            </div>
+                          </div>
+                          <div class="company-content">
+                            <div v-for="o in 18" :key="o"><span class="text">注册资本: 30000万元人民币</span></div>
+                          </div>
+                        </div>
+                      </el-tab-pane>
+                      <el-tab-pane label="重大事件日历" name="second">
+                        <div class="conditon-wrapper">
+                          <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                          <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
+                            <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
+                          </el-checkbox-group>
+                        </div>
+                        <div class="timeline-wrapper">
+                          <el-timeline>
+                            <el-timeline-item v-for="o in 5" :key="o" placement="top">
+                              <div style="width: 334px;height: 72px;border: 1px solid #409EFF;">
+                                <div><span style="font-weight: bold">2019-09-01  11:00:00</span></div>
+                                <div>投融资商业座谈会</div>
+                              </div>
+                            </el-timeline-item>
+                          </el-timeline>
+                        </div>
+                      </el-tab-pane>
+                    </el-tabs>
+                  </el-scrollbar>
+                </div>
               </div>
             </transition>
           </div>
@@ -111,7 +150,11 @@ export default {
       ],
       nodes: null,
       edges: null,
-      selectNodeId: ''
+      selectNodeId: '',
+      checkAll: false,
+      checkedCities: ['上海', '北京'],
+      cities: ['上海', '北京', '广州', '深圳'],
+      isIndeterminate: true
     }
   },
   mounted() {
@@ -142,7 +185,6 @@ export default {
       this.create(type)
     },
     create(type) {
-      // null，undefined，0，”“返回false，其他返回true
       // 默认自左向右
       const layoutType = type || 'RL'
       // create an array with nodes
@@ -312,6 +354,15 @@ export default {
           this.nodes.remove({ id: nodes[i] })
         }
       }
+    },
+    handleCheckAllChange(val) {
+      this.checkedCities = val ? this.cities : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedCitiesChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.cities.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
     }
   }
 }
@@ -450,13 +501,13 @@ export default {
   }
   .right-wrapper {
     display: flex;
-    height: calc(100vh - 248px);
+    height: calc(100vh - 246px);
     width: 100%;
     margin-left: 13px;
     margin-right: 13px;
     margin-bottom: 13px;
     background: #FFFFFF;
-    border: 1px solid #E7E8F2;
+    border-left: 1px solid #E7E8F2;
     box-shadow: 0 2px 10px 0 rgba(56,56,56,0.12);
     border-radius: 2px;
     border-radius: 2px;
@@ -480,7 +531,7 @@ export default {
       .node-detailinfo-wrapper {
         flex: 0 1 420px;
         height: 100%;
-        background-color: #97a8be;
+        border-left: 1px solid #E7E8F2;
       }
     }
   }
