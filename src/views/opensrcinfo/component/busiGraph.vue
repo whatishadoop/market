@@ -104,7 +104,7 @@ import { DataSet, Network } from 'vis'
 // 引入uuid文件
 import uuidv1 from 'uuid/v1'
 let network = null
-let DIR = process.env.BASE_URL + 'indonesia/'
+let DIR = process.env.BASE_API + 'indonesia/'
 export default {
   data() {
     return {

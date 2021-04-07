@@ -3,7 +3,7 @@
       <div class="main-wrapper">
         <el-scrollbar style="height:100%;">
           <div class="case-name-wrapper">
-            <el-input v-model="name" placeholder="请输入内容" style="margin-right: 10px;"></el-input><el-button @click="saveName" size="small" type="primary">确定</el-button>
+            <el-input v-model="conditons.data.name" placeholder="请输入方案名称" clearable/>
           </div>
           <div class="word-monitor-wrapper">
             <div class="word-monitor">
@@ -18,27 +18,14 @@
                         <span class="text-one">企业名称</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in monitorwords.company"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[0])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'company'"
-                        v-model="inputValue"
-                        ref="company"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[0])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[0])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-autocomplete
+                        v-model="conditionstrs.monitorwords.company_name"
+                        :fetch-suggestions="querySearchAsync"
+                        placeholder="请输入内容"
+                        style="width:50%"
+                        @select="selectCompany"
+                      ></el-autocomplete>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -47,27 +34,8 @@
                         <span class="text-one">主要人员</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in monitorwords.staff"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[1])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'staff'"
-                        v-model="inputValue"
-                        ref="staff"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[1])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[1])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-input v-model="conditionstrs.monitorwords.staffs" :readonly="true" style="width:50%"/>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -76,85 +44,62 @@
                         <span class="text-one">分支机构</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in monitorwords.sub_company"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[2])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'subcompany'"
-                        v-model="inputValue"
-                        ref="subcompany"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[2])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[2])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-input v-model="conditionstrs.monitorwords.sub_companies" :readonly="true" style="width:50%"/>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
                     <el-col :span="2">
                       <div class="label">
-                        <span class="text-one">行业</span>
+                        <span class="text-one">选择竞品</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in monitorwords.industry"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[3])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'industry'"
-                        v-model="inputValue"
-                        ref="industry"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[3])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[3])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-autocomplete
+                        v-model="conditionstrs.monitorwords.competitor_select"
+                        :fetch-suggestions="querySearchAsync"
+                        placeholder="请输入内容"
+                        clearable
+                        style="width:50%"
+                        @select="selectCompetitor"
+                      ></el-autocomplete>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
                     <el-col :span="2">
                       <div class="label">
-                        <span class="text-one">技术</span>
+                        <span class="text-one">竞品公司</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in monitorwords.technology"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[4])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'technology'"
-                        v-model="inputValue"
-                        ref="technology"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[4])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[4])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-input v-model="conditionstrs.monitorwords.competitor_company" :readonly="true" clearable placeholder="请选择所属竞品公司" style="width:50%"/>
+                    </el-col>
+                  </el-row>
+                  <el-row class="left-wrapper">
+                    <el-col :span="2">
+                      <div class="label">
+                        <span class="text-one">所属行业</span>
+                      </div>
+                    </el-col>
+                    <el-col :span="21" :offset="1">
+                      <el-select v-model="value" placeholder="请选择" @change="selectItem" style="width:50%">
+                        <el-option
+                          v-for="item in options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                        </el-option>
+                      </el-select>
+                    </el-col>
+                  </el-row>
+                  <el-row class="left-wrapper">
+                    <el-col :span="2">
+                      <div class="label">
+                        <span class="text-one">技术方案</span>
+                      </div>
+                    </el-col>
+                    <el-col :span="21" :offset="1">
+                      <el-input v-model="conditionstrs.monitorwords.technologies" placeholder="请输入技术方案" style="width:50%"/>
                     </el-col>
                   </el-row>
                 </el-col>
@@ -174,27 +119,8 @@
                         <span class="text-one">排除词</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in excludewords.words"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[5])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'excludewords'"
-                        v-model="inputValue"
-                        ref="excludewords"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[5])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[5])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-input v-model="conditionstrs.excludewords.words" placeholder="请输入, 支持批量添加用;分割" clearable style="width:50%"/>
                     </el-col>
                   </el-row>
                 </el-col>
@@ -214,27 +140,8 @@
                         <span class="text-one">预警词</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in alarmmode.words"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[6])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'alarmwords'"
-                        v-model="inputValue"
-                        ref="alarmwords"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[6])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[6])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-input v-model="conditionstrs.alarmmode.words" placeholder="请输入, 支持批量添加用;分割" clearable style="width:50%"/>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -243,27 +150,8 @@
                         <span class="text-one">媒体预警</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in alarmmode.mediawords"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[7])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'mediawords'"
-                        v-model="inputValue"
-                        ref="mediawords"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[7])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[7])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-input v-model="conditionstrs.alarmmode.mediawords" placeholder="请输入, 支持批量添加用;分割" clearable style="width:50%"/>
                     </el-col>
                   </el-row>
                   <el-row class="left-wrapper">
@@ -272,27 +160,8 @@
                         <span class="text-one">作者预警</span>
                       </div>
                     </el-col>
-                    <el-col :span="22">
-                      <el-tag
-                        class="condition"
-                        :key="tag"
-                        v-for="tag in alarmmode.author"
-                        closable
-                        :disable-transitions="false"
-                        @close="handleClose(tag, tagTypes[8])">
-                        {{tag}}
-                      </el-tag>
-                      <el-input
-                        class="input-new-tag condition"
-                        v-if="inputVisible === 'author'"
-                        v-model="inputValue"
-                        ref="author"
-                        size="small"
-                        @keyup.enter.native="handleInputConfirm"
-                        @blur="handleInputConfirm(tagTypes[8])"
-                      >
-                      </el-input>
-                      <el-button v-else class="button-new-tag condition" size="small" @click="showInput(tagTypes[8])" icon="el-icon-plus" round>添加</el-button>
+                    <el-col :span="21" :offset="1">
+                      <el-input v-model="conditionstrs.alarmmode.authors" placeholder="请输入, 支持批量添加用;分割" clearable style="width:50%"/>
                     </el-col>
                   </el-row>
                 </el-col>
@@ -300,7 +169,7 @@
             </div>
           </div>
           <div class="action-btn-wrapper">
-            <el-button @click="startSpider" size="small" type="primary">开始监测</el-button><el-button @click="saveConfigInfo" size="small" type="primary">保存</el-button>
+           <el-button @click="savemonitor" size="small" type="primary" style="width: 10%">保存</el-button>
           </div>
         </el-scrollbar>
       </div>
@@ -308,7 +177,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { getMonitorCase, saveMonitorCase, startSpider } from '@/api/opensrcinfo/dataset'
+import { getCompanyFullName, getCompanySimpleInfoWithName, saveMonitorCase, getMonitorCase } from '@/api/opensrcinfo/dataset'
 
 export default {
   props: {
@@ -319,234 +188,349 @@ export default {
   data() {
     return {
       caseid: this.cid,
-      name: '未命名',
-      monitorwords: {
-        company: [],
-        staff: [],
-        sub_company: [],
-        industry: [],
-        technology: []
+      isReadOnly: false,
+      companys: [],
+      options: [{
+        value: '1',
+        label: '大数据'
+      }, {
+        value: '2',
+        label: '人工智能'
+      }, {
+        value: '3',
+        label: '金融'
+      }],
+      value: '',
+      conditionstrs: {
+        monitorwords: {
+          company_name: '',
+          company_id: '',
+          staffs: '',
+          sub_companies: '',
+          competitor_select: '',
+          competitor_company: '',
+          competitor_ids: '',
+          industry_names: '',
+          industry_ids: '',
+          technologies: ''
+        },
+        excludewords: {
+          words: ''
+        },
+        alarmmode: {
+          words: '',
+          mediawords: '',
+          authors: ''
+        }
       },
-      excludewords: {
-        words: []
-      },
-      alarmmode: {
-        words: [],
-        mediawords: [],
-        author: []
-      },
-      tagTypes: ['company', 'staff', 'subcompany', 'industry', 'technology', 'excludewords', 'alarmwords', 'mediawords', 'author'],
-      date: '',
-      activeName: 'first',
-      inputVisible: '',
-      inputValue: ''
-    }
-  },
-  // wacth:{
-  //   cid:{
-  //     immediate: true,
-  //     handler(val){
-  //       alert(val+ 'haaha')
-  //     }
-  //   }
-  // },
-  created() {
-    if (!this.isNewCreate) {
-      this.$nextTick(() => {
-        this.getCusMonitorCase()
-      })
-    }
-    // 对于新增方案默认保存一份
-  },
-  methods: {
-    startSpider() {
-      debugger
-      let data = {
-        data: {
-          id: this.caseid,
-          userid: this.userid
-        }
-      }
-      startSpider(data).then(res => {
-        this.$message({
-          type: 'success',
-          message: '启动成功!'
-        })
-      })
-    },
-    refresh(caseId) {
-      this.caseid = caseId
-      let data = {
-        data: {
-          id: caseId,
-          userid: this.userid
-        }
-      }
-      debugger
-      getMonitorCase(data).then(res => {
-        debugger
-        this.name = res.data.name
-        this.monitorwords = res.data.monitorwords
-        this.excludewords = res.data.excludewords
-        this.alarmmode = res.data.alarmmode
-      })
-    },
-    getCusMonitorCase() {
-      let data = {
-        data: {
-          id: this.caseid,
-          userid: this.userid
-        }
-      }
-      getMonitorCase(data).then(res => {
-        debugger
-        this.monitorwords = res.data.monitorwords
-        this.excludewords = res.data.excludewords
-        this.alarmmode = res.data.alarmmode
-      })
-    },
-    saveName() {
-      // 1.向后台发送保存公司名请求
-      let data = {
-        userid: this.userid,
-        name: this.name,
-        monitorwords: this.monitorwords,
-        excludewords: this.excludewords,
-        alarmmode: this.alarmmode
-      }
-      console.log(data)
-      // saveMonitorCase(data).then(res => {
-      //   console.log(res)
-      // })
-      // 2.向父组件传值
-      this.$emit('e-name', this.name) // 使用$emit()触发一个事件，发送数据，事件名自定义
-    },
-    handleClose(tag, tagType) {
-      if (tagType === 'company') {
-        this.monitorwords.company.splice(this.monitorwords.company.indexOf(tag), 1)
-      } else if (tagType === 'staff') {
-        this.monitorwords.staff.splice(this.monitorwords.staff.indexOf(tag), 1)
-      } else if (tagType === 'subcompany') {
-        this.monitorwords.sub_company.splice(this.monitorwords.sub_company.indexOf(tag), 1)
-      } else if (tagType === 'industry') {
-        this.monitorwords.industry.splice(this.monitorwords.industry.indexOf(tag), 1)
-      } else if (tagType === 'technology') {
-        this.monitorwords.technology.splice(this.monitorwords.technology.indexOf(tag), 1)
-      } else if (tagType === 'excludewords') {
-        this.excludewords.words.splice(this.excludewords.words.indexOf(tag), 1)
-      } else if (tagType === 'alarmwords') {
-        this.alarmmode.words.splice(this.alarmmode.words.indexOf(tag), 1)
-      } else if (tagType === 'mediawords') {
-        this.alarmmode.mediawords.splice(this.alarmmode.mediawords.indexOf(tag), 1)
-      } else if (tagType === 'author') {
-        this.alarmmode.author.splice(this.alarmmode.author.indexOf(tag), 1)
-      }
-    },
-    showInput(tagType) {
-      this.inputVisible = tagType
-      this.$nextTick(_ => {
-        this.$refs[tagType].$refs.input.focus()
-      })
-    },
-    handleInputConfirm(tagType) {
-      let inputValue = this.inputValue
-      if (inputValue) {
-        if (tagType === 'company') {
-          this.monitorwords.company.push(inputValue)
-        } else if (tagType === 'staff') {
-          this.monitorwords.staff.push(inputValue)
-        } else if (tagType === 'subcompany') {
-          this.monitorwords.sub_company.push(inputValue)
-        } else if (tagType === 'industry') {
-          this.monitorwords.industry.push(inputValue)
-        } else if (tagType === 'technology') {
-          this.monitorwords.technology.push(inputValue)
-        } else if (tagType === 'excludewords') {
-          this.excludewords.words.push(inputValue)
-        } else if (tagType === 'alarmwords') {
-          this.alarmmode.words.push(inputValue)
-        } else if (tagType === 'mediawords') {
-          this.alarmmode.mediawords.push(inputValue)
-        } else if (tagType === 'author') {
-          this.alarmmode.author.push(inputValue)
-        }
-      }
-      this.inputVisible = ''
-      this.inputValue = ''
-    },
-    saveConfigInfo() {
-      let data = {
+      conditons: {
         data: {
           userid: this.userid,
-          caseid: this.caseid,
-          name: this.name,
-          monitorwords: this.monitorwords,
-          excludewords: this.excludewords,
-          alarmmode: this.alarmmode
+          caseid: this.caseid, // 若为空表示新建，不是''表示修改
+          name: '',
+          monitorwords: {
+            company_name: '南京中新赛克有限责任有限公司',
+            company_id: '',
+            staffs: [],
+            sub_companies: [],
+            competitor_info: [],
+            industry_info: [],
+            technologies: []
+          },
+          excludewords: {
+            words: []
+          },
+          alarmmode: {
+            words: [],
+            mediawords: [],
+            authors: []
+          }
         }
       }
-      let tmpData = JSON.parse(JSON.stringify(data))
-      console.log(tmpData)
-      // 保存配置属性
-      saveMonitorCase(tmpData).then(res => {
-        debugger
-        let is_case_name_existed = res.is_case_name_existed
-        if (is_case_name_existed === 1) {
-          this.$message({
-            type: 'error',
-            message: '名称已存在，保存失败!'
-          })
-        } else {
-          // 1.刷新方案名称
-          this.$emit('e-name', this.name)
-          // 2.向父组件传值
-          this.$emit('e-refreshCaseItem') // 使用$emit()触发一个事件，发送数据，事件名自定义
-          this.$message({
-            type: 'success',
-            message: '保存成功!'
-          })
+    }
+  },
+  created() {
+    this.$nextTick(() => {
+      debugger
+      this.getMonitorCase(this.caseid)
+    })
+  },
+  mounted() {
+  },
+  methods: {
+    refresh(caseId) {
+      this.getMonitorCase(caseId)
+    },
+    selectItem(value) {
+      this.conditionstrs.monitorwords.industry_ids = value
+      var obj = {}
+      obj = this.options.find((item) => {
+        return item.value === value
+      })
+      this.conditionstrs.monitorwords.industry_names = obj.label
+    },
+    querySearchAsync(queryString, cb) {
+      const _this = this
+      let data2 = {
+        data: {
+          text: queryString
         }
+      }
+      getCompanyFullName(data2).then(res => {
+        debugger
+        _this.companys.length = 0
+        if (res.length > 0) {
+          res.forEach(item => {
+            _this.companys.push({ 'value': item })
+          })
+          console.log(_this.companys)
+          cb(_this.companys)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+      console.log(this.companys)
+    },
+    // 选择公司
+    selectCompany(item) {
+      debugger
+      const _this = this
+      const data = {
+        data: {
+          company_name: item.value
+        }
+      }
+      // 1.组装公司名
+      _this.conditionstrs.monitorwords.company_name = item.value
+      getCompanySimpleInfoWithName(data).then(res => {
+        debugger
+        // 2.组装公司id
+        _this.conditionstrs.monitorwords.company_id = res.id
+        // 3. 组装组织人员
+        _this.conditionstrs.monitorwords.staffs = ''
+        res.leading_member.forEach(item => {
+          _this.conditionstrs.monitorwords.staffs += item + ';'
+        })
+        // 4. 组装子机构
+        _this.conditionstrs.monitorwords.sub_companies = ''
+        res.sub_companies.forEach(item => {
+          _this.conditionstrs.monitorwords.sub_companies += item + ';'
+        })
+      }).catch(err => {
+        console.log(err)
       })
     },
+    // 选择竞品公司
+    selectCompetitor(item) {
+      const _this = this
+      const data = {
+        data: {
+          company_name: item.value
+        }
+      }
+      // 5.组装竞品公司
+      _this.conditionstrs.monitorwords.competitor_company += item.value + ';'
+      getCompanySimpleInfoWithName(data).then(res => {
+        debugger
+        // 2.组装竞品公司id
+        _this.conditionstrs.monitorwords.competitor_ids += res.data.id + ';'
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    setIndustry(params) {
+      this.industry_names = params.name
+    },
+    savemonitor() {
+      debugger
+      console.log(this.conditionstrs)
+      this.conditons.data.userid = this.userid
+      this.conditons.data.monitorwords.company_name = this.conditionstrs.monitorwords.company_name
+      this.conditons.data.monitorwords.company_id = this.conditionstrs.monitorwords.company_id + ''
+      this.conditons.data.monitorwords.staffs = this.conditionstrs.monitorwords.staffs.split(';').filter(item => item !== '')
+      this.conditons.data.monitorwords.sub_companies = this.conditionstrs.monitorwords.sub_companies.split(';').filter(item => item !== '')
+      const competitor_ids = this.conditionstrs.monitorwords.competitor_ids.split(';').filter(item => item !== '')
+      // 组装竞品公司{id,name}
+      const competitor_companys = this.conditionstrs.monitorwords.competitor_company.split(';').filter(item => item !== '')
+      const competitor_info = competitor_ids.map((date, i) => ({ id: date, name: competitor_companys[i] }))
+      this.conditons.data.monitorwords.competitor_info = competitor_info
+
+      // 组装行业信息
+      this.conditons.data.monitorwords.industry_info = [{
+        id: this.conditionstrs.monitorwords.industry_ids,
+        name: this.conditionstrs.monitorwords.industry_names
+      }]
+      this.conditons.data.monitorwords.technologies = this.conditionstrs.monitorwords.technologies.split(';')
+
+      this.conditons.data.excludewords.words = this.conditionstrs.excludewords.words.split(';')
+
+      this.conditons.data.alarmmode.words = this.conditionstrs.alarmmode.words.split(';')
+      this.conditons.data.alarmmode.mediawords = this.conditionstrs.alarmmode.mediawords.split(';')
+      this.conditons.data.alarmmode.authors = this.conditionstrs.alarmmode.authors.split(';')
+      console.log(this.conditons)
+      // 保存监控方案
+      saveMonitorCase(this.conditons).then(res => {
+        debugger
+        this.setReadOnly(true)
+        // 1.刷新方案名称
+        this.$emit('e-name', this.name)
+        // 2.向父组件传值
+        this.$emit('e-refreshCaseItem') // 使用$emit()触发一个事件，发送数据，事件名自定义
+        this.$message({
+          type: 'success',
+          message: '保存成功!'
+        })
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    getMonitorCase(caseId) {
+      debugger
+      if (caseId !== '') {
+        const data = {
+          data: {
+            case_id: caseId,
+            user_id: this.userid
+          }
+        }
+        getMonitorCase(data).then(res => {
+          debugger
+          // 根据caseid加载详情
+          this.conditons.data.userid = this.userid
+          this.conditons.data.caseid = caseId
+          this.conditons.data.name = res.data.name
+
+          this.conditons.data.monitorwords.company_name = res.data.monitorwords.company_name
+          this.conditons.data.monitorwords.company_id = res.data.monitorwords.company_id + ''
+          this.conditons.data.monitorwords.staffs = res.data.monitorwords.staffs
+          this.conditons.data.monitorwords.sub_companies = res.data.monitorwords.sub_companies
+          this.conditons.data.monitorwords.competitor_info = res.data.monitorwords.competitor_info
+          this.conditons.data.monitorwords.industry_info = res.data.monitorwords.industry_info
+          this.conditons.data.monitorwords.technologies = res.data.monitorwords.technology
+
+          this.conditons.data.excludewords.words = res.data.excludewords.words
+
+          this.conditons.data.alarmmode.words = res.data.alarmmode.words
+          this.conditons.data.alarmmode.mediawords = res.data.alarmmode.mediawords
+          this.conditons.data.alarmmode.authors = res.data.alarmmode.authors
+
+          // 处理字符串显示
+          this.conditionstrs.monitorwords.company_name = res.data.monitorwords.company_name
+          this.conditionstrs.monitorwords.company_id = res.data.monitorwords.company_id + ''
+          this.conditionstrs.monitorwords.staffs = res.data.monitorwords.staffs.join(';')
+          this.conditionstrs.monitorwords.sub_companies = res.data.monitorwords.sub_companies.join(';')
+          this.conditionstrs.monitorwords.competitor_select = ''
+
+          // 拼接字符串
+          this.conditionstrs.monitorwords.competitor_company = ''
+          this.conditionstrs.monitorwords.competitor_ids = ''
+          res.data.monitorwords.competitor_info.forEach(item => {
+            this.conditionstrs.monitorwords.competitor_company += item.name + ';'
+            this.conditionstrs.monitorwords.competitor_ids += item.id + ';'
+          })
+
+          this.conditionstrs.monitorwords.industry_names = ''
+          this.conditionstrs.monitorwords.industry_ids = ''
+          res.data.monitorwords.industry_info.forEach(item => {
+            this.conditionstrs.monitorwords.industry_names += item.name
+            this.conditionstrs.monitorwords.industry_ids += item.id
+          })
+
+          this.conditionstrs.monitorwords.technologies = res.data.monitorwords.technology.join(';')
+
+          this.conditionstrs.excludewords.words = res.data.excludewords.words.join(';')
+          this.conditionstrs.alarmmode.words = res.data.alarmmode.words.join(';')
+          this.conditionstrs.alarmmode.mediawords = res.data.alarmmode.mediawords.join(';')
+          this.conditionstrs.alarmmode.authors = res.data.alarmmode.authors.join(';')
+        }).catch(err => {
+          console.log(err)
+        })
+      } else {
+        // 新建时清空数据
+        this.conditons.data.userid = ''
+        this.conditons.data.caseid = ''
+        this.conditons.data.name = ''
+
+        this.conditons.data.monitorwords.company_name = ''
+        this.conditons.data.monitorwords.company_id = ''
+        this.conditons.data.monitorwords.staffs = []
+        this.conditons.data.monitorwords.sub_company = []
+        this.conditons.data.monitorwords.competitor_info = []
+        this.conditons.data.monitorwords.industry_info = []
+        this.conditons.data.monitorwords.technologies = []
+
+        this.conditons.data.excludewords.words = []
+
+        this.conditons.data.alarmmode.words = []
+        this.conditons.data.alarmmode.mediawords = []
+        this.conditons.data.alarmmode.authors = []
+
+        this.conditionstrs.monitorwords.company_name = ''
+        this.conditionstrs.monitorwords.company_id = ''
+        this.conditionstrs.monitorwords.staffs = ''
+        this.conditionstrs.monitorwords.sub_companies = ''
+        this.conditionstrs.monitorwords.competitor_select = ''
+        this.conditionstrs.monitorwords.competitor_company = ''
+        this.conditionstrs.monitorwords.competitor_ids = ''
+        this.conditionstrs.monitorwords.industry_names = ''
+        this.conditionstrs.monitorwords.industry_ids = ''
+        this.conditionstrs.monitorwords.technologies = ''
+
+        this.conditionstrs.excludewords.words = ''
+        this.conditionstrs.alarmmode.words = ''
+        this.conditionstrs.alarmmode.mediawords = ''
+        this.conditionstrs.alarmmode.authors = ''
+      }
+    },
     saveDefaultConfigInfo(userid, name) {
-      this.userid = userid
-      this.caseid = ''
-      this.name = name
-      this.monitorwords = {
-        company: [],
-        staff: [],
-        sub_company: [],
-        industry: [],
-        technology: []
-      }
-      this.excludewords = {
-        words: []
-      }
-      this.alarmmode = {
-        words: [],
-        mediawords: [],
-        author: []
-      }
+      // 新建时清空数据
+      this.conditons.data.userid = userid
+      this.conditons.data.caseid = ''
+      this.conditons.data.name = name
+
+      this.conditons.data.monitorwords.company_name = ''
+      this.conditons.data.monitorwords.company_id = ''
+      this.conditons.data.monitorwords.staffs = []
+      this.conditons.data.monitorwords.sub_company = []
+      this.conditons.data.monitorwords.competitor_info = []
+      this.conditons.data.monitorwords.industry_info = []
+      this.conditons.data.monitorwords.technologies = []
+
+      this.conditons.data.excludewords.words = []
+
+      this.conditons.data.alarmmode.words = []
+      this.conditons.data.alarmmode.mediawords = []
+      this.conditons.data.alarmmode.authors = []
+
+      this.conditionstrs.monitorwords.company_name = ''
+      this.conditionstrs.monitorwords.company_id = ''
+      this.conditionstrs.monitorwords.staffs = ''
+      this.conditionstrs.monitorwords.sub_companies = ''
+      this.conditionstrs.monitorwords.competitor_select = ''
+      this.conditionstrs.monitorwords.competitor_company = ''
+      this.conditionstrs.monitorwords.competitor_ids = ''
+      this.conditionstrs.monitorwords.industry_names = ''
+      this.conditionstrs.monitorwords.industry_ids = ''
+      this.conditionstrs.monitorwords.technologies = ''
+
+      this.conditionstrs.excludewords.words = ''
+      this.conditionstrs.alarmmode.words = ''
+      this.conditionstrs.alarmmode.mediawords = ''
+      this.conditionstrs.alarmmode.authors = ''
+    },
+    setReadOnly(flag) {
+      this.isReadOnly = flag
     }
   }
 }
 </script>
 
 <style type="text/scss" rel="stylesheet/scss" lang="scss" scoped>
-.el-tag + .el-tag {
-  margin-left: 10px;
-}
-.button-new-tag {
-  margin-left: 10px;
-  height: 32px;
-  line-height: 30px;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-.input-new-tag {
-  width: 90px;
-  margin-left: 10px;
-  vertical-align: bottom;
+.el-row {
+  margin-bottom: 20px;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 .main-wrapper {
   width: 100%;
@@ -577,7 +561,7 @@ export default {
       .left-wrapper {
         height: 100%;
         weight: 100%;
-        margin-bottom: 5px;
+        margin-bottom: 15px;
         .label {
           margin-top: 14px;
           line-height: 20px;
@@ -599,8 +583,8 @@ export default {
   .action-btn-wrapper {
     padding-left: 20px;
     padding-right: 5px;
-    margin-left: 20px;
-    margin-top: 113px;
+    margin-left: 120px;
+    margin-top: 20px;
     margin-bottom: 20px;
   }
 }

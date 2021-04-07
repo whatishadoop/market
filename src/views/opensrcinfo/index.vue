@@ -132,7 +132,7 @@ export default {
       if (this.isNewCreate) {
         return
       }
-      this.activeName = 'five'
+      this.activeName = 'six'
       // 2. 右侧tab页自由方案设置中有显示，其余提示没有数据
       this.isNoShowData = true
       // 舆情列表显示为空
@@ -155,14 +155,17 @@ export default {
       const rLoading = this.openLoading()
       let data = {
         data: {
-          userid: this.userid
+          userid: this.userid,
+          conditions: {
+            content: ''
+          }
         }
       }
       getAllDataMonitorCase(data).then(res => {
         debugger
         this.allMonitorCase = res.caseinfo
         if (this.allMonitorCase.length > 0) {
-          this.activeName = 'third'
+          this.activeName = 'first'
           this.isNewCreate = false
           this.isNoShowData = false
           this.isShowConfigCase = true
@@ -177,7 +180,7 @@ export default {
             }
           })
         } else {
-          this.activeName = 'five'
+          this.activeName = 'first'
           this.isNewCreate = true
           this.isNoShowData = true
           this.isShowConfigCase = false
@@ -190,7 +193,10 @@ export default {
       const rLoading = this.openLoading()
       let data = {
         data: {
-          userid: this.userid
+          userid: this.userid,
+          conditions: {
+            content: ''
+          }
         }
       }
       getAllDataMonitorCase(data).then(res => {
@@ -198,7 +204,7 @@ export default {
         // 数据复制
         this.allMonitorCase = res.caseinfo
         if (this.allMonitorCase.length > 0) {
-          this.activeName = 'five'
+          this.activeName = 'first'
           // 默认显示第一个方案的详情信息
           // alert('激活值===============' + this.activeid)
           this.isNewCreate = false
@@ -246,7 +252,7 @@ export default {
         }
       })
       // 选中默认第一tab页
-      this.activeName = 'third'
+      this.activeName = 'first'
       // 设置方案名称
       // this.$refs.yuqingList.refresh(this.caseid)
       this.$refs.caseconfig.refresh(this.caseid)
@@ -273,7 +279,7 @@ export default {
         }
       })
       // 选中默认第一tab页
-      this.activeName = 'five'
+      this.activeName = 'first'
       // 设置方案名称
       // this.$refs.yuqingList.refresh(this.caseid)
       this.$refs.caseconfig.refresh(this.caseid)
@@ -285,9 +291,9 @@ export default {
       if (tab.name === 'first') {
         // alert(1 + ' ' + this.caseid )
         // this.$refs.yuqingList.refresh(this.caseid)
-      } else if (tab.name === 'five') {
+      } else if (tab.name === 'six') {
         // alert(5 + ' ' + this.caseid)
-        // this.$refs.caseconfig.refresh(this.caseid)
+        this.$refs.caseconfig.refresh(this.caseid)
       }
     },
     deleteCaseById(caseId) {
